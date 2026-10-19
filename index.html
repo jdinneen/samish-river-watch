@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.waterdata.usgs.gov https://api.water.noaa.gov https://api.tidesandcurrents.noaa.gov; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f3f5f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1218" media="(prefers-color-scheme: dark)">
+  <title>Samish River Watch</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a5c86'/%3E%3Cpath d='M5 19c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 4 3' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#status" id="skip-link"></a>
+
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div class="brand-text">
+        <h1 id="app-name" class="brand-name">Samish River Watch</h1>
+        <p id="app-place" class="brand-place">Samish River at Burlington</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="icon-btn" id="btn-refresh"></button>
+      <button type="button" class="icon-btn" id="btn-theme"></button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main id="main" class="layout" aria-busy="true">
+    <div class="col col-summary">
+      <section id="status" class="card status-card" aria-labelledby="status-h" tabindex="-1">
+        <h2 id="status-h" class="sr-only"></h2>
+        <p id="status-sentence" class="status-sentence" aria-live="polite" aria-atomic="true">
+          <span class="sk sk-line"></span><span class="sk sk-line"></span><span class="sk sk-line sk-short"></span>
+        </p>
+        <div class="status-meta">
+          <span id="line-chip" class="chip"></span>
+          <span id="status-time" class="meta"></span>
+        </div>
+      </section>
+
+      <section id="rise" class="card rise-card" aria-labelledby="rise-h">
+        <h2 id="rise-h" class="eyebrow"></h2>
+        <div id="rise-body"><span class="sk sk-block"></span></div>
+      </section>
+
+      <section id="crest" class="card crest-strip" aria-labelledby="crest-h">
+        <h2 id="crest-h" class="sr-only"></h2>
+        <div id="crest-body"><span class="sk sk-line"></span><span class="sk sk-line sk-short"></span></div>
+      </section>
+
+      <section id="feeds" class="card feeds-card" aria-labelledby="feeds-h">
+        <h2 id="feeds-h" class="sr-only"></h2>
+        <button type="button" id="feeds-toggle" class="feeds-toggle" aria-expanded="false" aria-controls="feeds-panel"></button>
+        <div id="feeds-panel" class="feeds-panel" hidden></div>
+      </section>
+    </div>
+
+    <div class="col col-detail">
+      <section id="chart-card" class="card chart-card" aria-labelledby="chart-h">
+        <div class="card-head">
+          <h2 id="chart-h" class="card-title"></h2>
+          <p id="chart-ages" class="meta"></p>
+        </div>
+        <div id="chart-readout" class="readout" aria-live="polite" aria-atomic="true"></div>
+        <div id="chart-host" class="chart-host" tabindex="0" role="group" aria-roledescription="chart" aria-describedby="chart-summary"><span class="sk sk-chart"></span></div>
+        <div id="chart-legend" class="legend"></div>
+        <p id="chart-range-note" class="note range-note" hidden></p>
+        <div id="chart-basis" class="basis-pop" hidden></div>
+        <p id="chart-hint" class="meta hint"></p>
+        <p id="chart-summary" class="sr-only"></p>
+        <div id="crossing" class="crossing"></div>
+        <details id="chart-table" class="table-details">
+          <summary id="chart-table-summary"></summary>
+          <div id="chart-table-body" class="table-wrap"></div>
+        </details>
+      </section>
+
+      <section id="crest-panel" class="card" aria-labelledby="crest-panel-h">
+        <h2 id="crest-panel-h" class="card-title"></h2>
+        <div id="crest-panel-body"></div>
+      </section>
+
+      <section id="sampling" class="card sampling-card" aria-labelledby="sampling-h">
+        <h2 id="sampling-h" class="card-title"></h2>
+        <div id="sampling-body"></div>
+        <div id="tap-slot-sampling"></div>
+      </section>
+
+      <section id="record" class="card" aria-labelledby="record-h">
+        <h2 id="record-h" class="card-title"></h2>
+        <div id="record-body"></div>
+      </section>
+
+      <section id="basis" class="card" aria-labelledby="basis-h">
+        <h2 id="basis-h" class="card-title"></h2>
+        <div id="basis-body"></div>
+      </section>
+
+      <section id="log" class="card log-card" aria-labelledby="log-h">
+        <h2 id="log-h" class="card-title"></h2>
+        <div id="tap-slot-log"></div>
+        <div id="log-body"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <nav id="footer-nav" class="footer-nav"></nav>
+    <p id="footer-note" class="meta">Private planning view for Taylor Shellfish. Not an official source. Closure status is the Washington State Department of Health&#39;s. It sends no messages and claims no forecast skill.</p>
+  </footer>
+
+  <dialog id="sheet-about" class="sheet" aria-labelledby="sheet-about-h"></dialog>
+  <dialog id="sheet-limits" class="sheet" aria-labelledby="sheet-limits-h"></dialog>
+  <dialog id="sheet-explainer" class="sheet sheet-explainer" aria-labelledby="sheet-explainer-h"></dialog>
+  <dialog id="confirm-clear" class="sheet sheet-confirm" aria-labelledby="confirm-clear-h"></dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><p class="noscript">Samish River Watch needs JavaScript to read the river feeds.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

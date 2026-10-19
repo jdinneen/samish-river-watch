@@ -1,0 +1,592 @@
+{
+ "name": "Samish River Watch past-miss table",
+ "version": 3,
+ "apply_to": "flow",
+ "spec": "tools/build_ratio_table.py docstring (v3)",
+ "how_to_apply": "For a path point at lead L from the latest observation (bin lead_lo_h <= L < lead_hi_h): if aligned >= storm_flow_cfs, regime = 'rise' if aligned - latest >= rise_floor_cfs else 'flat'; high = aligned * bins[k][regime].high_factor, low = aligned * bins[k][regime].low_factor. Else high = aligned + add_cfs, low = max(0, aligned - add_cfs). Nothing past 72 h. Wet season only (Oct-Apr look months); otherwise draw NOAA and the aligned line only.",
+ "rise_floor_cfs": 50.0,
+ "storm_flow_cfs": 150.0,
+ "wet_months": [
+  1,
+  2,
+  3,
+  4,
+  10,
+  11,
+  12
+ ],
+ "usable_lag_hours": 3,
+ "quantiles": [
+  10,
+  90
+ ],
+ "training_issue_span": [
+  "2018-04-03 14:41:00+00:00",
+  "2026-04-30 16:01:00+00:00"
+ ],
+ "training_cutoff_utc": "2026-10-06 00:00:00+00:00",
+ "bins": [
+  {
+   "lead_lo_h": 0,
+   "lead_hi_h": 12,
+   "add_cfs": 11.7,
+   "n_small_rows": 1499,
+   "rise": {
+    "low_factor": 0.697,
+    "high_factor": 1.193,
+    "q10_log": -0.3614,
+    "q90_log": 0.1766,
+    "low_factor_ci": [
+     0.662,
+     0.722
+    ],
+    "high_factor_ci": [
+     1.135,
+     1.245
+    ],
+    "n_rows": 1160,
+    "n_days": 438
+   },
+   "flat": {
+    "low_factor": 0.93,
+    "high_factor": 1.06,
+    "q10_log": -0.0731,
+    "q90_log": 0.0586,
+    "low_factor_ci": [
+     0.924,
+     0.935
+    ],
+    "high_factor_ci": [
+     1.051,
+     1.072
+    ],
+    "n_rows": 5910,
+    "n_days": 1381
+   }
+  },
+  {
+   "lead_lo_h": 12,
+   "lead_hi_h": 24,
+   "add_cfs": 29.6,
+   "n_small_rows": 1502,
+   "rise": {
+    "low_factor": 0.608,
+    "high_factor": 1.223,
+    "q10_log": -0.4974,
+    "q90_log": 0.2013,
+    "low_factor_ci": [
+     0.567,
+     0.635
+    ],
+    "high_factor_ci": [
+     1.163,
+     1.309
+    ],
+    "n_rows": 2024,
+    "n_days": 586
+   },
+   "flat": {
+    "low_factor": 0.881,
+    "high_factor": 1.146,
+    "q10_log": -0.1267,
+    "q90_log": 0.1366,
+    "low_factor_ci": [
+     0.872,
+     0.891
+    ],
+    "high_factor_ci": [
+     1.112,
+     1.194
+    ],
+    "n_rows": 5039,
+    "n_days": 1269
+   }
+  },
+  {
+   "lead_lo_h": 24,
+   "lead_hi_h": 36,
+   "add_cfs": 47.7,
+   "n_small_rows": 1512,
+   "rise": {
+    "low_factor": 0.547,
+    "high_factor": 1.223,
+    "q10_log": -0.6042,
+    "q90_log": 0.2013,
+    "low_factor_ci": [
+     0.523,
+     0.579
+    ],
+    "high_factor_ci": [
+     1.168,
+     1.319
+    ],
+    "n_rows": 2310,
+    "n_days": 633
+   },
+   "flat": {
+    "low_factor": 0.862,
+    "high_factor": 1.229,
+    "q10_log": -0.1486,
+    "q90_log": 0.2059,
+    "low_factor_ci": [
+     0.846,
+     0.874
+    ],
+    "high_factor_ci": [
+     1.179,
+     1.299
+    ],
+    "n_rows": 4742,
+    "n_days": 1178
+   }
+  },
+  {
+   "lead_lo_h": 36,
+   "lead_hi_h": 48,
+   "add_cfs": 63.0,
+   "n_small_rows": 1516,
+   "rise": {
+    "low_factor": 0.524,
+    "high_factor": 1.228,
+    "q10_log": -0.6457,
+    "q90_log": 0.2055,
+    "low_factor_ci": [
+     0.496,
+     0.553
+    ],
+    "high_factor_ci": [
+     1.179,
+     1.334
+    ],
+    "n_rows": 2523,
+    "n_days": 674
+   },
+   "flat": {
+    "low_factor": 0.834,
+    "high_factor": 1.299,
+    "q10_log": -0.1816,
+    "q90_log": 0.2614,
+    "low_factor_ci": [
+     0.815,
+     0.853
+    ],
+    "high_factor_ci": [
+     1.228,
+     1.381
+    ],
+    "n_rows": 4527,
+    "n_days": 1105
+   }
+  },
+  {
+   "lead_lo_h": 48,
+   "lead_hi_h": 60,
+   "add_cfs": 84.5,
+   "n_small_rows": 1548,
+   "rise": {
+    "low_factor": 0.505,
+    "high_factor": 1.297,
+    "q10_log": -0.6831,
+    "q90_log": 0.2598,
+    "low_factor_ci": [
+     0.474,
+     0.533
+    ],
+    "high_factor_ci": [
+     1.195,
+     1.392
+    ],
+    "n_rows": 2695,
+    "n_days": 705
+   },
+   "flat": {
+    "low_factor": 0.807,
+    "high_factor": 1.306,
+    "q10_log": -0.2142,
+    "q90_log": 0.2671,
+    "low_factor_ci": [
+     0.784,
+     0.828
+    ],
+    "high_factor_ci": [
+     1.255,
+     1.381
+    ],
+    "n_rows": 4321,
+    "n_days": 1037
+   }
+  },
+  {
+   "lead_lo_h": 60,
+   "lead_hi_h": 72,
+   "add_cfs": 107.7,
+   "n_small_rows": 1612,
+   "rise": {
+    "low_factor": 0.491,
+    "high_factor": 1.346,
+    "q10_log": -0.7111,
+    "q90_log": 0.297,
+    "low_factor_ci": [
+     0.45,
+     0.52
+    ],
+    "high_factor_ci": [
+     1.212,
+     1.52
+    ],
+    "n_rows": 2876,
+    "n_days": 733
+   },
+   "flat": {
+    "low_factor": 0.791,
+    "high_factor": 1.341,
+    "q10_log": -0.2339,
+    "q90_log": 0.2937,
+    "low_factor_ci": [
+     0.758,
+     0.816
+    ],
+    "high_factor_ci": [
+     1.282,
+     1.405
+    ],
+    "n_rows": 4295,
+    "n_days": 989
+   }
+  }
+ ],
+ "coverage_leave_one_water_year_out": {
+  "pooled": {
+   "n": 51611,
+   "inside": 42069,
+   "share": 0.815
+  },
+  "storm_rows": {
+   "n": 42422,
+   "inside": 33827,
+   "share": 0.797
+  },
+  "rise_regime": {
+   "n": 13588,
+   "inside": 10811,
+   "share": 0.796
+  },
+  "flat_regime": {
+   "n": 28834,
+   "inside": 23016,
+   "share": 0.798
+  },
+  "forecast_rise_ge_200": {
+   "n": 6628,
+   "inside": 4828,
+   "share": 0.728
+  },
+  "additive_rows": {
+   "n": 9189,
+   "inside": 8242,
+   "share": 0.897
+  },
+  "by_bin_rise": [
+   {
+    "bin": "0-12",
+    "n": 1160,
+    "inside": 929,
+    "share": 0.801
+   },
+   {
+    "bin": "12-24",
+    "n": 2024,
+    "inside": 1613,
+    "share": 0.797
+   },
+   {
+    "bin": "24-36",
+    "n": 2310,
+    "inside": 1846,
+    "share": 0.799
+   },
+   {
+    "bin": "36-48",
+    "n": 2523,
+    "inside": 2005,
+    "share": 0.795
+   },
+   {
+    "bin": "48-60",
+    "n": 2695,
+    "inside": 2138,
+    "share": 0.793
+   },
+   {
+    "bin": "60-72",
+    "n": 2876,
+    "inside": 2280,
+    "share": 0.793
+   }
+  ],
+  "by_water_year": [
+   {
+    "wy": 2018,
+    "n": 847,
+    "inside": 712,
+    "share": 0.841,
+    "rise": {
+     "n": 307,
+     "inside": 270,
+     "share": 0.879
+    },
+    "flat": {
+     "n": 540,
+     "inside": 442,
+     "share": 0.819
+    }
+   },
+   {
+    "wy": 2019,
+    "n": 6316,
+    "inside": 5019,
+    "share": 0.795,
+    "rise": {
+     "n": 1784,
+     "inside": 1192,
+     "share": 0.668
+    },
+    "flat": {
+     "n": 3387,
+     "inside": 2739,
+     "share": 0.809
+    }
+   },
+   {
+    "wy": 2020,
+    "n": 6855,
+    "inside": 5391,
+    "share": 0.786,
+    "rise": {
+     "n": 1987,
+     "inside": 1499,
+     "share": 0.754
+    },
+    "flat": {
+     "n": 3873,
+     "inside": 3008,
+     "share": 0.777
+    }
+   },
+   {
+    "wy": 2021,
+    "n": 6709,
+    "inside": 5678,
+    "share": 0.846,
+    "rise": {
+     "n": 1524,
+     "inside": 1338,
+     "share": 0.878
+    },
+    "flat": {
+     "n": 3614,
+     "inside": 2886,
+     "share": 0.799
+    }
+   },
+   {
+    "wy": 2022,
+    "n": 7378,
+    "inside": 5418,
+    "share": 0.734,
+    "rise": {
+     "n": 1701,
+     "inside": 1318,
+     "share": 0.775
+    },
+    "flat": {
+     "n": 4647,
+     "inside": 3501,
+     "share": 0.753
+    }
+   },
+   {
+    "wy": 2023,
+    "n": 5732,
+    "inside": 4736,
+    "share": 0.826,
+    "rise": {
+     "n": 1408,
+     "inside": 1130,
+     "share": 0.803
+    },
+    "flat": {
+     "n": 2904,
+     "inside": 2299,
+     "share": 0.792
+    }
+   },
+   {
+    "wy": 2024,
+    "n": 5922,
+    "inside": 5062,
+    "share": 0.855,
+    "rise": {
+     "n": 1450,
+     "inside": 1242,
+     "share": 0.857
+    },
+    "flat": {
+     "n": 3227,
+     "inside": 2612,
+     "share": 0.809
+    }
+   },
+   {
+    "wy": 2025,
+    "n": 5896,
+    "inside": 5198,
+    "share": 0.882,
+    "rise": {
+     "n": 1587,
+     "inside": 1415,
+     "share": 0.892
+    },
+    "flat": {
+     "n": 3495,
+     "inside": 2990,
+     "share": 0.856
+    }
+   },
+   {
+    "wy": 2026,
+    "n": 5956,
+    "inside": 4855,
+    "share": 0.815,
+    "rise": {
+     "n": 1840,
+     "inside": 1407,
+     "share": 0.765
+    },
+    "flat": {
+     "n": 3147,
+     "inside": 2539,
+     "share": 0.807
+    }
+   }
+  ]
+ },
+ "coverage_by_forecast_age": [
+  {
+   "age_h": 3,
+   "n": 51611,
+   "share": 0.818,
+   "rise": {
+    "n": 13588,
+    "inside": 10868,
+    "share": 0.8
+   }
+  },
+  {
+   "age_h": 9,
+   "n": 51558,
+   "share": 0.797,
+   "rise": {
+    "n": 12938,
+    "inside": 10154,
+    "share": 0.785
+   }
+  },
+  {
+   "age_h": 15,
+   "n": 51605,
+   "share": 0.78,
+   "rise": {
+    "n": 12267,
+    "inside": 9481,
+    "share": 0.773
+   }
+  },
+  {
+   "age_h": 27,
+   "n": 51578,
+   "share": 0.755,
+   "rise": {
+    "n": 11926,
+    "inside": 8998,
+    "share": 0.754
+   }
+  },
+  {
+   "age_h": 45,
+   "n": 51567,
+   "share": 0.731,
+   "rise": {
+    "n": 11694,
+    "inside": 8547,
+    "share": 0.731
+   }
+  }
+ ],
+ "fizzle": [
+  {
+   "bin": "0-12",
+   "n_points": 1160,
+   "n_forecasts": 838,
+   "n_days": 438,
+   "pointwise_no_higher_share": 0.243,
+   "never_rose_share": 0.104
+  },
+  {
+   "bin": "12-24",
+   "n_points": 2024,
+   "n_forecasts": 1140,
+   "n_days": 586,
+   "pointwise_no_higher_share": 0.213,
+   "never_rose_share": 0.079
+  },
+  {
+   "bin": "24-36",
+   "n_points": 2310,
+   "n_forecasts": 1267,
+   "n_days": 633,
+   "pointwise_no_higher_share": 0.199,
+   "never_rose_share": 0.071
+  },
+  {
+   "bin": "36-48",
+   "n_points": 2523,
+   "n_forecasts": 1357,
+   "n_days": 674,
+   "pointwise_no_higher_share": 0.2,
+   "never_rose_share": 0.073
+  },
+  {
+   "bin": "48-60",
+   "n_points": 2695,
+   "n_forecasts": 1448,
+   "n_days": 705,
+   "pointwise_no_higher_share": 0.203,
+   "never_rose_share": 0.068
+  },
+  {
+   "bin": "60-72",
+   "n_points": 2876,
+   "n_forecasts": 1488,
+   "n_days": 733,
+   "pointwise_no_higher_share": 0.207,
+   "never_rose_share": 0.072
+  }
+ ],
+ "acceptance": {
+  "pooled": [
+   0.7,
+   0.9
+  ],
+  "rise_regime": [
+   0.7,
+   0.9
+  ]
+ },
+ "caveats": [
+  "Rows within one storm are not independent; bootstrap blocks are 7-day windows of look time.",
+  "The table describes NOAA's past misses around the gauge-aligned path; it is a range of past misses, not a forecast of its own, and claims no skill.",
+  "A pointwise range mixes timing and size error; it is an envelope, not two futures.",
+  "Built for a forecast 3 h old; coverage at older forecasts is reported in coverage_by_forecast_age and falls as the forecast ages."
+ ]
+}

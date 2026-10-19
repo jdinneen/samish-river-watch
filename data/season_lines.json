@@ -1,0 +1,11 @@
+{
+ "nov_feb": 400,
+ "mar_apr": 200,
+ "may_oct": 100,
+ "unit": "cfs",
+ "local_time_zone": "America/Los_Angeles",
+ "source": {
+  "who": "Taylor Shellfish",
+  "label": "Confirmed in writing by Taylor Shellfish, October 2026"
+ }
+}

@@ -1,0 +1,914 @@
+{
+ "type": "FeatureCollection",
+ "numberReturned": 0,
+ "timeStamp": "2025-12-02T12:00:00Z",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "synthetic-1764622800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T21:00:00Z",
+    "value": "900",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764623700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T21:15:00Z",
+    "value": "910",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764624600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T21:30:00Z",
+    "value": "920",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764625500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T21:45:00Z",
+    "value": "930",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764626400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T22:00:00Z",
+    "value": "940",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764627300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T22:15:00Z",
+    "value": "950",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764628200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T22:30:00Z",
+    "value": "960",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764629100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T22:45:00Z",
+    "value": "970",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764630000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T23:00:00Z",
+    "value": "980",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764630900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T23:15:00Z",
+    "value": "990",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764631800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T23:30:00Z",
+    "value": "1000",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764632700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-01T23:45:00Z",
+    "value": "1010",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764633600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T00:00:00Z",
+    "value": "1020",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764634500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T00:15:00Z",
+    "value": "1030",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764635400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T00:30:00Z",
+    "value": "1040",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764636300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T00:45:00Z",
+    "value": "1050",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764637200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T01:00:00Z",
+    "value": "1060",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764638100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T01:15:00Z",
+    "value": "1070",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764639000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T01:30:00Z",
+    "value": "1080",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764639900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T01:45:00Z",
+    "value": "1090",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764640800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T02:00:00Z",
+    "value": "1100",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764641700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T02:15:00Z",
+    "value": "1181",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764642600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T02:30:00Z",
+    "value": "1261",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764643500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T02:45:00Z",
+    "value": "1340",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764644400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T03:00:00Z",
+    "value": "1418",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764645300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T03:15:00Z",
+    "value": "1494",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764646200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T03:30:00Z",
+    "value": "1569",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764647100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T03:45:00Z",
+    "value": "1640",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764648000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T04:00:00Z",
+    "value": "1709",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764648900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T04:15:00Z",
+    "value": "1775",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764649800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T04:30:00Z",
+    "value": "1836",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764650700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T04:45:00Z",
+    "value": "1894",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764651600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T05:00:00Z",
+    "value": "1948",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764652500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T05:15:00Z",
+    "value": "1997",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764653400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T05:30:00Z",
+    "value": "2042",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764654300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T05:45:00Z",
+    "value": "2081",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764655200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T06:00:00Z",
+    "value": "2116",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764656100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T06:15:00Z",
+    "value": "2145",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764657000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T06:30:00Z",
+    "value": "2169",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764657900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T06:45:00Z",
+    "value": "2187",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764658800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T07:00:00Z",
+    "value": "2200",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764659700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T07:15:00Z",
+    "value": "2207",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764660600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T07:30:00Z",
+    "value": "2209",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764661500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T07:45:00Z",
+    "value": "2205",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764662400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T08:00:00Z",
+    "value": "2196",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764663300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T08:15:00Z",
+    "value": "2181",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764664200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T08:30:00Z",
+    "value": "2162",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764665100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T08:45:00Z",
+    "value": "2137",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764666000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T09:00:00Z",
+    "value": "2108",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764666900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T09:15:00Z",
+    "value": "2074",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764667800000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T09:30:00Z",
+    "value": "2036",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764668700000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T09:45:00Z",
+    "value": "1995",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764669600000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T10:00:00Z",
+    "value": "1949",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764670500000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T10:15:00Z",
+    "value": "1900",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764671400000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T10:30:00Z",
+    "value": "1849",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764672300000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T10:45:00Z",
+    "value": "1794",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764673200000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T11:00:00Z",
+    "value": "1738",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764674100000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T11:15:00Z",
+    "value": "1680",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764675000000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T11:30:00Z",
+    "value": "1621",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  },
+  {
+   "type": "Feature",
+   "id": "synthetic-1764675900000",
+   "properties": {
+    "monitoring_location_id": "USGS-12201500",
+    "parameter_code": "00060",
+    "statistic_id": "00011",
+    "time": "2025-12-02T11:45:00Z",
+    "value": "1561",
+    "unit_of_measure": "ft^3/s",
+    "approval_status": "Provisional",
+    "qualifier": null
+   },
+   "geometry": null
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://example.invalid/page2"
+  }
+ ],
+ "_synthetic": true
+}

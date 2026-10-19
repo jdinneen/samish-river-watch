@@ -1,0 +1,32 @@
+{
+ "site": "samish-river-watch",
+ "release": "2026-10-19-v1",
+ "built_utc": "2026-10-19T19:20:13Z",
+ "source_commit": "e867882d39734c35ccdde23d4ad8da76b6c02d05",
+ "asset_sha256": {
+  "data/fixtures/replay_2026-09-29.json": "db5fc4d352217fd191db0d5a2361bf74730a867b36af53c98115f257879e47b3",
+  "data/fixtures/samples/basin_rain.json": "b4ee40631044bde81401dd1e06c726bc82150925e7774b06b0c4f00dbd54e7bc",
+  "data/fixtures/samples/nwps_stageflow.json": "26db252018eaee93881ce33b4566446b4c2eb3c4f8c89e12fc7c6846b7531e59",
+  "data/fixtures/samples/tides_predictions.json": "fc6eb2bd12ffed007e1a53942891c8e2b4b85fc851fc81f042c9b3dea7927603",
+  "data/fixtures/samples/usgs_page1.json": "a91a920c1e518c8ba62e8b05c039f46ba6c274216a140f07b9a0c768652e836b",
+  "data/fixtures/samples/usgs_page2.json": "2288f2c0c5eb2b98aff9bc154a25a64758935285704c8af4f88a817c7a2b99e9",
+  "data/live/basin_rain.json": "69218b905a500471d0b7add73c4ce9d69ae674e14050f1cf8bdc15293a598219",
+  "data/ratio_table.json": "713e5797d25cdf2b6c19ffdfedf82a07d2e01852cccaaaa93e1429a7da4e7fc7",
+  "data/records.json": "f89c4094271d42ed2cb1ad25c5b8dd1d9f947ebcd88e94dc605b933c089f14d4",
+  "data/season_lines.json": "e3ad08332016c9bc6e1d46c24db896411051882ed97e84eeab1946ccae152ad9",
+  "index.html": "b44242bdd44edd70ddfff2b6a09dee045e7926c2e48324ce3ec9d305a6545ab0",
+  "js/app.js": "8c9b17717c8bb573b8c82b69e0a2545f3ccbaf28e1757fed65de6ab7b332c36d",
+  "js/basin.js": "eb493dd00267545447ff2633149521409685446de682427db0f9e8a7b7015719",
+  "js/chart.js": "3b7846934ac51b2b2601bfa804a3ca888f849bb495072ca717228b0929cedd65",
+  "js/crest.js": "efd1db091b06433c11ba061ed03c31de993b6548975649b55902819e14a78c28",
+  "js/detector.js": "f705912875c7b7d9afe3891b68ebac2b3fdb4d463a279c1d35a74904dc8063cb",
+  "js/feeds.js": "016aedb645f7b08eeb87b1187025fec7e6dc03c4cdcfeafccb50dffc92521167",
+  "js/lines.js": "7b4036f3ad8ab9929e81571e867d6ede7f97b1aea899f82608c527d6b226757d",
+  "js/log.js": "237bf710ebb292664538580175cf85a271d6ecbe6776abddfde6deadd91e98df",
+  "js/render.js": "2d8e6d5bebcc662e09cc046dbd6cbab85dfa6d38ee6746e2bea77a1a55706b22",
+  "js/season.js": "28bd465fba28796ccb47ca858a6cf271c9adc51a191a6c26e5e5f159732e52a2",
+  "js/strings.js": "cc4cfcd8844964ea9cc264ff534ef9d263b715d335043030ca75793bdf4657c7",
+  "README.md": "d90d77da1a212982961b18753b74cd03db5ab1431ac10356f0a9c346596ba936",
+  "styles.css": "04dc9dc1467f114b600c7ea3fac6ca1f0fb96fc2ee22c329e9ea5b84b4272453"
+ }
+}
