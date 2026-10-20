@@ -90,7 +90,7 @@ const isNum = (n) => typeof n === 'number' && Number.isFinite(n);
  */
 export function renderStatic(doc, ctx) {
   const ids = ['main', 'banner', 'status', 'status-h', 'status-icon', 'status-sentence', 'status-fresh', 'crest', 'crest-h', 'crest-info',
-    'crest-body', 'rise', 'rise-h', 'rise-info', 'rise-body', 'feeds-h', 'feeds-toggle', 'feeds-panel', 'chart-h', 'chart-legend',
+    'crest-body', 'rise', 'rise-h', 'rise-info', 'rise-body', 'feeds-h', 'feeds-toggle', 'feeds-panel', 'chart-h', 'chart-legend', 'chart-panels-note',
     'chart-basis', 'chart-range-note', 'chart-crest', 'chart-readout', 'chart-host', 'chart-summary', 'chart-keys', 'chart-table-summary',
     'chart-table', 'chart-table-body', 'footer-nav', 'footer-note', 'sheet-how', 'sheet-limits', 'btn-refresh', 'btn-theme', 'skip-link', 'app-name',
     'app-place'];
@@ -98,6 +98,8 @@ export function renderStatic(doc, ctx) {
   for (const id of ids) r[id] = $(doc, id);
 
   r['skip-link'].textContent = S.UI.skip;
+  // the chart caption's words are fixed (section 13, 2026-10-20); renderChart shows the line with a drawn chart and hides it otherwise
+  r['chart-panels-note'].textContent = S.UI.chartPanelsNote;
   r['app-name'].textContent = S.UI.appName;
   // the place only (spec section 2 item 1); the station codes are in How this works, under Sources
   r['app-place'].textContent = S.UI.place;
@@ -495,12 +497,16 @@ function renderChart(r, view) {
   if (!c || (!c.observed.length && !c.raw.length)) {
     if (r.chart) { r.chart.destroy(); r.chart = null; }
     fill(r['chart-host'], h('p', { class: 'chart-empty', text: S.chartEmpty(view) }));
-    // no chart, so no hint to tap it and no empty readout bar (round 4, decision 6)
+    // no chart, so no hint to tap it, no empty readout bar (round 4, decision 6) and no caption for panels that are not there
     r['chart-readout'].replaceChildren();
     r['chart-readout'].hidden = true;
+    r['chart-panels-note'].hidden = true;
     return;
   }
   r['chart-readout'].hidden = false;
+  // the one visible line under the SVG that says which panel the season line is drawn in (section 13, 2026-10-20)
+  r['chart-panels-note'].textContent = S.UI.chartPanelsNote;
+  r['chart-panels-note'].hidden = false;
   if (!r.chart) r.chart = mountChart(r['chart-host'], r['chart-readout'], c, 'srwc');
   else r.chart.update(c);
 }

@@ -269,7 +269,7 @@ export function buildChartSvg(m, width, idp = 'c') {
   for (const [key, cls] of [['raw', 'c-x-raw'], ['high', 'c-x-range'], ['low', 'c-x-range']]) {
     const t = cr[key];
     if (Number.isFinite(t) && t > m.nowMs && t <= m.endMs) {
-      const lv = interpAt(season, t) ?? (season.length ? season[season.length - 1].cfs : null);
+      const lv = seasonAt(season, t);
       if (lv !== null) parts.push(`<circle class="c-xmark ${cls}" cx="${round1(x(t))}" cy="${round1(yRise(lv))}" r="5"/>`);
     }
   }
@@ -279,7 +279,7 @@ export function buildChartSvg(m, width, idp = 'c') {
   // near the line there, else the right end.
   if (season.length) {
     const leftEnd = m.startMs + span / 4;
-    const firstLine = interpAt(season, m.startMs) ?? season[0].cfs;
+    const firstLine = seasonAt(season, m.startMs);
     const busyLeft = rObs.some((p) => p.t <= leftEnd && p.cfs >= firstLine * 0.6);
     const lineV = busyLeft ? season[season.length - 1].cfs : firstLine;
     const ly = round1(yRise(lineV)) - 7;

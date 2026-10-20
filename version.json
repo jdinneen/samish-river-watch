@@ -1,8 +1,8 @@
 {
  "site": "samish-river-watch",
- "release": "2026-10-19-v2",
- "built_utc": "2026-10-20T07:42:18Z",
- "source_commit": "89616f86970f38bfc076566b0239ccb9afef80ec",
+ "release": "2026-10-20-v1",
+ "built_utc": "2026-10-20T17:28:46Z",
+ "source_commit": "be34a96730312b4b88a8830bd46cf55c856e4f36",
  "asset_sha256": {
   "data/fixtures/replay_2026-09-29.json": "db5fc4d352217fd191db0d5a2361bf74730a867b36af53c98115f257879e47b3",
   "data/fixtures/samples/basin_rain.json": "b4ee40631044bde81401dd1e06c726bc82150925e7774b06b0c4f00dbd54e7bc",
@@ -14,19 +14,18 @@
   "data/ratio_table.json": "713e5797d25cdf2b6c19ffdfedf82a07d2e01852cccaaaa93e1429a7da4e7fc7",
   "data/records.json": "af8ee533e3beb71851b24f2a094bed6e6104639b6c6d5879b5389f1cfadff3cc",
   "data/season_lines.json": "e3ad08332016c9bc6e1d46c24db896411051882ed97e84eeab1946ccae152ad9",
-  "index.html": "75027eb8c12bdaa03b73ba2878890ce813cd58ef174d679cc97de628570d8115",
+  "index.html": "8f3f31f5a8df5648fb930388fbadcb5421a280727fbcb220be9d2ab9befcc810",
   "js/app.js": "c95ff5d0d811f0976c95f0cec821b8461c8419a89607356669714884c63c5fb4",
   "js/basin.js": "eb493dd00267545447ff2633149521409685446de682427db0f9e8a7b7015719",
-  "js/chart.js": "8a6ea284106abbe4507035cd0b777d6a3949430d07c4e9c11bcfb9cda14c65e5",
+  "js/chart.js": "4078b8b33cda5cb5165e9853f09039af6f0b3d8066dbf094c21aeee30d940639",
   "js/crest.js": "15a9cc2bc6d2e7393d32a6ed1fdc075585bfb178dbab700bfa21adcde08e0813",
   "js/detector.js": "f705912875c7b7d9afe3891b68ebac2b3fdb4d463a279c1d35a74904dc8063cb",
   "js/feeds.js": "016aedb645f7b08eeb87b1187025fec7e6dc03c4cdcfeafccb50dffc92521167",
   "js/lines.js": "7b4036f3ad8ab9929e81571e867d6ede7f97b1aea899f82608c527d6b226757d",
-  "js/render.js": "d034f3270e3e9b65debc457b9188e962c24300ec429d12127a28882fceaba883",
+  "js/render.js": "ca14c999dec972bc98c63fc60430268ae98672d774a7dcd53312e4038cf917a1",
   "js/season.js": "c89a444b21a1862b32a27910f03535fb019f5c11e2b2f7ae7a4ee6cade2efcc2",
-  "js/strings.js": "b1c30436a4f8a25b3c8d0f72863e7ce1afb3e85e74127e5dce530fdf07a0ce25",
+  "js/strings.js": "5625049682981f178b6aed02f8b01d54335eded300f495bf3beb2b2c00d49660",
   "README.md": "77d05c18a5538d38a66483363ade6482c686b880ffea953b3f077fe6bfeb916c",
-  "styles.css": "fff0196358a00c938ae4f7fbf3a8736d890d2507c9c71b796701b3495386c2f8"
- },
- "live_updated_utc": "2026-10-20T17:10:13Z"
+  "styles.css": "697e81e50bfb8e849a861ba6f2c88a9c98247106e8839de3c80471f5127c3fe7"
+ }
 }

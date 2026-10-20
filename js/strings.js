@@ -157,6 +157,8 @@ export const UI = Object.freeze({
   chartTableCaption: 'Chart values as a table',
   axisFlow: 'Flow, cfs',
   axisRise: '24-h rise, cfs (study definition)',
+  // the one visible line under the chart's SVG that says which panel the season line is drawn in (section 13, 2026-10-20)
+  chartPanelsNote: 'The season line applies to the 24-h rise, not the flow.',
   noaaCrestLabel: "NOAA's forecast crest",
   targetLabel: "Taylor's target: 6 h after the peak",
   readoutHint: 'Tap the chart to read values.',
@@ -821,7 +823,7 @@ export function noaaCrestLine(view) {
   // no line for a path falling from now, or from its own first point after now (no rise before the turn: round 1 review)
   if (!c || c.fallingFromNow || c.fallingFromStart || c.noTurn === 'flat') return '';
   // still rising where the page stops reading it (its last point, or 72 h ahead): one short line with that time (round 4,
-  // coordinator decision 5: the longer forms put a quiet day over its 160-word limit)
+  // coordinator decision 5: the longer forms put a quiet day over its 160-word limit (165 since section 13, 2026-10-20))
   if (c.risingAt72h || c.noTurn === 'rising') return `NOAA's line still rising at ${dayTime(c.t)}.`;
   return `${UI.noaaCrestLabel}: ${cfs(c.cfs)} at ${dayTime(c.t)}.`;
 }
@@ -979,11 +981,14 @@ export function chartKeys() {
   return 'With a keyboard, focus the chart and use the arrow keys.';
 }
 
-/** Axis label for days: "Tue 29". @param {number} ms @returns {string} */
+/**
+ * Axis label for days: the weekday alone, "Tue" (section 13, 2026-10-20: the chart spans 72 h back and 72 h ahead, where a
+ * weekday is unambiguous; the page's own times carry no date either, and the replay banner carries the date).
+ * @param {number} ms @returns {string}
+ */
 export function axisDay(ms) {
   if (!isTime(ms)) return '';
-  const d = Number(dayKey(ms).slice(8, 10));
-  return `${WD.format(ms)} ${d}`;
+  return WD.format(ms);
 }
 
 /** Axis number with thousands commas: "1,500", "800". @param {number} n @returns {string} */

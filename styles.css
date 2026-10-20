@@ -386,6 +386,9 @@ a { color: var(--accent); }
 }
 .chart-svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
 .chart-empty { padding: var(--s-4) 0; text-align: center; color: var(--muted); }
+/* the one visible line under the chart's SVG, above the legend: which panel the season line is drawn in (section 13, 2026-10-20);
+   plain .meta text (its size and muted colour), no icon, no button, no background */
+.panels-note { margin-top: var(--s-1); }
 .chart-crest { margin-top: var(--s-1); }
 .chart-crest-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-1); }
 .chart-crest-line { font-weight: 600; }
