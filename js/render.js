@@ -1,6 +1,10 @@
 // render.js: DOM rendering for Samish River Watch. Every word comes from strings.js.
 // Text is always set with textContent (never parsed as HTML); the only markup strings are fixed icons and the chart SVG,
 // whose text is escaped in chart.js.
+// The page (phase 5, CONTRACT.md Amendment 2026-10-19): the status sentence with one freshness line, the Peak and sample
+// card (only during a rise, within 48 h of a call, or while the call is paused), the 24-h rise, the feed pills and the
+// chart; a footer with two links; two sheets, How this works and Limits. Every info button opens How this works at the
+// heading it names.
 'use strict';
 
 import * as S from './strings.js';
@@ -35,24 +39,29 @@ const ICONS = Object.freeze({
   check: '<path d="M5 12.5l4.2 4.2L19 7"/>',
   bang: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4v.1"/>',
   up: '<path d="M4 17l6-6 4 4 6-7"/><path d="M15 8h5v5"/>',
-  peak: '<path d="M3 19l6-9 4 5 3-4 5 8"/><path d="M9 10V4"/><path d="M9 4h5l-1.5 2L14 8H9"/>',
+  peak: '<path d="M3 19l9-13 9 13"/><path d="M12 6v-3"/>',
+  // near its highest so far, or below it: a rising line that levels off, which cannot read as a summit (round 4, coordinator
+  // decision 7: the round 3 rounded top with a dot read as "peak called"); neither the rising arrow nor a quiet river's flat line
+  plateau: '<path d="M3 19c4 0 5-11 10-11h8"/>',
   flat: '<path d="M4 12h16"/>',
+  // over or under the season line, as the rise bar draws it: a dot above or below a line (no direction, round 2 review)
+  above: '<path d="M4 16h16"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/>',
+  below: '<path d="M4 8h16"/><circle cx="12" cy="15" r="2.5" fill="currentColor"/>',
   wave: '<path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 19c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/>',
   refresh: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 21v-5h-5"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
   auto: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>',
   chevron: '<path d="M6 9l6 6 6-6"/>',
-  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.1"/>',
   rain: '<path d="M7 15a4 4 0 0 1 .5-8 5.5 5.5 0 0 1 10.5 1.5A3.5 3.5 0 0 1 17.5 15z"/><path d="M8 18l-1 2M12 18l-1 2M16 18l-1 2"/>',
   replay: '<path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 3.5v5h5"/><path d="M12 8v4l3 2"/>',
 });
 
-/** Decorative icon (aria-hidden). @param {keyof ICONS} name @param {string} [cls] @returns {HTMLElement} */
+/** Decorative icon (aria-hidden); data-glyph names it for the tests. @param {keyof ICONS} name @param {string} [cls] @returns {HTMLElement} */
 function icon(name, cls = 'icon') {
-  const span = h('span', { class: cls, 'aria-hidden': 'true' });
+  const span = h('span', { class: cls, 'aria-hidden': 'true', 'data-glyph': name });
   span.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">${ICONS[name] || ''}</svg>`;
   return span;
 }
@@ -67,6 +76,7 @@ function fill(el, ...kids) {
 }
 
 const $ = (doc, id) => doc.getElementById(id);
+const isNum = (n) => typeof n === 'number' && Number.isFinite(n);
 
 // ---------------------------------------------------------------------------------------------
 // Static chrome (built once)
@@ -75,36 +85,34 @@ const $ = (doc, id) => doc.getElementById(id);
 /**
  * Build the parts of the page that do not change between refreshes and wire their handlers.
  * @param {Document} doc
- * @param {{onRefresh:Function, onTheme:Function, onTap:Function, onUndo:Function, onExport:Function, onClear:Function, replay:boolean}} ctx
+ * @param {{onRefresh:Function, onTheme:Function, replay:boolean}} ctx
  * @returns {object} refs used by the other render functions
  */
 export function renderStatic(doc, ctx) {
-  const ids = ['main', 'banner', 'status', 'status-h', 'status-sentence', 'line-chip', 'status-time', 'rise-h', 'rise-body',
-    'crest-h', 'crest-body', 'feeds-h', 'feeds-toggle', 'feeds-panel', 'chart-h', 'chart-ages', 'chart-legend', 'chart-basis', 'chart-range-note',
-    'chart-readout', 'chart-host', 'chart-hint', 'chart-summary', 'crossing', 'chart-table-summary', 'chart-table-body',
-    'crest-panel-h', 'crest-panel-body', 'sampling', 'sampling-h', 'sampling-body', 'tap-slot-sampling', 'record-h', 'record-body',
-    'basis-h', 'basis-body', 'log-h', 'tap-slot-log', 'log-body', 'footer-nav', 'footer-note', 'sheet-about', 'sheet-limits',
-    'sheet-explainer', 'confirm-clear', 'toast', 'btn-refresh', 'btn-theme', 'skip-link', 'app-name', 'app-place'];
-  const r = { doc, ctx, chart: null, lastStatus: '', toastTimer: 0, basisKey: null, sheetsTable: undefined };
+  const ids = ['main', 'banner', 'status', 'status-h', 'status-icon', 'status-sentence', 'status-fresh', 'crest', 'crest-h', 'crest-info',
+    'crest-body', 'rise', 'rise-h', 'rise-info', 'rise-body', 'feeds-h', 'feeds-toggle', 'feeds-panel', 'chart-h', 'chart-legend',
+    'chart-basis', 'chart-range-note', 'chart-crest', 'chart-readout', 'chart-host', 'chart-summary', 'chart-keys', 'chart-table-summary',
+    'chart-table', 'chart-table-body', 'footer-nav', 'footer-note', 'sheet-how', 'sheet-limits', 'btn-refresh', 'btn-theme', 'skip-link', 'app-name',
+    'app-place'];
+  const r = { doc, ctx, chart: null, lastStatus: '', basisKey: null, sheetsKey: null, view: null };
   for (const id of ids) r[id] = $(doc, id);
 
   r['skip-link'].textContent = S.UI.skip;
   r['app-name'].textContent = S.UI.appName;
-  fill(r['app-place'], h('span', { text: S.UI.place }), h('span', { class: 'brand-ids', text: ` · ${S.UI.placeIds}` }));
+  // the place only (spec section 2 item 1); the station codes are in How this works, under Sources
+  r['app-place'].textContent = S.UI.place;
   r['status-h'].textContent = S.UI.statusHeading;
-  r['rise-h'].textContent = `${S.UI.riseHeading} (${S.UI.riseStudy})`;
   r['crest-h'].textContent = S.UI.crestHeading;
+  r['rise-h'].textContent = `${S.UI.riseHeading} (${S.UI.riseStudy})`;
   r['feeds-h'].textContent = S.UI.feedsHeading;
   r['chart-h'].textContent = S.UI.chartHeading;
-  r['chart-hint'].textContent = S.chartHint();
+  r['chart-keys'].textContent = S.chartKeys();
   r['chart-host'].setAttribute('aria-label', S.UI.chartHeading);
   r['chart-table-summary'].textContent = S.UI.chartTable;
-  r['crest-panel-h'].textContent = S.UI.crestPanelHeading;
-  r['sampling-h'].textContent = S.UI.samplingHeading;
-  r['record-h'].textContent = S.UI.recordHeading;
-  r['basis-h'].textContent = S.UI.basisHeading;
-  r['log-h'].textContent = S.UI.logHeading;
   r['footer-note'].textContent = S.UI.footer;
+  // the words entry that states the study's rule and the page's tracking rule, beside Taylor's target (round 4, decision 8)
+  setInfo(r, r['crest-info'], S.UI.infoPeak, 'how-peak-word');
+  setInfo(r, r['rise-info'], S.UI.infoRise, 'how-rise');
 
   // header buttons
   fill(r['btn-refresh'], icon('refresh'), h('span', { class: 'btn-label', text: S.UI.refresh }));
@@ -113,7 +121,7 @@ export function renderStatic(doc, ctx) {
   r['btn-theme'].addEventListener('click', () => ctx.onTheme());
   if (ctx.replay) r['btn-refresh'].hidden = true;
 
-  // legend: each line's basis one tap away
+  // legend: each line's one-line basis one tap away
   const legendItems = [
     ['observed', 'key-observed'], ['raw', 'key-raw'], ['aligned', 'key-aligned'], ['range', 'key-range'], ['season', 'key-season'],
   ];
@@ -122,7 +130,7 @@ export function renderStatic(doc, ctx) {
     const b = h('button', {
       type: 'button', class: 'legend-item', 'aria-expanded': 'false', 'aria-controls': 'chart-basis',
       onclick: () => toggleBasis(r, key),
-    }, h('span', { class: `legend-key ${cls}`, 'aria-hidden': 'true' }), h('span', { class: 'legend-label', text: S.LINE_NAMES[key] }), icon('info', 'icon icon-sm'));
+    }, h('span', { class: `legend-key ${cls}`, 'aria-hidden': 'true' }), h('span', { class: 'legend-label', text: S.LINE_NAMES[key] }), icon('chevron', 'icon icon-sm'));
     r.legendButtons[key] = b;
     return b;
   }));
@@ -135,35 +143,30 @@ export function renderStatic(doc, ctx) {
     if (r.view) renderFeedsToggle(r, r.view);
   });
 
-  // taps (one group, moved between the sampling card and the log)
-  r.taps = h('div', { class: 'taps', role: 'group', 'aria-label': S.UI.logHeading },
-    ...['bay', 'county', 'call50', 'call80'].map((kind) => h('button', {
-      type: 'button', class: `tap tap-${kind}`, dataset: { kind }, onclick: () => ctx.onTap(kind),
-    }, icon(kind === 'bay' ? 'drop' : kind === 'county' ? 'wave' : 'check'), h('span', { text: S.TAP_KINDS[kind] }))));
-  r['tap-slot-log'].append(r.taps);
-
-  // log list + actions
-  r.logCounter = h('div', { class: 'counter' });
-  r.logList = h('div', { class: 'log-list' });
-  r.logNote = h('p', { class: 'meta' });
-  r.logExport = h('button', { type: 'button', class: 'btn btn-secondary', onclick: () => ctx.onExport() }, S.UI.logExport);
-  r.logClear = h('button', { type: 'button', class: 'btn btn-danger-quiet', onclick: () => showSheet(r, r['confirm-clear']) }, S.UI.logClear);
-  fill(r['log-body'], r.logCounter, r.logList, h('div', { class: 'log-actions' }, r.logExport, r.logClear), r.logNote);
-
-  // footer
+  // footer: How this works · Limits
   fill(r['footer-nav'],
-    h('button', { type: 'button', class: 'link-btn', onclick: () => showSheet(r, r['sheet-about']) }, S.UI.about),
-    h('button', { type: 'button', class: 'link-btn', onclick: () => showSheet(r, r['sheet-limits']) }, S.UI.limits),
-    h('button', { type: 'button', class: 'link-btn', onclick: () => showSheet(r, r['sheet-explainer']) }, S.UI.howToRead));
+    h('button', { type: 'button', class: 'link-btn', onclick: () => openHow(r, null) }, S.UI.how),
+    h('button', { type: 'button', class: 'link-btn', onclick: () => showSheet(r, r['sheet-limits']) }, S.UI.limits));
 
-  buildAbout(r);
-  buildLimits(r, null);
-  buildExplainer(r, null);
-  buildConfirm(r);
-  for (const d of [r['sheet-about'], r['sheet-limits'], r['sheet-explainer'], r['confirm-clear']]) wireSheet(r, d);
+  buildSheets(r, null);
+  for (const d of [r['sheet-how'], r['sheet-limits']]) wireSheet(r, d);
 
   renderFeedsToggle(r, null);
   return r;
+}
+
+/** Turn a button into an info button: a 44 px target with a spoken label, opening How this works at a heading. */
+function setInfo(r, el, label, targetId) {
+  el.setAttribute('type', 'button');
+  el.className = 'info-btn';
+  el.setAttribute('aria-label', label);
+  fill(el, icon('info'));
+  el.addEventListener('click', () => openHow(r, targetId));
+}
+
+/** A new info button (for parts drawn on each refresh). */
+function infoButton(r, label, targetId) {
+  return h('button', { type: 'button', class: 'info-btn', 'aria-label': label, onclick: () => openHow(r, targetId) }, icon('info'));
 }
 
 function toggleBasis(r, key) {
@@ -172,12 +175,12 @@ function toggleBasis(r, key) {
   for (const [k, b] of Object.entries(r.legendButtons)) b.setAttribute('aria-expanded', String(!same && k === key));
   if (same) { pop.hidden = true; r.basisKey = null; return; }
   r.basisKey = key;
-  fill(pop, h('p', { text: S.BASIS[key] }));
+  fill(pop, h('p', { text: S.legendText(r.view, key) }));
   pop.hidden = false;
 }
 
 // ---------------------------------------------------------------------------------------------
-// Sheets (About, Limits, explainer, confirm)
+// Sheets: How this works (the words, then the numbers and their sources) and Limits
 // ---------------------------------------------------------------------------------------------
 
 function sheetHead(r, dialog, id, title) {
@@ -186,73 +189,107 @@ function sheetHead(r, dialog, id, title) {
     h('button', { type: 'button', class: 'btn btn-secondary sheet-done', onclick: () => dialog.close() }, S.UI.close));
 }
 
-function buildAbout(r) {
-  const d = r['sheet-about'];
-  const c = S.aboutContent();
-  fill(d, h('div', { class: 'sheet-inner' },
-    sheetHead(r, d, 'sheet-about-h', c.title),
-    h('div', { class: 'sheet-body' }, c.sections.map((s) => h('section', { class: 'sheet-section', id: s.id },
-      h('h3', { text: s.heading }), s.paras.map((p) => h('p', { text: p })))))));
+/** A small, labelled data table (first column is the row header). */
+function miniTable(caption, head, rows) {
+  return h('div', { class: 'mini-wrap' }, h('table', { class: 'mini' },
+    h('caption', { text: caption }),
+    h('thead', {}, h('tr', {}, head.map((t) => h('th', { scope: 'col', text: t })))),
+    h('tbody', {}, rows.map((row) => h('tr', {}, h('th', { scope: 'row', text: row[0] }), row.slice(1).map((c) => h('td', { text: c })))))));
 }
 
-function buildLimits(r, table, view) {
+function buildHow(r, view) {
+  const d = r['sheet-how'];
+  const c = S.howContent(view);
+  const heading = (id, text) => h('h3', { id, tabindex: '-1', text });
+  // every number keeps its unit on the same line in the sheets (S.keepUnits: a no-break space)
+  const u = S.keepUnits;
+  fill(d, h('div', { class: 'sheet-inner' },
+    sheetHead(r, d, 'sheet-how-h', c.title),
+    h('div', { class: 'sheet-body' },
+      h('p', { class: 'sheet-intro', text: c.intro }),
+      h('section', { class: 'sheet-section' }, heading(c.words.id, c.words.heading),
+        h('dl', { class: 'words' }, c.words.items.map((w) => [h('dt', { id: w.id, tabindex: '-1', text: w.term }), h('dd', { text: u(w.text) })]))),
+      h('section', { class: 'sheet-section' }, heading(c.sources.id, c.sources.heading), h('p', { text: c.sources.text })),
+      c.sections.map((s) => h('section', { class: 'sheet-section' },
+        heading(s.id, s.heading),
+        s.items.map((it) => h('div', { class: 'how-item' }, h('p', { text: u(it.text) }), it.source ? h('p', { class: 'source', text: it.source }) : null)),
+        s.empty ? h('p', { class: 'meta', text: s.empty }) : null,
+        s.factors ? h('details', { class: 'more' }, h('summary', { text: S.UI.basisFactorsHeading }), miniTable(s.factors.caption, s.factors.head, s.factors.rows)) : null,
+        s.source ? h('p', { class: 'source', text: s.source }) : null)),
+      h('section', { class: 'sheet-section' }, heading(c.files.id, c.files.heading),
+        c.files.paths.length
+          ? h('details', { class: 'more' }, h('summary', { text: c.files.summary }), h('ul', { class: 'source-paths' }, c.files.paths.map((p) => h('li', { text: p }))))
+          : (c.files.empty ? h('p', { class: 'meta', text: c.files.empty }) : null)))));
+}
+
+function buildLimits(r, view) {
   const d = r['sheet-limits'];
-  const c = S.limitsContent(table, view || null);
+  const c = S.limitsContent(view ? view.table : null, view);
   fill(d, h('div', { class: 'sheet-inner' },
     sheetHead(r, d, 'sheet-limits-h', c.title),
-    h('div', { class: 'sheet-body' }, h('ul', { class: 'limits-list' }, c.items.map((t) => h('li', { text: t }))))));
-  r.sheetsTable = table ? JSON.stringify([table, view ? view.recordsStatus : '']) : undefined;
+    h('div', { class: 'sheet-body' }, h('ul', { class: 'limits-list' },
+      c.items.map((t) => h('li', { text: S.keepUnits(t) })),
+      h('li', { class: 'limits-more' }, `${c.more} `, h('button', { type: 'button', class: 'link-btn', onclick: () => openHow(r, 'how-noaa') }, c.link))))));
 }
 
-function buildExplainer(r, onDone) {
-  const d = r['sheet-explainer'];
-  const c = S.explainerContent();
-  const done = h('button', { type: 'button', class: 'btn btn-primary btn-wide', onclick: () => d.close() }, S.UI.gotIt);
-  fill(d, h('div', { class: 'sheet-inner' },
-    h('div', { class: 'sheet-head' }, h('h2', { id: 'sheet-explainer-h', class: 'sheet-title', text: c.title })),
-    h('div', { class: 'sheet-body' },
-      h('ol', { class: 'steps' }, c.steps.map((s, i) => h('li', { class: 'step' },
-        h('span', { class: 'step-n', 'aria-hidden': 'true', text: String(i + 1) }),
-        h('div', {}, h('h3', { text: s.heading }), h('p', { text: s.text }))))),
-      h('div', { class: 'sheet-actions' }, done))));
-  r.explainerDone = onDone;
+/** What the sheets were last built from: rebuilt only when the record file or the table arrives or goes. */
+function sheetsKey(view) {
+  if (!view) return 'none';
+  const n = view.records && Array.isArray(view.records.records) ? view.records.records.length : 0;
+  return `${view.recordsStatus || ''}|${n}|${view.table ? (view.table.factors || []).length : -1}`;
 }
 
-function buildConfirm(r) {
-  const d = r['confirm-clear'];
-  fill(d, h('div', { class: 'sheet-inner' },
-    h('div', { class: 'sheet-head' }, h('h2', { id: 'confirm-clear-h', class: 'sheet-title', text: S.UI.logClearConfirmTitle })),
-    h('div', { class: 'sheet-body' }, h('p', { text: S.UI.logClearConfirmBody }),
-      h('div', { class: 'sheet-actions' },
-        h('button', { type: 'button', class: 'btn btn-secondary', autofocus: true, onclick: () => d.close() }, S.UI.logClearNo),
-        h('button', { type: 'button', class: 'btn btn-danger', onclick: () => { d.close(); r.ctx.onClear(); } }, S.UI.logClearYes)))));
+function buildSheets(r, view) {
+  buildHow(r, view);
+  buildLimits(r, view);
+  r.sheetsKey = sheetsKey(view);
+}
+
+/** True while either sheet is up. */
+function anySheetOpen(r) {
+  return Boolean(r['sheet-how'].open || r['sheet-limits'].open);
 }
 
 function wireSheet(r, d) {
   d.addEventListener('click', (ev) => { if (ev.target === d) d.close(); });
   d.addEventListener('close', () => {
+    // The browser queues a dialog's close event, so when Limits hands over to How this works this runs after How this works
+    // is already up: it must not unlock the page behind it or send focus behind it (round 1 review, 2026-10-19).
+    if (anySheetOpen(r)) return;
     r.doc.documentElement.classList.remove('sheet-up');
-    if (d === r['sheet-explainer'] && typeof r.explainerDone === 'function') { r.explainerDone(); r.explainerDone = null; }
-    if (r.returnFocus && typeof r.returnFocus.focus === 'function') r.returnFocus.focus();
+    const back = r.returnFocus;
     r.returnFocus = null;
+    if (back && back.isConnected !== false && typeof back.focus === 'function') back.focus();
   });
 }
 
 function showSheet(r, d) {
   if (typeof d.showModal !== 'function') return;
   try { if (d.matches(':modal')) return; } catch { /* older engines: no :modal selector */ }
-  r.returnFocus = r.doc.activeElement;
+  if (!anySheetOpen(r)) r.returnFocus = r.doc.activeElement;
   r.doc.documentElement.classList.add('sheet-up');
   d.showModal();
 }
 
 /**
- * Show the first-run explainer; onDone runs when it is dismissed.
- * @param {object} r refs @param {Function} onDone
+ * Show How this works, scrolled to a heading (an info button) or at its top (the footer link). Limits closes first, so only
+ * one sheet shows at a time; focus then goes back to what opened Limits.
+ * @param {object} r refs @param {string|null} targetId
  */
-export function showExplainer(r, onDone) {
-  r.explainerDone = onDone;
-  showSheet(r, r['sheet-explainer']);
+function openHow(r, targetId) {
+  const lim = r['sheet-limits'];
+  const from = lim.open ? r.returnFocus : null;
+  if (lim.open && typeof lim.close === 'function') lim.close();
+  showSheet(r, r['sheet-how']);
+  if (from) r.returnFocus = from;
+  const el = targetId ? r.doc.getElementById(targetId) : null;
+  if (el) {
+    if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ block: 'start' });
+    if (typeof el.focus === 'function') el.focus({ preventScroll: true });
+  } else {
+    const body = r['sheet-how'].querySelector('.sheet-body');
+    if (body) body.scrollTop = 0;
+  }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -276,7 +313,7 @@ export function renderBusy(r, busy) {
 /** Initial skeleton state (the skeleton markup is in index.html). @param {object} r */
 export function renderLoading(r) {
   r.main.setAttribute('aria-busy', 'true');
-  r['status-time'].textContent = S.statusTime({ loading: true });
+  r['status-fresh'].textContent = S.freshLine({ loading: true });
   renderFeedsToggle(r, null);
 }
 
@@ -295,27 +332,13 @@ export function renderView(r, view, opts = {}) {
   r.main.setAttribute('aria-busy', opts.refreshing ? 'true' : 'false');
   renderBanner(r, view);
   renderStatus(r, view);
+  renderPeak(r, view);
   renderRise(r, view);
-  renderCrestStrip(r, view);
   renderFeedsToggle(r, view);
   renderFeedsPanel(r, view);
   renderChart(r, view);
-  renderCrestPanel(r, view);
-  renderSampling(r, view);
-  renderRecords(r, view);
-  renderLog(r, view);
-  if (view.table && r.sheetsTable !== JSON.stringify([view.table, view.recordsStatus])) buildLimits(r, view.table, view);
+  if (sheetsKey(view) !== r.sheetsKey) buildSheets(r, view);
   r.doc.documentElement.dataset.mode = view.mode || 'live';
-}
-
-/**
- * Re-render only the log and the sampling counter (after a tap, undo or clear).
- * @param {object} r @param {object} view @param {string} [message]
- */
-export function renderLogOnly(r, view, message) {
-  r.view = view;
-  renderSampling(r, view);
-  renderLog(r, view, message);
 }
 
 function renderBanner(r, view) {
@@ -323,7 +346,7 @@ function renderBanner(r, view) {
   const el = r.banner;
   if (!b.text) { el.hidden = true; el.replaceChildren(); return; }
   el.className = `banner banner-${b.kind}`;
-  fill(el, icon(b.kind === 'replay' ? 'replay' : 'clock'), h('span', { text: b.text }));
+  fill(el, icon({ replay: 'replay', error: 'bang' }[b.kind] || 'clock'), h('span', { text: b.text }));
   el.hidden = false;
 }
 
@@ -334,270 +357,171 @@ function renderStatus(r, view) {
     el.textContent = sentence;
     r.lastStatus = sentence;
   }
-  const g = view.feeds ? view.feeds.gauge : null;
-  r.status.classList.toggle('is-bad', !g || g.status !== 'ok');
-  const chip = S.lineChip(view);
-  const chipEl = r['line-chip'];
-  chipEl.className = `chip chip-${chip.state}`;
-  fill(chipEl, icon(chip.state === 'crossed' ? 'up' : chip.state === 'not_crossed' ? 'flat' : 'bang', 'icon icon-sm'),
-    h('span', { text: chip.word }), chip.detail ? h('span', { class: 'chip-detail', text: chip.detail }) : null);
-  r['status-time'].textContent = S.statusTime(view);
+  const o = view.observed || {};
+  // The edge tint says where the river stands against the season line (magenta over it) or that the gauge has a problem; the
+  // icon says what the river part of the sentence says (round 1 review: a rising arrow beside "Peak called." read as the
+  // opposite of the words): rising arrow for "River rising", a plateau for "River near its highest so far" and "River below
+  // its high so far" (round 3 review: it shared the quiet page's flat line; round 4, decisions 1a and 7), a peak for "Peak
+  // called", warning for the gauge, flat otherwise.
+  const kind = S.riverKind(view);
+  const line = kind === 'gauge' ? 'bad' : o.overLine ? 'over' : 'under';
+  r.status.classList.toggle('is-bad', line === 'bad');
+  r.status.dataset.line = line;
+  const glyph = { gauge: 'bang', rising: 'up', near: 'plateau', below: 'plateau', called: 'peak' }[kind] || 'flat';
+  r['status-icon'].dataset.glyph = glyph;
+  fill(r['status-icon'], icon(glyph));
+  r['status-fresh'].textContent = S.freshLine(view);
+}
+
+function renderPeak(r, view) {
+  const u = S.keepUnits;
+  const w = S.peakCard(view);
+  const card = r.crest;
+  card.hidden = !w.visible;
+  card.dataset.state = w.state;
+  card.classList.toggle('is-bad', w.state === 'paused');
+  if (!w.visible) { r['crest-body'].replaceChildren(); return; }
+  const target = w.target ? h('div', { class: 'pk-target' },
+    h('p', { class: 'pk-label', text: u(w.targetLabel) }),
+    h('p', { class: `pk-time${w.targetPassed ? ' is-passed' : ''}`, text: w.target }),
+    w.tide ? h('p', { class: `pk-tide${w.tideState === 'bad' ? ' bad-text' : ''}` }, icon(w.tideState === 'bad' ? 'bang' : 'wave', 'icon icon-sm'), h('span', { text: u(w.tide) })) : null)
+    : null;
+  // No rain clock (round 3, coordinator decision 1): the peak status, the highest so far or the call, the target rule or time.
+  fill(r['crest-body'],
+    h('p', { class: 'pk-title', text: u(w.title) }),
+    w.detail ? h('p', { class: 'pk-detail', text: u(w.detail) }) : null,
+    w.callLine ? h('p', { class: 'pk-callline', text: u(w.callLine) }) : null,
+    w.rule ? h('p', { class: 'pk-rule', text: u(w.rule) }) : null,
+    target);
 }
 
 function renderRise(r, view) {
+  const u = S.keepUnits;
   const w = S.riseCard(view);
   const body = r['rise-body'];
-  const card = body.closest('.card');
-  card.classList.toggle('is-bad', w.missing || w.stale);
+  r.rise.classList.toggle('is-bad', (w.missing && !w.neutral) || w.stale);
   if (w.missing) {
-    fill(body, h('p', { class: 'bad-line' }, icon('bang'), h('span', { text: w.compare })), h('p', { class: 'meta', text: w.line }));
+    // a replay file that could not be read is not a gauge failure: no red line, and no season-line row when its time did not parse
+    fill(body, w.neutral ? h('p', { class: 'rise-compare' }, h('span', { text: u(w.compare) })) : h('p', { class: 'bad-line' }, icon('bang'), h('span', { text: u(w.compare) })),
+      w.line ? h('p', { class: 'rise-line', text: u(w.line) }) : null);
     return;
   }
   const line = view.observed ? view.observed.lineAtLatest : null;
   const rise = view.observed ? view.observed.riseCfs : null;
-  const over = typeof rise === 'number' && typeof line === 'number' && rise >= line;
+  const over = isNum(rise) && isNum(line) && rise >= line;
   const max = Math.max((line || 100) * 1.5, (rise || 0) * 1.1);
-  const meter = h('div', { class: `meter${over ? ' is-over' : ''}${w.stale ? ' is-stale' : ''}`, 'aria-hidden': 'true' },
+  const meter = h('div', { class: `meter${over ? ' is-over' : ''}${w.stale ? ' is-stale' : ''}`, ...(w.meterLabel ? { role: 'img', 'aria-label': w.meterLabel } : { 'aria-hidden': 'true' }) },
     h('div', { class: 'meter-fill' }), h('div', { class: 'meter-line' }));
-  const fillEl = meter.firstChild;
-  const lineEl = meter.lastChild;
-  fillEl.style.width = `${Math.max(0, Math.min(100, ((rise || 0) / max) * 100))}%`;
-  lineEl.style.left = `${Math.min(100, ((line || 0) / max) * 100)}%`;
+  meter.firstChild.style.width = `${Math.max(0, Math.min(100, ((rise || 0) / max) * 100))}%`;
+  meter.lastChild.style.left = `${Math.min(100, ((line || 0) / max) * 100)}%`;
   fill(body,
     h('div', { class: 'rise-top' },
-      h('p', { class: 'rise-main' },
-        h('span', { class: 'rise-value', text: w.value }),
-        h('span', { class: 'rise-unit', text: w.unit })),
-      h('p', { class: `rise-compare${over ? ' is-over' : ''}` }, icon(over ? 'up' : 'flat', 'icon icon-sm'), h('span', { text: w.compare }))),
+      h('p', { class: 'rise-main' }, h('span', { class: 'rise-value', text: w.value }), h('span', { class: 'rise-unit', text: w.unit })),
+      // over or under the season line, never a direction: an up arrow under "Peak called." read as rising (round 2 review)
+      h('p', { class: `rise-compare${over ? ' is-over' : ''}` }, icon(over ? 'above' : 'below', 'icon icon-sm'), h('span', { text: u(w.compare) }))),
     meter,
-    h('p', { class: 'rise-line', text: w.line }),
-    h('p', { class: `meta${w.stale ? ' bad-text' : ''}`, text: `${w.flow} · ${w.age}` }));
-}
-
-function renderCrestStrip(r, view) {
-  const w = S.crestStrip(view);
-  const ic = { none: 'flat', rising: 'up', called: 'peak', paused: 'bang' }[w.state] || 'flat';
-  const card = r['crest-body'].closest('.card');
-  card.dataset.state = w.state;
-  card.classList.toggle('is-bad', w.state === 'paused');
-  fill(r['crest-body'],
-    h('div', { class: 'crest-row' }, icon(ic, 'icon icon-badge'),
-      h('div', { class: 'crest-text' },
-        h('p', { class: 'crest-title', text: w.title }),
-        w.detail ? h('p', { class: 'crest-detail', text: w.detail }) : null)),
-    w.tide ? h('p', { class: 'crest-tide' }, icon('wave', 'icon icon-sm'), h('span', { text: w.tide })) : null,
-    w.record ? h('p', { class: 'meta crest-record', text: w.record }) : null);
+    h('p', { class: `rise-line${w.stale ? ' bad-text' : ''}`, text: u(w.line) }));
 }
 
 const FEED_KEYS = ['gauge', 'noaa', 'tides', 'basin'];
 
+/**
+ * One feed's look, the same on its pill and its panel row: current (a check), not current (a warning), reading (a clock), or,
+ * while the cached banner is up, neutral and "not refreshed" (a clock; round 3, coordinator decision 12). A feed a replay file
+ * that could not be read never asked for has the same neutral look, "not read" (round 4, coordinator decision 6).
+ * @returns {{cls:string, glyph:string}}
+ */
+function feedLook(f, cached) {
+  if (cached || f.status === 'not_read') return { cls: 'is-cached', glyph: 'clock' };
+  if (f.status === 'ok') return { cls: 'is-ok', glyph: 'check' };
+  if (f.status === 'loading') return { cls: 'is-loading', glyph: 'clock' };
+  return { cls: 'is-bad', glyph: 'bang' };
+}
+
 function renderFeedsToggle(r, view) {
   const nowMs = view ? view.nowMs : 0;
+  const cached = Boolean(view && view.fromCache);
   const expanded = r['feeds-toggle'].getAttribute('aria-expanded') === 'true';
   const pills = FEED_KEYS.map((k) => {
     const f = view ? view.feeds[k] : { status: 'loading' };
-    const ok = f.status === 'ok';
-    const loading = f.status === 'loading';
-    return h('span', { class: `pill ${ok ? 'is-ok' : loading ? 'is-loading' : 'is-bad'}` },
-      icon(ok ? 'check' : loading ? 'clock' : 'bang', 'icon icon-sm'),
-      h('span', { class: 'pill-name', text: S.FEED_NAMES[k] }));
+    const look = feedLook(f, cached);
+    return h('span', { class: `pill ${look.cls}` },
+      icon(look.glyph, 'icon icon-sm'),
+      h('span', { class: 'pill-name', text: S.pillText(k, f, cached) }));
   });
   fill(r['feeds-toggle'], h('span', { class: 'pills' }, pills), icon('chevron', `icon icon-sm chev${expanded ? ' is-up' : ''}`));
-  const labels = FEED_KEYS.map((k) => S.feedDotLabel(k, view ? view.feeds[k] : { status: 'loading' }, nowMs));
+  const synthetic = Boolean(view && view.fixtureNotes && view.fixtureNotes.syntheticTides);
+  const labels = FEED_KEYS.map((k) => S.feedDotLabel(k, view ? view.feeds[k] : { status: 'loading' }, nowMs, cached, synthetic));
   r['feeds-toggle'].setAttribute('aria-label', `${S.UI.feedsHeading}. ${labels.join('. ')}. ${expanded ? S.UI.feedsHide : S.UI.feedsHint}`);
 }
 
 function renderFeedsPanel(r, view) {
+  const cached = Boolean(view.fromCache);
   fill(r['feeds-panel'], h('ul', { class: 'feed-list' }, FEED_KEYS.map((k) => {
     const f = view.feeds[k];
-    const ok = f.status === 'ok';
+    const look = feedLook(f, cached);
     const problem = S.feedProblem(k, f);
     const extra = k === 'basin' ? S.radarNote(view) : '';
-    return h('li', { class: `feed-row ${ok ? 'is-ok' : 'is-bad'}` },
-      icon(ok ? 'check' : 'bang', 'icon icon-sm'),
+    return h('li', { class: `feed-row ${look.cls}` },
+      icon(look.glyph, 'icon icon-sm'),
       h('div', { class: 'feed-text' },
-        h('p', { class: 'feed-name' }, h('span', { text: S.FEED_LONG[k] }), h('span', { class: 'feed-word', text: S.feedStatusWord(f.status) })),
-        h('p', { class: 'meta', text: S.feedAge(k, f, view.nowMs) }),
+        h('p', { class: 'feed-name', text: S.feedRow(k, view) }),
         extra ? h('p', { class: 'feed-extra' }, icon('rain', 'icon icon-sm'), h('span', { text: extra })) : null,
         problem ? h('p', { class: 'feed-problem', text: problem }) : null));
   })));
 }
 
+const ROW_KEY = Object.freeze({ raw: 'key-raw', aligned: 'key-aligned', high: 'key-range', low: 'key-range' });
+
 function renderChart(r, view) {
   const c = view.chart;
-  const g = view.feeds.gauge;
-  const n = view.feeds.noaa;
-  r['chart-ages'].textContent = `${S.FEED_NAMES.gauge}: ${S.feedAge('gauge', g, view.nowMs)} · ${S.FEED_NAMES.noaa}: ${S.feedAge('noaa', n, view.nowMs)}`;
-  const f = view.forecast || {};
   const drawn = { observed: Boolean(c && c.observed.length), raw: Boolean(c && c.raw.length), aligned: Boolean(c && c.aligned.length), range: Boolean(c && c.high.length), season: Boolean(c && c.seasonLine.length) };
   for (const [k, b] of Object.entries(r.legendButtons)) b.classList.toggle('is-off', !drawn[k]);
+  if (r.basisKey && !r['chart-basis'].hidden) fill(r['chart-basis'], h('p', { text: S.legendText(view, r.basisKey) }));
   const rn = S.rangeNote(view);
   fill(r['chart-range-note'], rn ? [icon('info', 'icon icon-sm'), h('span', { text: rn })] : null);
   r['chart-range-note'].hidden = !rn;
+  // NOAA's forecast crest line, only with a crest ahead or a line still rising, and its record beside a crest of 800 cfs or more
+  const crest = S.noaaCrestLine(view);
+  const rec = S.noaaCrestRecord(view);
+  fill(r['chart-crest'], crest
+    ? [h('div', { class: 'chart-crest-row' }, h('p', { class: 'chart-crest-line', text: S.keepUnits(crest) }), infoButton(r, S.UI.infoCrest, 'how-noaa')),
+      rec ? h('p', { class: 'meta chart-crest-record', text: S.keepUnits(rec) }) : null]
+    : null);
+  r['chart-crest'].hidden = !crest;
+  renderTable(r, view);
+  r['chart-summary'].textContent = S.chartSummary(view);
   // Nothing to draw (no chart, or neither gauge readings nor NOAA's path): say why instead of an empty grid.
   if (!c || (!c.observed.length && !c.raw.length)) {
     if (r.chart) { r.chart.destroy(); r.chart = null; }
     fill(r['chart-host'], h('p', { class: 'chart-empty', text: S.chartEmpty(view) }));
-    r['chart-summary'].textContent = S.chartSummary(view);
+    // no chart, so no hint to tap it and no empty readout bar (round 4, decision 6)
     r['chart-readout'].replaceChildren();
-    fill(r.crossing);
+    r['chart-readout'].hidden = true;
     return;
   }
+  r['chart-readout'].hidden = false;
   if (!r.chart) r.chart = mountChart(r['chart-host'], r['chart-readout'], c, 'srwc');
   else r.chart.update(c);
-  r['chart-summary'].textContent = S.chartSummary(view);
-
-  const cr = S.crossingReading(view);
-  const parts = cr.line.includes(' | ') ? cr.line.split(' | ') : null;
-  fill(r.crossing,
-    h('h3', { class: 'sub-title', text: S.UI.crossingHeading }),
-    // The reading stays one sentence in strings.js; on screen each line gets its own row and its legend key
-    // (NOAA, high case, low case), and screen readers get the whole sentence once.
-    parts
-      ? [h('ul', { class: 'crossing-list', 'aria-hidden': 'true' }, parts.map((s, i) => h('li', {},
-        h('span', { class: `legend-key ${['key-raw', 'key-range', 'key-range'][i] || 'key-range'}`, 'aria-hidden': 'true' }), h('span', { text: s })))),
-      h('span', { class: 'sr-only', text: cr.line })]
-      : h('p', { class: 'crossing-line', text: cr.line }),
-    cr.aligned ? h('p', { class: 'meta', text: cr.aligned }) : null,
-    cr.note && cr.note !== rn ? h('p', { class: 'note' }, icon('info', 'icon icon-sm'), h('span', { text: cr.note })) : null);
-
-  renderTable(r, view);
 }
 
+/** The disclosure under the chart: crossing times for each drawn line (or why there are none), then the values table. */
 function renderTable(r, view) {
-  const rows = tableRows(view.chart, 3);
-  const td = (v) => h('td', { text: typeof v === 'number' ? S.num(v) : '–' });
-  fill(r['chart-table-body'], h('table', {},
-    h('caption', { class: 'sr-only', text: S.UI.chartTable }),
+  // nothing from a replay file that could not be read: no crossing times, no values, so no disclosure (round 4, decision 6)
+  r['chart-table'].hidden = view.mode === 'fixture_error';
+  const cr = S.crossingRows(view);
+  const crossing = cr.note
+    ? h('p', { class: 'cross-note', text: cr.note })
+    : h('ul', { class: 'cross-list' }, cr.rows.map((row) => h('li', {},
+      h('span', { class: `legend-key ${ROW_KEY[row.key] || 'key-range'}`, 'aria-hidden': 'true' }), h('span', { text: `${row.label} ${row.value}` }))));
+  const rows = view.chart ? tableRows(view.chart, 3) : [];
+  const td = (v) => h('td', { text: isNum(v) ? S.num(v) : '–' });
+  fill(r['chart-table-body'], crossing, rows.length ? h('div', { class: 'table-wrap' }, h('table', {},
+    h('caption', { class: 'sr-only', text: S.UI.chartTableCaption }),
     h('thead', {}, h('tr', {}, [S.UI.colTime, S.UI.colObserved, S.UI.colNoaa, S.UI.colAligned, S.UI.colRange, S.UI.colRise].map((t) => h('th', { scope: 'col', text: t })))),
     h('tbody', {}, rows.map((v) => h('tr', { class: v.t > view.nowMs ? 'is-future' : '' },
       h('th', { scope: 'row', text: S.dayTime(v.t) }),
       td(v.observed), td(v.raw), td(v.aligned),
-      h('td', { text: typeof v.low === 'number' && typeof v.high === 'number' ? `${S.num(v.low)}–${S.num(v.high)}` : '–' }),
-      td(v.rise))))));
-}
-
-function renderCrestPanel(r, view) {
-  const strip = S.crestStrip(view);
-  const win = S.crestWindow(view);
-  const noaaRec = S.recordText(view, 'noaa_crest_6h_0_24_event');
-  fill(r['crest-panel-body'], h('dl', { class: 'rows' },
-    h('div', { class: 'row' }, h('dt', { text: S.UI.peakCallLabel }), h('dd', {}, h('p', { text: strip.title }), strip.detail ? h('p', { class: 'meta', text: strip.detail }) : null)),
-    h('div', { class: 'row' }, h('dt', { text: S.UI.noaaCrestLabel }), h('dd', {}, h('p', { text: S.noaaCrestValue(view) }), noaaRec ? h('p', { class: 'meta', text: noaaRec }) : null)),
-    h('div', { class: `row${win.shown ? '' : ' is-muted'}` }, h('dt', { text: S.UI.windowLabel }),
-      h('dd', {},
-        win.shown ? [h('p', { text: win.lead }), h('p', { class: `window-times${win.passed ? ' is-passed' : ''}` }, icon('clock', 'icon icon-sm'), h('span', { text: win.times })), win.timesNote ? h('p', { class: 'window-note', text: win.timesNote }) : null, h('p', { class: 'meta', text: win.basis })]
-          : h('p', { class: 'meta', text: win.reason }),
-        !win.shown && S.radarNote(view) && !win.reason.startsWith(S.radarNote(view).slice(0, -1)) ? h('p', { class: 'meta', text: S.radarNote(view) }) : null,
-        h('p', { class: 'meta', text: `${S.FEED_NAMES.basin}: ${S.feedAge('basin', view.feeds.basin, view.nowMs)}` })))));
-}
-
-function counterEl(view) {
-  const n = view.log ? view.log.seasonCount : 0;
-  const text = S.samplingCard(view).counter;
-  const segs = h('div', { class: 'segments', 'aria-hidden': 'true' },
-    Array.from({ length: 15 }, (_, i) => h('span', { class: i < n ? 'seg is-on' : 'seg' })));
-  return [h('p', { class: 'counter-text', text }), segs];
-}
-
-function renderSampling(r, view) {
-  const w = S.samplingCard(view);
-  const card = r.sampling;
-  card.classList.toggle('is-quiet', !w.visible);
-  if (!w.visible) {
-    fill(r['sampling-body'], h('p', { class: 'meta', text: w.hidden }));
-    if (r.taps.parentElement !== r['tap-slot-log']) r['tap-slot-log'].append(r.taps);
-    return;
-  }
-  const tidesOk = view.feeds.tides && view.feeds.tides.status === 'ok';
-  fill(r['sampling-body'],
-    h('div', { class: 'big-figure' }, h('span', { class: `big-value${w.pending ? ' is-pending' : ''}`, text: w.big }), h('span', { class: 'big-label', text: w.bigLabel })),
-    h('p', { class: 'target' }, icon('clock', 'icon icon-sm'), h('span', { text: w.target })),
-    w.tide ? h('p', { class: tidesOk ? 'tide' : 'tide bad-text' }, icon(tidesOk ? 'wave' : 'bang', 'icon icon-sm'), h('span', { text: w.tide })) : null,
-    w.tide ? h('p', { class: 'meta', text: `${w.tideNote} ${S.FEED_NAMES.tides}: ${S.feedAge('tides', view.feeds.tides, view.nowMs)}` }) : null,
-    h('div', { class: 'counter' }, counterEl(view)));
-  if (r.taps.parentElement !== r['tap-slot-sampling']) r['tap-slot-sampling'].append(r.taps);
-}
-
-function recordList(items) {
-  const shared = S.sharedSource(items);
-  const list = h('ul', { class: 'record-list' }, items.map((it) => h('li', {},
-    h('p', { text: it.text }), it.source && !shared ? h('p', { class: 'source', text: it.source }) : null)));
-  return shared ? [list, h('p', { class: 'source source-shared', text: shared })] : list;
-}
-
-/** A collapsible OUR BASIS group (the first group is always shown; the rest are one tap away). */
-function basisMore(heading, ...body) {
-  return h('details', { class: 'basis-group basis-more' }, h('summary', { class: 'sub-title', text: heading }), h('div', { class: 'basis-more-body' }, ...body));
-}
-
-function sourcesBox(items) {
-  const paths = S.sourcePaths(items);
-  if (!paths.length) return null;
-  return h('details', { class: 'sources' }, h('summary', { text: S.UI.sourcesToggle }),
-    h('ul', { class: 'source-paths' }, paths.map((p) => h('li', { text: p }))));
-}
-
-/** A small, labelled data table (first column is the row header). */
-function miniTable(caption, head, rows, cls) {
-  return h('div', { class: `mini-wrap ${cls || ''}` }, h('table', { class: 'mini' },
-    h('caption', { text: caption }),
-    h('thead', {}, h('tr', {}, head.map((t) => h('th', { scope: 'col', text: t })))),
-    h('tbody', {}, rows.map((row) => h('tr', {}, h('th', { scope: 'row', text: row[0] }), row.slice(1).map((c) => h('td', { text: c })))))));
-}
-
-function renderRecords(r, view) {
-  const noaa = S.noaaRecord(view);
-  fill(r['record-body'], noaa.items.length ? [recordList(noaa.items), sourcesBox(noaa.items)] : h('p', { class: 'meta', text: noaa.empty }));
-  const basis = S.basisRecords(view);
-  const all = basis.groups.flatMap((g) => g.items);
-  const factors = S.basisFactors(view.table);
-  const coverage = S.basisCoverage(view.table);
-  const fizzle = S.basisFizzle(view.table);
-  fill(r['basis-body'],
-    h('div', { class: 'basis-group' },
-      h('h3', { class: 'sub-title', text: S.UI.basisTableHeading }),
-      recordList(S.tableBasis(view.table).map((t) => ({ text: t, source: '' })))),
-    factors ? basisMore(S.UI.basisFactorsHeading, miniTable(factors.caption, factors.head, factors.rows, 'mini-factors')) : null,
-    coverage.length ? basisMore(S.UI.basisCoverageHeading, recordList(coverage.map((t) => ({ text: t, source: '' })))) : null,
-    fizzle ? basisMore(S.UI.basisFizzleHeading, miniTable(fizzle.intro, fizzle.head, fizzle.rows, 'mini-fizzle'), h('p', { class: 'meta', text: fizzle.note })) : null,
-    basis.groups.map((g) => basisMore(g.heading, recordList(g.items), g.note ? h('p', { class: 'note basis-note' }, icon('info', 'icon icon-sm'), h('span', { text: g.note })) : null)),
-    sourcesBox(all),
-    basis.empty ? h('p', { class: 'meta', text: basis.empty }) : null);
-}
-
-function renderLog(r, view, message) {
-  const L = view.log || { entries: [], available: false };
-  const w = S.logText(L);
-  const inLog = r.taps.parentElement === r['tap-slot-log'];
-  fill(r.logCounter, inLog ? counterEl(view) : null);
-  r.logCounter.hidden = !inLog;
-  const entries = [...(L.entries || [])].sort((a, b) => b.t - a.t);
-  if (!L.available) fill(r.logList, h('p', { class: 'bad-line' }, icon('bang', 'icon icon-sm'), h('span', { text: w.unavailable })));
-  else if (!entries.length) fill(r.logList, h('p', { class: 'empty', text: w.empty }));
-  else {
-    fill(r.logList, h('ol', { class: 'log-entries', 'aria-label': S.UI.logListLabel }, entries.slice(0, 200).map((e) => h('li', { class: 'log-entry' },
-      h('p', { class: 'log-when' }, h('span', { class: 'log-time', text: S.when(e.t, view.nowMs) }), h('span', { class: `log-kind kind-${e.kind}`, text: S.TAP_KINDS[e.kind] })),
-      e.status ? h('p', { class: 'log-status', text: e.status }) : null))));
-  }
-  r.logExport.disabled = !entries.length;
-  r.logClear.disabled = !entries.length;
-  r.logNote.textContent = message || w.note;
-}
-
-// ---------------------------------------------------------------------------------------------
-// Toast
-// ---------------------------------------------------------------------------------------------
-
-/**
- * Show a short message; with an entry id it carries an Undo button.
- * @param {object} r @param {string} text @param {string|null} undoId
- */
-export function showToast(r, text, undoId) {
-  const t = r.toast;
-  clearTimeout(r.toastTimer);
-  fill(t, h('span', { class: 'toast-text', text }),
-    undoId ? h('button', { type: 'button', class: 'btn btn-toast', onclick: () => { t.hidden = true; r.ctx.onUndo(undoId); } }, S.UI.undo) : null);
-  t.hidden = false;
-  r.toastTimer = setTimeout(() => { t.hidden = true; }, undoId ? 10_000 : 5_000);
+      h('td', { text: isNum(v.low) && isNum(v.high) ? `${S.num(v.low)}–${S.num(v.high)}` : '–' }),
+      td(v.rise)))))) : null);
 }

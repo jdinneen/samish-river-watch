@@ -22,22 +22,49 @@
      "token": "6"
     },
     "24": {
-     "source_path": "RESULT.md",
+     "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
      "quote": "the 24-hour rise here (flow(t) - flow(t-24h)",
      "token": "24",
-     "source_label": "RESULT.md"
+     "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
     },
     "74": {
-     "source_path": "RESULT.md",
+     "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
      "quote": "72-h look-ahead warned 74 of 88 (hit rate 84%",
      "token": "74",
-     "source_label": "RESULT.md"
+     "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
     },
     "72": {
      "quote": "median lead 54 h at 72 h look-ahead",
      "token": "72"
+    },
+    "88": {
+     "quote": "Episode level: 78 of 88 warned",
+     "token": "88"
+    },
+    "88#2": {
+     "quote": "67 of 88 (76%) at +/-6 h tolerance",
+     "token": "88"
+    },
+    "88#3": {
+     "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
+     "quote": "72-h look-ahead warned 74 of 88 (hit rate 84%",
+     "token": "88",
+     "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
+    },
+    "24#2": {
+     "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
+     "quote": "the 24-hour rise here (flow(t) - flow(t-24h)",
+     "token": "24",
+     "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
+    },
+    "24#3": {
+     "source_path": "season.js",
+     "quote": "flow at t minus the lowest flow in the 24 h ending at t",
+     "token": "24",
+     "source_label": "season.js"
     }
    },
+   "display": "never",
    "source_label": "HYPOTHESES_LEDGER.json"
   },
   {
@@ -50,6 +77,7 @@
    "quote_number": "88",
    "computed_on": "2026-09-28",
    "source_kind": "file",
+   "display": "never",
    "source_label": "HYPOTHESES_LEDGER.json"
   },
   {
@@ -57,24 +85,25 @@
    "value": 67,
    "unit": "episodes",
    "sentence": "Requiring the forecast rise to land within 6 hours of the real crossing, NOAA's forecast had 67 of 88 past river rises.",
-   "source_path": "RESULT.md",
+   "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
    "source_quote": "within +/-6 h of the observed crossing gives 76% (67 of 88",
    "computed_on": "2026-09-26",
    "source_kind": "file",
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
   },
   {
    "id": "noaa_rise_definition_h",
    "value": 24,
    "unit": "h",
    "sentence": "NOAA's rise record uses the flow now minus the flow exactly 24 hours earlier, a different rise from this page's.",
-   "source_path": "RESULT.md",
+   "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
    "source_quote": "the 24-hour rise here (flow(t) - flow(t-24h), month-of-t threshold, >= comparison, 72-h episode reset) is a CANDIDATE definition",
    "computed_on": "2026-09-26",
    "source_kind": "file",
    "display": "never",
    "display_note": "Supports the wording of noaa_rise_warned_n; not shown on its own.",
-   "source_label": "RESULT.md"
+   "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
   },
   {
    "id": "noaa_rise_median_lead_h",
@@ -95,12 +124,13 @@
    "value": 38,
    "unit": "%",
    "sentence": "Of NOAA's 703 warning-type forecast issues with no rise already under way, 270 (38%) were not followed by a new rise within 72 hours (interval 30% to 47%). One storm gives several issues, so these count issues, not storms.",
-   "source_path": "RESULT.md",
+   "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
    "source_quote": "**38%** of the forecast's 72-hour warnings were not followed by a new rise episode within 72 hours (false alarm ratio, 95% interval 30%-47%, week clustered; 270 false alarms out of 703 warnings)",
    "quote_number": "38",
    "computed_on": "2026-09-27",
    "source_kind": "file",
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
   },
   {
    "id": "noaa_72h_false_ci_lo",
@@ -112,6 +142,7 @@
    "quote_number": "30",
    "computed_on": "2026-09-28",
    "source_kind": "file",
+   "display": "never",
    "source_label": "HYPOTHESES_LEDGER.json"
   },
   {
@@ -124,14 +155,15 @@
    "quote_number": "47",
    "computed_on": "2026-09-28",
    "source_kind": "file",
+   "display": "never",
    "source_label": "HYPOTHESES_LEDGER.json"
   },
   {
    "id": "noaa_crest_6h_0_24_event",
    "value": 55,
    "unit": "%",
-   "sentence": "In 55 past storms of 800 cfs or more (April 2018 to March 2026), NOAA put the crest within 6 hours of the real crest in 55% of storms within a day of it.",
-   "source_path": "RESULT.md",
+   "sentence": "In 55 past storms of 800 cfs or more (April 2018 to March 2026), 55% of NOAA's forecasts made within a day of the real crest put it within 6 hours (each storm weighted equally).",
+   "source_path": "A3_peak_timing_error/RESULT.md",
    "source_quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
    "quote_number": "55%",
    "computed_on": "2026-09-26",
@@ -152,16 +184,24 @@
     "2026": {
      "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
      "token": "2026"
+    },
+    "55": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "55"
+    },
+    "55#2": {
+     "token": "55"
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A3_peak_timing_error/RESULT.md"
   },
   {
    "id": "noaa_crest_6h_24_48_event",
    "value": 43,
    "unit": "%",
-   "sentence": "One to two days ahead of the crest, NOAA put it within 6 hours in 43% of those 55 storms.",
-   "source_path": "RESULT.md",
+   "sentence": "One to two days ahead of the crest, 43% of NOAA's forecasts put it within 6 hours (each of those 55 storms weighted equally).",
+   "source_path": "A3_peak_timing_error/RESULT.md",
    "source_quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
    "quote_number": "43%",
    "computed_on": "2026-09-26",
@@ -170,16 +210,21 @@
     "6": {
      "quote": "47% within +/-6 h (CI 34% to 59%; 171 issues, 55 events)",
      "token": "6"
+    },
+    "55": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "55"
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A3_peak_timing_error/RESULT.md"
   },
   {
    "id": "noaa_crest_6h_48_72_event",
    "value": 30,
    "unit": "%",
-   "sentence": "Two to three days ahead of the crest, NOAA put it within 6 hours in 30% of those 55 storms.",
-   "source_path": "RESULT.md",
+   "sentence": "Two to three days ahead of the crest, 30% of NOAA's forecasts put it within 6 hours (each of those 55 storms weighted equally).",
+   "source_path": "A3_peak_timing_error/RESULT.md",
    "source_quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
    "quote_number": "30%",
    "computed_on": "2026-09-26",
@@ -190,18 +235,23 @@
      "token": "6"
     },
     "30": {
-     "quote": "and 30% (CI 20% to 42%)",
+     "quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
      "token": "30"
+    },
+    "55": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "55"
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A3_peak_timing_error/RESULT.md"
   },
   {
    "id": "noaa_crest_events_n",
    "value": 55,
    "unit": "events",
    "sentence": "NOAA's crest-timing record counts 55 storms of 800 cfs or more, April 2018 to March 2026.",
-   "source_path": "RESULT.md",
+   "source_path": "A3_peak_timing_error/RESULT.md",
    "source_quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
    "computed_on": "2026-09-26",
    "source_kind": "file",
@@ -211,14 +261,15 @@
      "token": "800"
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A3_peak_timing_error/RESULT.md"
   },
   {
    "id": "noaa_peak_within_25pct_h",
    "value": "12-36",
    "unit": "h",
    "sentence": "In 55 past storms of 800 cfs or more, NOAA's forecast peak flow was typically within 25% of the real peak only from about 12 to 36 hours ahead and closer (median miss 15% within 12 hours, 26% at one to two days).",
-   "source_path": "RESULT.md",
+   "source_path": "A1_peak_error_by_lead/RESULT.md",
    "source_quote": "so the honest reading is '12 to 36 hours'",
    "quote_number": "12 to 36",
    "computed_on": "2026-09-26",
@@ -245,28 +296,37 @@
      "quote": "the typical miss is 25.7% (CI 19.5 to 34.2",
      "token": "25.7",
      "digits": 0
+    },
+    "12": {
+     "token": "12"
+    },
+    "12#2": {
+     "quote": "**Within 12 hours of the peak**, the forecast peak is typically 15.0% off",
+     "token": "12"
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A1_peak_error_by_lead/RESULT.md"
   },
   {
    "id": "noaa_peak_ape_0_12h",
    "value": 15,
    "unit": "%",
    "sentence": "Within 12 hours of the peak, NOAA's forecast peak flow typically missed by 15%.",
-   "source_path": "RESULT.md",
+   "source_path": "A1_peak_error_by_lead/RESULT.md",
    "source_quote": "Within 12 hours of the peak**, the forecast peak is typically 15.0% off (median absolute percent error, issue-weighted",
    "quote_number": "15.0",
    "computed_on": "2026-09-26",
    "source_kind": "file",
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A1_peak_error_by_lead/RESULT.md"
   },
   {
    "id": "noaa_peak_ape_24_48h",
    "value": 26,
    "unit": "%",
    "sentence": "One to two days ahead, NOAA's forecast peak flow typically missed by 26%.",
-   "source_path": "RESULT.md",
+   "source_path": "A1_peak_error_by_lead/RESULT.md",
    "source_quote": "the typical miss is 25.7% (CI 19.5 to 34.2",
    "quote_number": "25.7",
    "computed_on": "2026-09-26",
@@ -277,18 +337,20 @@
      "digits": 0
     }
    },
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A1_peak_error_by_lead/RESULT.md"
   },
   {
    "id": "noaa_peak_events_n",
    "value": 55,
    "unit": "events",
    "sentence": "NOAA's peak-flow record counts 55 storms of 800 cfs or more.",
-   "source_path": "RESULT.md",
+   "source_path": "A1_peak_error_by_lead/RESULT.md",
    "source_quote": "Events at >= 800 cfs in the forecast era (2018-04-03 to 2026-09-22): **55**",
    "computed_on": "2026-09-26",
    "source_kind": "file",
-   "source_label": "RESULT.md"
+   "display": "never",
+   "source_label": "A1_peak_error_by_lead/RESULT.md"
   },
   {
    "id": "peak_call_storms_n",
@@ -300,6 +362,7 @@
    "quote_number": "163",
    "computed_on": "2026-10-07",
    "source_kind": "file",
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -327,6 +390,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -345,6 +409,7 @@
      "token": "163"
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -365,6 +430,7 @@
      "digits": 1
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -385,6 +451,7 @@
      "digits": 1
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -403,6 +470,7 @@
      "token": "14"
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -458,6 +526,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -478,6 +547,7 @@
      "digits": 0
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -498,6 +568,7 @@
      "digits": 0
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -531,6 +602,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -549,6 +621,7 @@
      "token": "163"
     }
    },
+   "display": "never",
    "source_label": "q1b_test_result.json"
   },
   {
@@ -637,6 +710,7 @@
    "source_quote": "\"median_h_from_shown_rain_end_to_peak\": 6.0",
    "computed_on": "2026-10-07",
    "source_kind": "file",
+   "display": "never",
    "source_label": "q9_result.json"
   },
   {
@@ -648,6 +722,7 @@
    "source_quote": "\"storms\": 75,",
    "computed_on": "2026-10-07",
    "source_kind": "file",
+   "display": "never",
    "source_label": "q9_result.json"
   },
   {
@@ -659,6 +734,7 @@
    "source_quote": "\"hours\": 236,",
    "computed_on": "2026-10-07",
    "source_kind": "file",
+   "display": "never",
    "source_label": "q9_result.json"
   },
   {
@@ -676,6 +752,7 @@
      "token": "75"
     }
    },
+   "display": "never",
    "source_label": "q9_result.json"
   },
   {
@@ -695,6 +772,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "q9_result.json"
   },
   {
@@ -707,6 +785,7 @@
    "quote_number": "2016-2023",
    "computed_on": "2026-10-07",
    "source_kind": "file",
+   "display": "never",
    "source_label": "q9.py"
   },
   {
@@ -732,6 +811,7 @@
      "source_label": "q9.py"
     }
    },
+   "display": "never",
    "source_label": "q8_result.json"
   },
   {
@@ -739,7 +819,7 @@
    "value": 44,
    "unit": "rises",
    "sentence": "44 of 172 earlier river rises crested 8 or more hours after the 24-hour rise passed the season line.",
-   "source_path": "BRIEF.md",
+   "source_path": "site_update_20261013/BRIEF.md",
    "source_quote": "At the Samish 44 of 172 development-year rises (26%) crested 8 or more hours after the trigger",
    "quote_number": "44",
    "computed_on": "2026-10-13",
@@ -750,50 +830,54 @@
      "token": "24"
     }
    },
-   "source_label": "BRIEF.md"
+   "display": "never",
+   "source_label": "site_update_20261013/BRIEF.md"
   },
   {
    "id": "crest_late_caution_total",
    "value": 172,
    "unit": "rises",
    "sentence": "172 earlier river rises were counted.",
-   "source_path": "BRIEF.md",
+   "source_path": "site_update_20261013/BRIEF.md",
    "source_quote": "At the Samish 44 of 172 development-year rises (26%) crested 8 or more hours after the trigger",
    "quote_number": "172",
    "computed_on": "2026-10-13",
    "source_kind": "file",
-   "source_label": "BRIEF.md"
+   "display": "never",
+   "source_label": "site_update_20261013/BRIEF.md"
   },
   {
    "id": "crest_late_caution_pct",
    "value": 26,
    "unit": "%",
    "sentence": "That is 26% of the rises.",
-   "source_path": "BRIEF.md",
+   "source_path": "site_update_20261013/BRIEF.md",
    "source_quote": "At the Samish 44 of 172 development-year rises (26%) crested 8 or more hours after the trigger",
    "quote_number": "26",
    "computed_on": "2026-10-13",
    "source_kind": "file",
-   "source_label": "BRIEF.md"
+   "display": "never",
+   "source_label": "site_update_20261013/BRIEF.md"
   },
   {
    "id": "radar_match_r",
    "value": 0.69,
    "unit": "correlation",
    "sentence": "Hourly radar rain matched the archive rain loosely, correlation 0.69, for a rectangle around the basin, not the exact drainage average shown here.",
-   "source_path": "SPEC.md",
+   "source_path": "study_20261007/SPEC.md",
    "source_quote": "best lag 0 (correlation 0.69;",
    "quote_number": "0.69",
    "computed_on": "2026-10-07",
    "source_kind": "file",
-   "source_label": "SPEC.md"
+   "display": "never",
+   "source_label": "study_20261007/SPEC.md"
   },
   {
    "id": "county_pass_rising_pct",
    "value": 50,
    "unit": "%",
    "sentence": "County river samples taken while the river was still rising passed the county's bacteria-times-flow test 50% of the time (80 samples).",
-   "source_path": "RESULT.json",
+   "source_path": "samish_crest_premise_check_20261019/RESULT.json",
    "source_quote": "\"bin\": \"rising_or_at_high\", \"n\": 80, \"fail\": 40, \"passed\": 40, \"pass_rate\": 0.5,",
    "quote_number": "0.5,",
    "computed_on": "2026-10-19",
@@ -805,14 +889,15 @@
      "times": 100
     }
    },
-   "source_label": "RESULT.json"
+   "display": "never",
+   "source_label": "samish_crest_premise_check_20261019/RESULT.json"
   },
   {
    "id": "county_pass_0_6h_pct",
    "value": 56,
    "unit": "%",
    "sentence": "County samples taken 0.25 to 6 hours after the peak passed that test 56% of the time (34 samples).",
-   "source_path": "RESULT.json",
+   "source_path": "samish_crest_premise_check_20261019/RESULT.json",
    "source_quote": "\"bin\": \"peaked_0.25_to_6h\", \"n\": 34, \"fail\": 15, \"passed\": 19, \"pass_rate\": 0.559,",
    "quote_number": "0.559",
    "computed_on": "2026-10-19",
@@ -824,14 +909,15 @@
      "times": 100
     }
    },
-   "source_label": "RESULT.json"
+   "display": "never",
+   "source_label": "samish_crest_premise_check_20261019/RESULT.json"
   },
   {
    "id": "county_pass_6_24h_pct",
    "value": 78,
    "unit": "%",
    "sentence": "County samples taken 6 to 24 hours after the peak passed that test 78% of the time (107 samples).",
-   "source_path": "RESULT.json",
+   "source_path": "samish_crest_premise_check_20261019/RESULT.json",
    "source_quote": "\"bin\": \"peaked_6_to_24h\", \"n\": 107, \"fail\": 24, \"passed\": 83, \"pass_rate\": 0.776,",
    "quote_number": "0.776",
    "computed_on": "2026-10-19",
@@ -843,14 +929,15 @@
      "times": 100
     }
    },
-   "source_label": "RESULT.json"
+   "display": "never",
+   "source_label": "samish_crest_premise_check_20261019/RESULT.json"
   },
   {
    "id": "county_pass_24_72h_pct",
    "value": 92,
    "unit": "%",
    "sentence": "County samples taken 24 to 72 hours after the peak passed that test 92% of the time (105 samples).",
-   "source_path": "RESULT.json",
+   "source_path": "samish_crest_premise_check_20261019/RESULT.json",
    "source_quote": "\"bin\": \"peaked_24_to_72h\", \"n\": 105, \"fail\": 8, \"passed\": 97, \"pass_rate\": 0.924,",
    "quote_number": "0.924",
    "computed_on": "2026-10-19",
@@ -862,7 +949,8 @@
      "times": 100
     }
    },
-   "source_label": "RESULT.json"
+   "display": "never",
+   "source_label": "samish_crest_premise_check_20261019/RESULT.json"
   },
   {
    "id": "season_line_mar_apr",
@@ -874,6 +962,7 @@
    "quote_number": "200 cfs",
    "computed_on": "2026-10-08",
    "source_kind": "written_confirmation",
+   "display": "never",
    "source_label": "Confirmed in writing by Taylor Shellfish, October 2026"
   },
   {
@@ -886,6 +975,7 @@
    "quote_number": "100 cfs",
    "computed_on": "2026-10-08",
    "source_kind": "written_confirmation",
+   "display": "never",
    "source_label": "Confirmed in writing by Taylor Shellfish, October 2026"
   },
   {
@@ -898,6 +988,7 @@
    "quote_number": "400 CFS",
    "computed_on": "2026-10-08",
    "source_kind": "written_confirmation",
+   "display": "never",
    "source_label": "Confirmed in writing by Taylor Shellfish, October 2026"
   },
   {
@@ -905,12 +996,13 @@
    "value": 6,
    "unit": "h",
    "sentence": "Taylor Shellfish's own rule of thumb is about 6 hours after the rain stops.",
-   "source_path": "Taylor Shellfish's stated target, September 2026",
-   "source_quote": "Taylor Shellfish's stated target, September 2026",
+   "source_path": "Taylor Shellfish's rule of thumb, October 2026",
+   "source_quote": "Taylor Shellfish's rule of thumb, October 2026",
    "quote_number": "6 hours",
    "computed_on": "2026-10-05",
    "source_kind": "file",
-   "source_label": "Taylor Shellfish's stated target, September 2026"
+   "display": "never",
+   "source_label": "Taylor Shellfish's rule of thumb, October 2026"
   },
   {
    "id": "table_rise_0_12_low_factor",
@@ -928,6 +1020,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -946,6 +1039,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -964,6 +1058,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -982,6 +1077,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1000,6 +1096,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1018,6 +1115,7 @@
      "token": "50.0"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1044,6 +1142,7 @@
      "token": "36"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1070,6 +1169,7 @@
      "token": "36"
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1089,6 +1189,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1101,6 +1202,7 @@
    "quote_number": "42069",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1113,6 +1215,7 @@
    "quote_number": "51611",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1132,6 +1235,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1144,6 +1248,7 @@
    "quote_number": "10811",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1156,6 +1261,7 @@
    "quote_number": "13588",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1175,6 +1281,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1187,6 +1294,7 @@
    "quote_number": "23016",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1199,6 +1307,7 @@
    "quote_number": "28834",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1218,6 +1327,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1230,6 +1340,7 @@
    "quote_number": "4828",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1242,6 +1353,7 @@
    "quote_number": "6628",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1261,6 +1373,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1280,6 +1393,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1299,6 +1413,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1318,6 +1433,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1337,6 +1453,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1356,6 +1473,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1375,6 +1493,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1387,6 +1506,7 @@
    "quote_number": "1160",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1399,6 +1519,7 @@
    "quote_number": "838",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1418,6 +1539,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1437,6 +1559,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1449,6 +1572,7 @@
    "quote_number": "2024",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1461,6 +1585,7 @@
    "quote_number": "1140",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1480,6 +1605,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1499,6 +1625,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1511,6 +1638,7 @@
    "quote_number": "2310",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1523,6 +1651,7 @@
    "quote_number": "1267",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1542,6 +1671,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1561,6 +1691,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1573,6 +1704,7 @@
    "quote_number": "2523",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1585,6 +1717,7 @@
    "quote_number": "1357",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1604,6 +1737,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1623,6 +1757,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1635,6 +1770,7 @@
    "quote_number": "2695",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1647,6 +1783,7 @@
    "quote_number": "1448",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1666,6 +1803,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1685,6 +1823,7 @@
      "times": 100
     }
    },
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1697,6 +1836,7 @@
    "quote_number": "2876",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
   },
   {
@@ -1709,7 +1849,470 @@
    "quote_number": "1488",
    "computed_on": "2026-10-19",
    "source_kind": "file",
+   "display": "never",
    "source_label": "ratio_table.json"
+  },
+  {
+   "id": "how_noaa_rises",
+   "value": 78,
+   "unit": "episodes",
+   "sentence": "Read with recent gauge readings, as this page does, NOAA's forecast showed 78 of 88 past rises ahead of time, looking up to 72 h ahead and timed within about a day (67 of 88 within 6 h). That study measured the rise from the flow 24 h earlier, not the 24-h low used here.",
+   "source_path": "HYPOTHESES_LEDGER.json",
+   "source_quote": "Episode level: 78 of 88 warned",
+   "quote_number": "78",
+   "computed_on": "2026-09-28",
+   "source_kind": "file",
+   "source_title": "NOAA rise study and the Lab's claim review",
+   "sentence_numbers": {
+    "67": {
+     "quote": "67 of 88 (76%) at +/-6 h tolerance",
+     "token": "67"
+    },
+    "6": {
+     "quote": "67 of 88 (76%) at +/-6 h tolerance",
+     "token": "6"
+    },
+    "72": {
+     "quote": "median lead 54 h at 72 h look-ahead",
+     "token": "72"
+    },
+    "24": {
+     "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
+     "quote": "the 24-hour rise here (flow(t) - flow(t-24h)",
+     "token": "24",
+     "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
+    },
+    "88": {
+     "quote": "Episode level: 78 of 88 warned",
+     "token": "88"
+    },
+    "88#2": {
+     "quote": "67 of 88 (76%) at +/-6 h tolerance",
+     "token": "88"
+    },
+    "24#2": {
+     "source_path": "season.js",
+     "quote": "flow at t minus the lowest flow in the 24 h ending at t",
+     "token": "24",
+     "source_label": "season.js"
+    }
+   },
+   "source_label": "HYPOTHESES_LEDGER.json"
+  },
+  {
+   "id": "how_noaa_no_rise",
+   "value": 38,
+   "unit": "%",
+   "sentence": "When NOAA's forecast showed a rise with none under way, no new rise followed within 72 h in 270 of 703 forecasts (38%, likely between 30% and 47%). One storm gives several forecasts, so these count forecasts, not storms.",
+   "source_path": "A4_rise_threshold_warning_skill/RESULT.md",
+   "source_quote": "**38%** of the forecast's 72-hour warnings were not followed by a new rise episode within 72 hours (false alarm ratio, 95% interval 30%-47%, week clustered; 270 false alarms out of 703 warnings)",
+   "quote_number": "38",
+   "computed_on": "2026-09-27",
+   "source_kind": "file",
+   "source_title": "NOAA rise study; the uncertainty from the Lab's claim review",
+   "sentence_numbers": {
+    "30": {
+     "source_path": "HYPOTHESES_LEDGER.json",
+     "quote": "38% (30-47%)",
+     "token": "30",
+     "source_label": "HYPOTHESES_LEDGER.json"
+    },
+    "47": {
+     "source_path": "HYPOTHESES_LEDGER.json",
+     "quote": "38% (30-47%)",
+     "token": "47",
+     "source_label": "HYPOTHESES_LEDGER.json"
+    }
+   },
+   "source_label": "A4_rise_threshold_warning_skill/RESULT.md"
+  },
+  {
+   "id": "how_noaa_crest_timing",
+   "value": 55,
+   "unit": "%",
+   "sentence": "For storms of 800 cfs or more (55, April 2018 to March 2026), NOAA's forecast crest time was within 6 h of the real crest for 55% of its forecasts issued less than a day before it, 43% at one to two days and 30% at two to three days (each storm weighted equally).",
+   "source_path": "A3_peak_timing_error/RESULT.md",
+   "source_quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+   "quote_number": "55%",
+   "computed_on": "2026-09-26",
+   "source_kind": "file",
+   "source_title": "NOAA crest-timing study",
+   "sentence_numbers": {
+    "800": {
+     "quote": "no provider-fill rows) of at least 800 cfs",
+     "token": "800"
+    },
+    "55": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "55"
+    },
+    "2018": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "2018"
+    },
+    "2026": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "2026"
+    },
+    "6": {
+     "quote": "47% within +/-6 h (CI 34% to 59%; 171 issues, 55 events)",
+     "token": "6"
+    },
+    "43": {
+     "quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+     "token": "43"
+    },
+    "30": {
+     "quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+     "token": "30"
+    },
+    "55#2": {
+     "token": "55"
+    }
+   },
+   "source_label": "A3_peak_timing_error/RESULT.md"
+  },
+  {
+   "id": "how_noaa_peak_flow",
+   "value": 15,
+   "unit": "%",
+   "sentence": "In those 55 storms, NOAA's forecast peak flow typically missed by 15% within 12 h of the peak and by 26% at one to two days (each forecast counted once).",
+   "source_path": "A1_peak_error_by_lead/RESULT.md",
+   "source_quote": "Within 12 hours of the peak**, the forecast peak is typically 15.0% off (median absolute percent error, issue-weighted",
+   "quote_number": "15.0",
+   "computed_on": "2026-09-26",
+   "source_kind": "file",
+   "source_title": "NOAA peak-flow study",
+   "sentence_numbers": {
+    "55": {
+     "quote": "55 events is a small sample",
+     "token": "55"
+    },
+    "26": {
+     "quote": "the typical miss is 25.7% (CI 19.5 to 34.2",
+     "token": "25.7",
+     "digits": 0
+    }
+   },
+   "source_label": "A1_peak_error_by_lead/RESULT.md"
+  },
+  {
+   "id": "how_range_basis",
+   "value": "2018-04-03/2026-04-30",
+   "unit": "issue dates",
+   "sentence": "The range of past misses around NOAA's forecast. NOAA's line is shifted to start at the latest gauge reading, then widened by how far the river ended up from it in past Oct–Apr forecasts issued April 2018 to April 2026.",
+   "source_path": "ratio_table.json",
+   "source_quote": "\"training_issue_span\": [ \"2018-04-03 14:41:00+00:00\", \"2026-04-30 16:01:00+00:00\" ]",
+   "quote_number": "2018-04-03",
+   "computed_on": "2026-10-19",
+   "source_kind": "file",
+   "source_title": "past-miss table, published with this page",
+   "source_label": "ratio_table.json"
+  },
+  {
+   "id": "how_range_coverage",
+   "value": 42069,
+   "unit": "points",
+   "sentence": "Checked one water year (Oct to Sep) at a time against a range built without that year, the river stayed inside at 42,069 (82%) of 51,611 past forecast points (one forecast at one lead time). It stayed inside at 73% when NOAA showed a rise of 200 cfs or more, and fell from 82% to 73% as NOAA's forecast aged from 3 h to 45 h. Forecast points in one storm are linked, so these counts overstate the evidence.",
+   "source_path": "ratio_table.json",
+   "source_quote": "\"pooled\": { \"n\": 51611, \"inside\": 42069, \"share\": 0.815 }",
+   "quote_number": "42069",
+   "computed_on": "2026-10-19",
+   "source_kind": "file",
+   "source_title": "past-miss table, published with this page",
+   "sentence_numbers": {
+    "82": {
+     "token": "0.815",
+     "times": 100,
+     "digits": 0
+    },
+    "73": {
+     "quote": "\"forecast_rise_ge_200\": { \"n\": 6628, \"inside\": 4828, \"share\": 0.728 }",
+     "token": "0.728",
+     "times": 100,
+     "digits": 0
+    },
+    "200": {
+     "quote": "\"forecast_rise_ge_200\": { \"n\": 6628, \"inside\": 4828, \"share\": 0.728 }",
+     "token": "200"
+    },
+    "3": {
+     "quote": "\"age_h\": 3, \"n\": 51611, \"share\": 0.818",
+     "token": "3"
+    },
+    "45": {
+     "quote": "\"age_h\": 45, \"n\": 51567, \"share\": 0.731",
+     "token": "45"
+    },
+    "82#2": {
+     "quote": "\"age_h\": 3, \"n\": 51611, \"share\": 0.818",
+     "token": "0.818",
+     "times": 100,
+     "digits": 0
+    },
+    "73#2": {
+     "quote": "\"age_h\": 45, \"n\": 51567, \"share\": 0.731",
+     "token": "0.731",
+     "times": 100,
+     "digits": 0
+    }
+   },
+   "source_label": "ratio_table.json"
+  },
+  {
+   "id": "how_peak_call",
+   "value": 163,
+   "unit": "storms",
+   "sentence": "Tested on 163 past storms. A correct call (a call the river did not later beat) came within 3 h of the peak in 85% of them (likely between 80% and 91%); leaving out the too-early calls, it typically came 1.75 h after the peak. The first call came too early in 14. A higher second peak came more than 12 h later in 27.",
+   "source_path": "q1b_test_result.json",
+   "source_quote": "\"test_events\": 163",
+   "quote_number": "163",
+   "computed_on": "2026-10-07",
+   "source_kind": "file",
+   "source_title": "the study behind this page, peak-call test",
+   "sentence_numbers": {
+    "3": {
+     "quote": "\"within3h_share_of_events\": 0.852760736196319",
+     "token": "3"
+    },
+    "85": {
+     "quote": "\"within3h_share_of_events\": 0.852760736196319",
+     "token": "0.852760736196319",
+     "times": 100,
+     "digits": 0
+    },
+    "80": {
+     "quote": "\"within3h_ci95\": [ 0.7961752011397922, 0.9074074074074074",
+     "token": "0.7961752011397922",
+     "times": 100,
+     "digits": 0
+    },
+    "91": {
+     "quote": "\"within3h_ci95\": [ 0.7961752011397922, 0.9074074074074074",
+     "token": "0.9074074074074074",
+     "times": 100,
+     "digits": 0
+    },
+    "1.75": {
+     "quote": "\"median_delay_h\": 1.75",
+     "token": "1.75",
+     "digits": 2
+    },
+    "14": {
+     "quote": "\"premature_n\": 14",
+     "token": "14"
+    },
+    "12": {
+     "source_path": "q1b.py",
+     "quote": "H12 = np.timedelta64(12, \"h\")",
+     "token": "12",
+     "source_label": "q1b.py"
+    },
+    "27": {
+     "quote": "\"second_peak_n\": 27",
+     "token": "27"
+    }
+   },
+   "source_label": "q1b_test_result.json"
+  },
+  {
+   "id": "how_rain_clock",
+   "value": 75,
+   "unit": "storms",
+   "sentence": "This page sets no time from rain. At past hours when rain had eased and the river had not yet peaked, the peak came more than 8 h after the rain end at 45% of those hours, and rain came back before the peak in 24 of 75 storms (2016 to 2023). The typical wait was 6 h, measured with older rain records for a box around the watershed; radar found 1 mm or more in only 61% of the hours those records did, so it can show the rain end early.",
+   "source_path": "q9_result.json",
+   "source_quote": "\"storms\": 75,",
+   "quote_number": "75",
+   "computed_on": "2026-10-07",
+   "source_kind": "file",
+   "source_title": "the study behind this page, rain and radar checks",
+   "sentence_numbers": {
+    "2016": {
+     "source_path": "q9.py",
+     "quote": "# (5) real-time rain clock (AORC, test storms 2016-2023)",
+     "token": "2016",
+     "source_label": "q9.py"
+    },
+    "2023": {
+     "source_path": "q9.py",
+     "quote": "# (5) real-time rain clock (AORC, test storms 2016-2023)",
+     "token": "2023",
+     "source_label": "q9.py"
+    },
+    "6": {
+     "quote": "\"median_h_from_shown_rain_end_to_peak\": 6.0",
+     "token": "6.0"
+    },
+    "8": {
+     "quote": "\"share_peak_more_than_8h_after\": 0.4491525423728814",
+     "token": "8"
+    },
+    "45": {
+     "quote": "\"share_peak_more_than_8h_after\": 0.4491525423728814",
+     "token": "0.4491525423728814",
+     "times": 100,
+     "digits": 0
+    },
+    "24": {
+     "quote": "\"storms_rain_returned\": 24,",
+     "token": "24"
+    },
+    "1": {
+     "source_path": "q8.py",
+     "quote": "wet = both & (rain >= 1.0)",
+     "token": "1.0",
+     "source_label": "q8.py"
+    },
+    "61": {
+     "source_path": "q8_result.json",
+     "quote": "\"share_of_aorc_solid_hours_also_solid_in_mrms\": 0.6091825307950728",
+     "token": "0.6091825307950728",
+     "times": 100,
+     "digits": 0,
+     "source_label": "q8_result.json"
+    },
+    "75": {
+     "quote": "\"storms\": 75,",
+     "token": "75"
+    }
+   },
+   "source_label": "q9_result.json"
+  },
+  {
+   "id": "legend_range",
+   "value": 81.5,
+   "unit": "%",
+   "sentence": "The range of past misses around NOAA's forecast, from Oct–Apr forecasts 2018–2026. The river stayed inside at 82% of past forecast points (one forecast at one lead time), less for older forecasts and big rises. Not drawn past 72 h.",
+   "source_path": "ratio_table.json",
+   "source_quote": "\"pooled\": { \"n\": 51611, \"inside\": 42069, \"share\": 0.815 }",
+   "quote_number": "0.815",
+   "computed_on": "2026-10-19",
+   "source_kind": "file",
+   "sentence_numbers": {
+    "82": {
+     "token": "0.815",
+     "times": 100,
+     "digits": 0
+    },
+    "2018": {
+     "quote": "\"training_issue_span\": [ \"2018-04-03 14:41:00+00:00\", \"2026-04-30 16:01:00+00:00\" ]",
+     "token": "2018"
+    },
+    "2026": {
+     "quote": "\"training_issue_span\": [ \"2018-04-03 14:41:00+00:00\", \"2026-04-30 16:01:00+00:00\" ]",
+     "token": "2026"
+    },
+    "72": {
+     "quote": "Nothing past 72 h.",
+     "token": "72"
+    }
+   },
+   "source_label": "ratio_table.json"
+  },
+  {
+   "id": "chart_noaa_crest_record",
+   "value": 55,
+   "unit": "%",
+   "sentence": "For 55 past storms of 800 cfs or more, 55% of NOAA's forecasts made a day ahead or less put the crest within 6 h of the real one (43% one to two days ahead, 30% two to three; each storm weighted equally).",
+   "source_path": "A3_peak_timing_error/RESULT.md",
+   "source_quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+   "quote_number": "55%",
+   "computed_on": "2026-09-26",
+   "source_kind": "file",
+   "sentence_numbers": {
+    "55": {
+     "quote": "That gives **55 events** from 2018-04-17 to 2026-03-20",
+     "token": "55"
+    },
+    "800": {
+     "quote": "no provider-fill rows) of at least 800 cfs",
+     "token": "800"
+    },
+    "6": {
+     "quote": "47% within +/-6 h (CI 34% to 59%; 171 issues, 55 events)",
+     "token": "6"
+    },
+    "55#2": {
+     "token": "55"
+    },
+    "43": {
+     "quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+     "token": "43"
+    },
+    "30": {
+     "quote": "Counting each EVENT once instead: 55% (CI 45% to 66%), 43% (CI 31% to 55%) and 30% (CI 20% to 42%).",
+     "token": "30"
+    }
+   },
+   "source_label": "A3_peak_timing_error/RESULT.md"
+  },
+  {
+   "id": "limits_peak_call",
+   "value": 14,
+   "unit": "storms",
+   "sentence": "A peak call can be exceeded: 14 of 163 past first calls came too early; in 27 of 163 storms a higher peak came more than 12 h later.",
+   "source_path": "q1b_test_result.json",
+   "source_quote": "\"premature_n\": 14",
+   "quote_number": "14",
+   "computed_on": "2026-10-07",
+   "source_kind": "file",
+   "sentence_numbers": {
+    "163": {
+     "quote": "\"test_events\": 163, \"called\": 163",
+     "token": "163"
+    },
+    "27": {
+     "quote": "\"second_peak_n\": 27",
+     "token": "27"
+    },
+    "12": {
+     "source_path": "q1b.py",
+     "quote": "H12 = np.timedelta64(12, \"h\")",
+     "token": "12",
+     "source_label": "q1b.py"
+    },
+    "163#2": {
+     "quote": "\"test_events\": 163, \"called\": 163",
+     "token": "163"
+    }
+   },
+   "source_label": "q1b_test_result.json"
+  },
+  {
+   "id": "limits_rain_clock",
+   "value": 24,
+   "unit": "storms",
+   "sentence": "The Radar pill shows only whether the hourly radar rain file is current. No peak or sample time on this page comes from rain: in the past, rain came back before the peak in 24 of 75 storms.",
+   "source_path": "q9_result.json",
+   "source_quote": "\"storms_rain_returned\": 24,",
+   "quote_number": "24",
+   "computed_on": "2026-10-07",
+   "source_kind": "file",
+   "sentence_numbers": {
+    "75": {
+     "quote": "\"storms\": 75,",
+     "token": "75"
+    }
+   },
+   "source_label": "q9_result.json"
+  },
+  {
+   "id": "taylor_target_h",
+   "value": 6,
+   "unit": "h",
+   "sentence": "Taylor Shellfish's own target is about 6 h after the peak, stated on 2 September 2026.",
+   "source_path": "Taylor Shellfish's stated target, September 2026",
+   "source_quote": "Taylor Shellfish's stated target, September 2026",
+   "quote_number": "6 HOURS",
+   "computed_on": "2026-10-19",
+   "source_kind": "record_snapshot",
+   "sentence_numbers": {
+    "2026": {
+     "quote": "Taylor Shellfish's stated target, September 2026",
+     "token": "2026"
+    }
+   },
+   "source_label": "Taylor Shellfish's stated target, September 2026"
   }
  ]
 }

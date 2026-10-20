@@ -1,6 +1,6 @@
 // chart.js: dependency-free, responsive SVG chart for Samish River Watch.
 // Two stacked panels on one time axis (never two y-scales on one panel):
-//   top    = flow (observed last 72 h, NOAA's forecast as issued, NOAA aligned to the gauge, high-to-low range)
+//   top    = flow (observed last 72 h, NOAA's forecast as issued, NOAA shifted to the gauge, high-to-low range)
 //   bottom = 24-h rise (study definition) against the season line, where crossings are read.
 // Geometry is a pure function (buildChartSvg) so it can be checked in node; mountChart adds the interaction.
 'use strict';
@@ -9,6 +9,8 @@ import { LINE_NAMES, UI, chartReadout, axisDay, axisNum, clock } from './strings
 
 const HOUR = 3_600_000;
 const SVG_NS = 'http://www.w3.org/2000/svg';
+/** The values after a tap keep this far from the "Now" line, in CSS px (round 4, coordinator decision 3). */
+const PANEL_GAP_PX = 8;
 
 /**
  * @typedef {{t:number, cfs:number}} Pt
@@ -396,15 +398,46 @@ export function mountChart(host, readout, spec, idp) {
     }
   };
 
-  const writeReadout = (v, isDefault) => {
+  // At rest the readout is one line that says how to read values; the values themselves are on the cards above (phase 5).
+  // It is written once, so the polite live region is not re-announced on every refresh.
+  const writeHint = () => {
+    if (readout.dataset.rest === '1' && readout.querySelector('.ro-hint')) return;
+    readout.replaceChildren();
+    readout.classList.remove('has-back');
+    const hint = document.createElement('span');
+    hint.className = 'ro-hint';
+    hint.textContent = UI.readoutHint;
+    readout.append(hint);
+    readout.dataset.rest = '1';
+  };
+
+  const writeReadout = (v) => {
     const r = chartReadout(v, m.nowMs);
     readout.replaceChildren();
-    readout.classList.toggle('has-back', !isDefault);
+    readout.dataset.rest = '0';
+    readout.classList.add('has-back');
+    // The one-line readout keeps its place and holds the tapped time and "Clear", so nothing on the page moves on a tap (round 3
+    // review: the readout used to keep 124 px empty at rest). The values lie in the chart's top corner on the far side of "Now"
+    // from the tapped point, so they hide neither that point nor the river's latest reading, and taps pass through them to the
+    // chart (styles.css .ro-panel: pointer-events none; round 4, coordinator decision 3).
     const time = document.createElement('span');
     time.className = 'ro-time';
-    // The default readout is the latest gauge reading, which can be older than now (a stale gauge), so it is never called "Now".
-    time.textContent = isDefault ? `${LINE_NAMES.latest} · ${r.time}` : r.time;
+    time.textContent = r.time;
     readout.append(time);
+    // On touch there is no pointer leave, so a tapped readout gets a way back to the resting readout ("Clear": the hint).
+    const back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'link-btn ro-back';
+    back.textContent = UI.readoutClear;
+    back.addEventListener('click', () => reset());
+    readout.append(back);
+    const hostW = host.clientWidth || geo.L.W;
+    const nowPx = (geo.x(m.nowMs) / geo.L.W) * hostW;
+    const right = geo.x(v.t) <= geo.x(m.nowMs);
+    const panel = document.createElement('div');
+    panel.className = `ro-panel ${right ? 'ro-right' : 'ro-left'}`;
+    panel.style.maxWidth = `${Math.max(0, Math.floor(right ? hostW - nowPx - PANEL_GAP_PX : nowPx - PANEL_GAP_PX))}px`;
+    readout.append(panel);
     for (const row of r.rows) {
       const item = document.createElement('span');
       item.className = `ro-item ro-${row.key}`;
@@ -418,20 +451,11 @@ export function mountChart(host, readout, spec, idp) {
       val.className = 'ro-value';
       val.textContent = row.value;
       item.append(key, lab, val);
-      readout.append(item);
-    }
-    if (!isDefault) {
-      // On touch there is no pointer leave, so a tapped readout gets a way back to the latest reading.
-      const back = document.createElement('button');
-      back.type = 'button';
-      back.className = 'link-btn ro-back';
-      back.textContent = UI.backToLatest;
-      back.addEventListener('click', () => reset());
-      readout.append(back);
+      panel.append(item);
     }
   };
 
-  /** Clear the cursor and show the latest-reading readout again. */
+  /** Clear the cursor and show the resting readout again. */
   function reset() {
     cur = null;
     delete host.dataset.cursor;
@@ -445,8 +469,7 @@ export function mountChart(host, readout, spec, idp) {
     if (t === null) {
       cross.setAttribute('visibility', 'hidden');
       for (const k of ['obs', 'raw', 'aligned', 'rise']) setDot(svg, k, null, null);
-      const lastObs = m.observed && m.observed.length ? m.observed[m.observed.length - 1].t : m.nowMs;
-      writeReadout(valuesAt(m, Math.min(lastObs, m.nowMs)), true);
+      writeHint();
       return;
     }
     const v = valuesAt(m, t);
@@ -459,7 +482,7 @@ export function mountChart(host, readout, spec, idp) {
     setDot(svg, 'aligned', v.aligned === null ? null : xx, v.aligned === null ? null : geo.yFlow(v.aligned));
     setDot(svg, 'rise', v.rise === null ? null : xx, v.rise === null ? null : geo.yRise(v.rise));
     cross.setAttribute('visibility', 'visible');
-    writeReadout(v, false);
+    writeReadout(v);
     if (fromUser) host.dataset.cursor = String(t);
   }
 

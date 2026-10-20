@@ -6,21 +6,31 @@
 import * as S from './strings.js';
 import * as render from './render.js';
 import { BASIN_RULES, basinCompleteness, solidRainEnd as basinSolidRainEnd } from './basin.js';
-import { loadLog, addEntry, removeEntry, clearLog, makeEntry, seasonCount, seasonStartMs, toCsv, csvFileName, LOG_KEY, REPLAY_LOG_KEY } from './log.js';
 
 const MIN = 60_000;
 const HOUR = 60 * MIN;
-const REFRESH_MS = 5 * MIN;
+/** The page refreshes this often while it is on screen (the Limits sheet states it; tests/strings.test.mjs checks the two agree). */
+export const REFRESH_MS = 5 * MIN;
 // The cache holds the last good FEEDS (not a built view), so a later display rebuilds every time-dependent part.
 const CACHE_KEY = 'srw.cache.v2';
 const OLD_VIEW_KEY = 'srw.view.v1';
 const MEMORY_KEY = 'srw.detector.v1';
 const THEME_KEY = 'srw.theme';
-const SEEN_KEY = 'srw.seen.v1';
 const TABLE_URL = 'data/ratio_table.json';
 const RECORDS_URL = 'data/records.json';
 const FIXTURE_DIR = 'data/fixtures/';
 const CACHE_MAX_AGE_MS = 7 * 24 * HOUR;
+/**
+ * "Over the season line since {time}" names the most recent upward crossing inside this window before now, and drops
+ * "since" when none falls inside it (CONTRACT.md, Amendment 2026-10-19, phase 5). One constant, used by buildView and the tests.
+ */
+export const SINCE_WINDOW_MS = 72 * HOUR;
+/**
+ * Forecast crossing times are read only inside the span the chart draws, now to 72 h ahead (round 1 review, 2026-10-19):
+ * NOAA's issues run out to about 10 days, past the chart and past the high and low cases, and a weekday-only time days
+ * past the chart would read as this week.
+ */
+export const FORECAST_HORIZON_MS = 72 * HOUR;
 
 // =============================================================================================
 // ADAPTER: module loading with clearly marked fallbacks.
@@ -97,7 +107,7 @@ const REQUIRED = Object.freeze({
   season: ['seasonLineCfs', 'rise24', 'firstCrossing', 'spliceSeries'],
   lines: ['alignedPath', 'edgePaths', 'crossingSummary'],
   detector: ['peakState'],
-  crest: ['noaaCrest', 'ourWindow', 'samplingCard', 'samplingVisible'],
+  crest: ['noaaCrest', 'samplingCard', 'samplingVisible'],
 });
 
 /**
@@ -169,9 +179,16 @@ export function cleanSeries(s) {
     .filter((p, i, a) => i === 0 || p.t !== a[i - 1].t);
 }
 
+/** The newest tide prediction at or before nowMs (the clock feeds.js ages tides by), or null. */
+function newestPastTide(f, nowMs) {
+  const past = (f && Array.isArray(f.events) ? f.events : []).map((e) => e && e.t).filter((t) => isNum(t) && t <= nowMs);
+  return past.length ? Math.max(...past) : null;
+}
+
 /**
  * Feed summary kept in the view (no bulky data). dataT is the time the age refers to: the newest gauge reading,
- * NOAA's issue time, the radar file's generated time, or the tide read time.
+ * NOAA's issue time, the radar file's newest observed hour, or the newest tide prediction already past (null when none is).
+ * A NOAA issue time in the future keeps its negative age, so the page says "in 2 h", never "just now" (round 3 review).
  * @param {'gauge'|'noaa'|'tides'|'basin'} key @param {object} f feed from feeds.fetchAll @param {number} nowMs
  * @returns {{status:string, readT:number|null, dataT:number|null, ageMin:number|null, issuedT?:number}}
  */
@@ -179,14 +196,17 @@ export function feedSummary(key, f, nowMs) {
   const status = f && typeof f.status === 'string' ? f.status : 'could_not_read';
   const readT = f && isNum(f.readT) ? f.readT : null;
   // Radar: the age is the newest OBSERVED hour's end time, not the time the file was written (external review 2026-10-19).
-  const own = { gauge: f && f.newestT, noaa: f && f.issuedT, basin: f && (isNum(f.newestHourT) ? f.newestHourT : f.generatedT), tides: readT }[key];
+  // Tides: the newest prediction already past, the clock their 36 h rule runs on (round 3 review: "read ... (just now)"
+  // stood above "read over 36 h ago").
+  const own = { gauge: f && f.newestT, noaa: f && f.issuedT, basin: f && (isNum(f.newestHourT) ? f.newestHourT : f.generatedT), tides: newestPastTide(f, nowMs) }[key];
   let dataT = isNum(own) ? own : null;
   if (dataT === null && key === 'gauge' && f && Array.isArray(f.series) && f.series.length) {
     const last = f.series[f.series.length - 1];
     if (last && isNum(last.t)) dataT = last.t;
   }
   if (dataT === null && readT !== null && f && isNum(f.ageMin) && key !== 'tides') dataT = readT - f.ageMin * MIN;
-  const out = { status, readT, dataT, ageMin: dataT !== null ? Math.max(0, (nowMs - dataT) / MIN) : null };
+  const age = dataT !== null ? (nowMs - dataT) / MIN : null;
+  const out = { status, readT, dataT, ageMin: age === null ? null : key === 'noaa' ? age : Math.max(0, age) };
   if (f && isNum(f.issuedT)) out.issuedT = f.issuedT;
   // Radar only: why a stale file is stale, 'old' (file or newest hour too old) or 'gaps' (a missing hour in the last six).
   if (key === 'basin' && f && (f.problem === 'old' || f.problem === 'gaps')) out.problem = f.problem;
@@ -247,23 +267,22 @@ export function summarizeTable(table) {
 }
 
 /**
- * Radar quiet test for the feed panel and the rain clock: the basin-file hours in the 48 h before nowMs, and
- * whether any reached solid rain (>= 1 mm, the threshold of the contract's rain-end rule).
- * Quiet (no solid hour) is different from stale (an old file) and from missing (no file).
+ * Radar quiet test for the feed panel: whether any basin-file hour in the 48 h before nowMs reached solid rain (>= 1 mm, the
+ * threshold of the contract's rain-end rule). Quiet (no solid hour) is different from stale (an old file) and from missing (no
+ * file). No rain time is kept: no time on the page comes from rain (round 3, coordinator decision 1). Only what the page reads is
+ * returned (strings.js radarNote reads quiet; round 4, coordinator decision 22i).
  * @param {{status?:string, hours?:{endT:number, mm:number}[]}|null|undefined} basin parsed feed
  * @param {number} nowMs
- * @returns {{hours:number, quiet:boolean, lastSolidT:number|null, coverage48:number}|null} null when the feed is not current
+ * @returns {{quiet:boolean}|null} null when the feed is not current
  */
 export function radarSummary(basin, nowMs) {
   if (!basin || basin.status !== 'ok' || !Array.isArray(basin.hours)) return null;
   const recent = basin.hours.filter((h) => h && isNum(h.endT) && isNum(h.mm) && h.endT <= nowMs && h.endT > nowMs - 48 * HOUR);
-  if (!recent.length) return { hours: 0, quiet: false, lastSolidT: null, coverage48: 0 };
-  const solid = recent.filter((h) => h.mm >= 1);
+  if (!recent.length) return { quiet: false };
   const c = basinCompleteness(basin.hours, nowMs);
   // "Quiet" says nothing fell, so it needs the observations to back it: a current newest hour and at least 90% of the
   // 48 hours ending at it. With holes in the record, no solid hour found is not the same as none fell.
-  const quiet = solid.length === 0 && c.newestFresh && c.coverage48 >= BASIN_RULES.minCoverage;
-  return { hours: recent.length, quiet, lastSolidT: solid.length ? solid[solid.length - 1].endT : null, coverage48: c.coverage48 };
+  return { quiet: !recent.some((h) => h.mm >= 1) && c.newestFresh && c.coverage48 >= BASIN_RULES.minCoverage };
 }
 
 /**
@@ -379,10 +398,78 @@ function riseCurve(rise24, series, points) {
   return out;
 }
 
+/**
+ * Where the observed 24-h rise stands against the season line over a window (phase 5, CONTRACT.md Amendment 2026-10-19):
+ * crossT is the most recent upward crossing inside [fromMs, toMs], the reading at which the rise reached the line after a
+ * reading below it (a reading before the window counts as the one before the first reading inside it), or null when no
+ * crossing falls inside the window, so the page never states a wrong start time; wasOver says whether any reading inside
+ * the window was at or over the line. Rise and line are the frozen rules (season.js rise24 and seasonLineCfs, line by the
+ * month of each reading).
+ * @param {{t:number,cfs:number}[]} series sorted @param {number} fromMs @param {number} toMs
+ * @param {(s:{t:number,cfs:number}[], t:number)=>number|null} rise24 @param {(t:number)=>number} lineFn
+ * @returns {{crossT:number|null, wasOver:boolean}}
+ */
+export function seasonLineState(series, fromMs, toMs, rise24, lineFn) {
+  const out = { crossT: null, wasOver: false };
+  if (!Array.isArray(series) || !series.length || typeof rise24 !== 'function' || typeof lineFn !== 'function') return out;
+  let i = series.findIndex((p) => p.t >= fromMs);
+  if (i < 0) return out;
+  if (i > 0) i -= 1;
+  let prev = null;
+  for (; i < series.length && series[i].t <= toMs; i += 1) {
+    const p = series[i];
+    const r = rise24(series, p.t);
+    const line = lineFn(p.t);
+    const over = isNum(r) && isNum(line) ? r >= line : null;
+    if (p.t >= fromMs && over === true) {
+      out.wasOver = true;
+      if (prev === false) out.crossT = p.t;
+    }
+    if (over !== null) prev = over;
+  }
+  return out;
+}
+
 function extreme(series, a, b, pick) {
   let best = null;
   for (const p of series) if (p.t >= a && p.t <= b && (!best || pick(p.cfs, best.cfs))) best = p;
   return best;
+}
+
+/**
+ * NOAA's crest as the page reads it (round 1 review, 2026-10-19). crest.js (frozen) reads the path from now; when an issue's
+ * first point comes after now (each NWRFC issue starts 2 to 3 h after its issue time) and that first point is the highest,
+ * with only lower or equal points after it, the path never rises inside what the page reads, so it has no crest: a crest
+ * needs a rise before its turn. Such a crest comes back marked fallingFromStart, and strings.js shows no crest line and no
+ * record line for it. Every other result is returned unchanged.
+ * @param {{t:number, cfs:number, fallingFromNow?:true, risingAt72h?:true, noTurn?:string}|null} c crest.noaaCrest result
+ * @param {{t:number,cfs:number}[]} raw NOAA's path, sorted @param {number} nowMs
+ * @returns {object|null}
+ */
+export function markFallingFromStart(c, raw, nowMs) {
+  if (!c || c.fallingFromNow || c.risingAt72h || c.noTurn || !Array.isArray(raw) || !raw.length) return c;
+  return raw[0].t > nowMs && c.t === raw[0].t ? { ...c, fallingFromStart: true } : c;
+}
+
+/**
+ * Whether the detector's current call is the call of a second peak (round 2 review, 2026-10-19; presentation only,
+ * detector.js is frozen). When the river re-arms more than 12 h after a call, the detector marks that earlier call
+ * secondPeak, and when the next call fires it moves the earlier call into its memory history and records the new one with
+ * secondPeak false, so the new call alone never says so. Inside one rise every replaced call is marked premature or
+ * secondPeak; the last call of an earlier rise is marked neither. So, walking back from the newest history entry over
+ * premature calls, the current call follows a second peak when an entry marked secondPeak comes before one marked neither.
+ * @param {{history?:{premature?:boolean, secondPeak?:boolean}[]}|null|undefined} memory detector memory (plain data)
+ * @returns {boolean}
+ */
+export function followsSecondPeak(memory) {
+  const hist = memory && Array.isArray(memory.history) ? memory.history : [];
+  for (let i = hist.length - 1; i >= 0; i -= 1) {
+    const c = hist[i];
+    if (!c || typeof c !== 'object') return false;
+    if (c.secondPeak) return true;
+    if (!c.premature) return false;
+  }
+  return false;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -398,7 +485,6 @@ function extreme(series, a, b, pick) {
  * @param {object|null} input.table parsed ratio_table.json
  * @param {object|null} input.records parsed records.json
  * @param {'ok'|'could_not_read'} input.recordsStatus
- * @param {{available:boolean, entries:any[]}} input.log
  * @param {object|null} input.memory detector memory from the previous refresh
  * @param {'live'|'replay'} input.mode
  * @param {string|null} [input.fixtureName]
@@ -406,7 +492,7 @@ function extreme(series, a, b, pick) {
  * @returns {{view:object, memory:object|null}}
  */
 export function buildView(input) {
-  const { nowMs, feeds, mods, table, records, recordsStatus, log, memory, mode, fixtureName, fixtureNotes } = input;
+  const { nowMs, feeds, mods, table, records, recordsStatus, memory, mode, fixtureName, fixtureNotes } = input;
   const { season, lines, detector, crest } = mods;
   const F = {
     gauge: feeds && feeds.gauge ? feeds.gauge : { status: 'could_not_read' },
@@ -428,8 +514,15 @@ export function buildView(input) {
   const riseCfs = latest ? guarded(season.rise24, [series, latest.t], null, 'rise24') : null;
   const lineAtLatest = latest ? guarded(season.seasonLineCfs, [latest.t], lineCfs, 'seasonLineCfs') : lineCfs;
   const overLine = isNum(riseCfs) && isNum(lineAtLatest) && riseCfs >= lineAtLatest;
-  let crossT = latest ? guarded(season.firstCrossing, [series, nowMs - 72 * HOUR], null, 'firstCrossing') : null;
-  if (!isNum(crossT) || crossT > (latest ? latest.t : nowMs)) crossT = null;
+  // "Over the season line since {time}": the most recent upward crossing inside the last 72 h, none when it falls outside.
+  const lineState = latest
+    ? guarded(seasonLineState, [series, nowMs - SINCE_WINDOW_MS, latest.t, season.rise24 || fbRise24, season.seasonLineCfs || fbSeasonLineCfs], { crossT: null, wasOver: false }, 'seasonLineState')
+    : { crossT: null, wasOver: false };
+  // The highest reading of the last 24 h (earliest on ties): whether a river over the line with no rise tracked yet is still
+  // making new highs, so the status sentence can say "River rising." only when the readings show it (round 1 review).
+  const high24 = latest ? extreme(series, latest.t - 24 * HOUR, latest.t, (a, b) => a > b) : null;
+  const crossT = isNum(lineState.crossT) ? lineState.crossT : null;
+  const wasOver = Boolean(lineState.wasOver) || overLine;
 
   // --- forecast
   const noaaOk = F.noaa.status === 'ok';
@@ -448,22 +541,24 @@ export function buildView(input) {
     forecastStatus, latest, gaugeFresh, table, wet, alignedState, aligned, edgePaths: lines.edgePaths, nowMs,
   });
   const crossings = { raw: null, aligned: null, high: null, low: null };
+  // A crossing is kept only inside the 72 h the chart draws; the first crossing past it is no crossing in what is shown.
+  const inSpan = (t) => (isNum(t) && t <= nowMs + FORECAST_HORIZON_MS ? t : null);
   if (forecastStatus === 'ok' && series.length) {
     // Paths are densified to 15 min so crossing times are read off the linearly interpolated lines, not only at
     // NOAA's 6-hourly points.
     const c = guarded(lines.crossingSummary, [series, densify(raw), densify(aligned), densify(high), densify(low)], null, 'crossingSummary');
     if (c && typeof c === 'object') {
-      crossings.raw = isNum(c.raw) ? c.raw : null;
-      crossings.aligned = alignedState === 'shown' && isNum(c.aligned) ? c.aligned : null;
-      crossings.high = edges === 'shown' && isNum(c.high) ? c.high : null;
-      crossings.low = edges === 'shown' && isNum(c.low) ? c.low : null;
+      crossings.raw = inSpan(c.raw);
+      crossings.aligned = alignedState === 'shown' ? inSpan(c.aligned) : null;
+      crossings.high = edges === 'shown' ? inSpan(c.high) : null;
+      crossings.low = edges === 'shown' ? inSpan(c.low) : null;
     } else if (typeof lines.crossingSummary !== 'function' && typeof season.firstCrossing === 'function') {
       // ADAPTER: lines.js missing; NOAA's raw crossing from the season fallback only.
       const sp = guarded(season.spliceSeries, [series, raw], [], 'spliceSeries');
-      crossings.raw = latest ? guarded(season.firstCrossing, [cleanSeries(sp), latest.t], null, 'firstCrossing') : null;
+      crossings.raw = latest ? inSpan(guarded(season.firstCrossing, [cleanSeries(sp), latest.t], null, 'firstCrossing')) : null;
     }
   }
-  const noaaCrest = forecastStatus === 'ok' ? guarded(crest.noaaCrest, [raw, nowMs], null, 'noaaCrest') : null;
+  const noaaCrest = forecastStatus === 'ok' ? markFallingFromStart(guarded(crest.noaaCrest, [raw, nowMs], null, 'noaaCrest'), raw, nowMs) : null;
 
   // --- peak call
   let peak = { episode: false, episodeStart: null, state: 'none', high: null, call: null };
@@ -484,7 +579,9 @@ export function buildView(input) {
           peakCfs: isNum(p.call.peakCfs) ? p.call.peakCfs : null,
           confirmedT: isNum(p.call.confirmedT) ? p.call.confirmedT : (isNum(p.call.t) ? p.call.t : null),
           premature: Boolean(p.call.premature),
-          secondPeak: Boolean(p.call.secondPeak),
+          // while rising, the earlier call's own flags say what happened; a standing call is a second peak's when the call it
+          // replaced was (followsSecondPeak), which the detector does not carry over (round 2 review)
+          secondPeak: Boolean(p.call.secondPeak) || (p.state !== 'rising' && followsSecondPeak(p.memory)),
         } : null,
       };
       nextMemory = p.memory && typeof p.memory === 'object' ? p.memory : nextMemory;
@@ -493,33 +590,23 @@ export function buildView(input) {
     }
   }
 
-  // --- the rain clock (only during an episode, with a fresh radar file)
-  let crestWin = null;
-  if (peak.episode && F.basin.status === 'ok') {
-    if (typeof crest.ourWindow !== 'function') crestWin = { withheld: true, reason: 'unavailable' };
-    else {
-      const w = guarded(crest.ourWindow, [F.basin, peak.episodeStart, nowMs], { withheld: true, reason: 'unavailable' }, 'ourWindow');
-      crestWin = w && !w.withheld && isNum(w.easedT) && isNum(w.medianT) && w.easedT <= nowMs
-        ? { easedT: w.easedT, medianT: w.medianT }
-        : { withheld: true, reason: w && typeof w.code === 'string' ? w.code : w && typeof w.reason === 'string' ? w.reason : '' };
-    }
-  }
-
-  // --- sampling card
+  // --- sampling card (the rain clock that sat here is gone: round 3, coordinator decision 1; crest.js keeps its rain
+  // computation for the Lab ledger, which reads crest.js itself)
   const call = peak.call;
-  const callT = call ? (call.confirmedT ?? call.t ?? call.peakT) : null;
-  const recentCall = call && !call.premature && isNum(callT) && nowMs - callT <= 48 * HOUR && nowMs >= callT;
   // A silent gauge cannot show that a rise is still under way, so only a fresh gauge keeps the card up by episode;
-  // a call confirmed in the last 48 h keeps it up either way (CONTRACT.md section 3, SAMPLING CARD).
+  // a call confirmed in the last 48 h keeps it up either way (CONTRACT.md section 3, SAMPLING CARD; crest.samplingVisible).
+  // Without crest.js the Peak and sample card is not available: the view says so (sampling.unavailable) and strings.js hides the
+  // card in every state rather than guess (round 3 review; round 4, coordinator decision 22e), and loadModules reports the
+  // missing part.
+  const crestReady = typeof crest.samplingVisible === 'function' && typeof crest.samplingCard === 'function';
   const episodeLive = peak.episode && gaugeFresh;
-  const samplingVisible = typeof crest.samplingVisible === 'function'
-    ? Boolean(guarded(crest.samplingVisible, [episodeLive, call, nowMs], episodeLive || recentCall, 'samplingVisible'))
-    : Boolean(episodeLive || recentCall);
+  const samplingVisible = Boolean(guarded(crest.samplingVisible, [episodeLive, call, nowMs], false, 'samplingVisible'));
   const tideEvents = F.tides.status === 'ok' && Array.isArray(F.tides.events) ? F.tides.events : [];
   let card = null;
   if (samplingVisible && call) {
-    // Hours since and Taylor's 6-h target count from the PEAK time (CONTRACT.md section 3), so t is set to peakT here.
-    const c = guarded(crest.samplingCard, [{ ...call, t: call.peakT }, tideEvents, nowMs, log.entries], null, 'samplingCard');
+    // Hours since and Taylor's 6-h target count from the PEAK time (CONTRACT.md section 3): the detector's call.t is its
+    // peakT (detector.js), so the call is passed as it is.
+    const c = guarded(crest.samplingCard, [call, tideEvents, nowMs], null, 'samplingCard');
     if (c && typeof c === 'object') {
       const n = c.nextTideAfterTarget;
       card = {
@@ -566,7 +653,6 @@ export function buildView(input) {
     rangeAtEnd: high.length && low.length ? { high: high[high.length - 1].cfs, low: low[low.length - 1].cfs } : null,
   };
 
-  const entries = Array.isArray(log.entries) ? log.entries : [];
   const view = {
     mode,
     fixtureName: fixtureName || null,
@@ -582,19 +668,15 @@ export function buildView(input) {
       basin: feedSummary('basin', F.basin, nowMs),
     },
     season: { lineCfs, wet },
-    observed: { latest, riseCfs: isNum(riseCfs) ? riseCfs : null, lineAtLatest, overLine, crossT },
-    forecast: { status: forecastStatus, aligned: alignedState, edges, crossings, noaaCrest, issuedT: isNum(F.noaa.issuedT) ? F.noaa.issuedT : null },
-    peak,
-    crest: { window: crestWin },
-    radar: radarSummary(F.basin, nowMs),
-    sampling: { visible: samplingVisible, card },
-    log: {
-      available: Boolean(log.available),
-      replay: mode === 'replay',
-      entries,
-      seasonCount: seasonCount(entries, nowMs),
-      seasonStartMs: seasonStartMs(nowMs),
+    observed: { latest, riseCfs: isNum(riseCfs) ? riseCfs : null, lineAtLatest, overLine, crossT, wasOver, high24 },
+    forecast: {
+      status: forecastStatus, aligned: alignedState, edges, crossings, noaaCrest, issuedT: isNum(F.noaa.issuedT) ? F.noaa.issuedT : null,
+      // the last time the high and low cases are drawn to (a case drawn part of the way is never said to stay below)
+      edgesEndT: high.length ? high[high.length - 1].t : null,
     },
+    peak,
+    radar: radarSummary(F.basin, nowMs),
+    sampling: { visible: samplingVisible, card, unavailable: !crestReady },
     records: records || null,
     recordsStatus,
     table: summarizeTable(table),
@@ -703,17 +785,39 @@ export function cacheEntry(c) {
 /**
  * Rebuild the last good snapshot for display at a later time (a refresh failed, or the page just opened). The cached
  * feeds are re-aged with the contract's rules and the whole view is built again at renderMs, so every part that depends
- * on the clock (hours since the peak, the target's tense, card visibility, crossing times, forecast lines, the rain
- * clock) follows the clock, and anything that depends on a feed that is now too old is withheld with its reason.
+ * on the clock (hours since the peak, the target's tense, card visibility, crossing times, forecast lines) follows the
+ * clock, and anything that depends on a feed that is now too old is withheld with its reason.
  * @param {{builtMs:number, feeds:object}} cached from cacheEntry
  * @param {number} renderMs
- * @param {{mods:object, table:object|null, records:object|null, recordsStatus:string, log:{available:boolean, entries:any[]}, memory:object|null}} ctx
+ * @param {{mods:object, table:object|null, records:object|null, recordsStatus:string, memory:object|null}} ctx
  * @returns {object} frozen view with fromCache, builtMs (the snapshot time), renderMs and cacheAgeMin
  */
 export function reageCachedView(cached, renderMs, ctx) {
   const feeds = reageFeeds(cached.feeds, renderMs);
   const { view } = buildView({ ...ctx, nowMs: renderMs, feeds, mode: 'live', fixtureName: null, fixtureNotes: null });
   return deepFreeze({ ...view, builtMs: cached.builtMs, fromCache: true, renderMs, cacheAgeMin: (renderMs - cached.builtMs) / MIN });
+}
+
+const COULD_NOT_READ = Object.freeze({ status: 'could_not_read', readT: null, ageMin: null });
+const ALL_FAILED = Object.freeze({ gauge: COULD_NOT_READ, noaa: COULD_NOT_READ, tides: COULD_NOT_READ, basin: COULD_NOT_READ });
+const NOT_READ = Object.freeze({ status: 'not_read', readT: null, ageMin: null });
+const NONE_READ = Object.freeze({ gauge: NOT_READ, noaa: NOT_READ, tides: NOT_READ, basin: NOT_READ });
+
+/**
+ * The view for a replay whose fixture file could not be read: the page asked no feed, so each is 'not_read' (never "could not
+ * read"), the banner says the file could not be read, and nothing from it is shown (round 4, coordinator decision 6). The season
+ * line is the one of the link's own time when that parsed (ctx.lineCfs), else none. The record file and the table still serve
+ * the sheets.
+ * @param {number} nowMs
+ * @param {{records?:object|null, recordsStatus?:string, table?:object|null, lineCfs?:number|null}} [ctx]
+ * @returns {object} frozen
+ */
+export function fixtureErrorView(nowMs, ctx = {}) {
+  return deepFreeze({
+    mode: 'fixture_error', loading: false, nowMs, feeds: NONE_READ, season: { lineCfs: isNum(ctx.lineCfs) ? ctx.lineCfs : null },
+    observed: {}, forecast: {}, peak: {}, sampling: {}, chart: null,
+    records: ctx.records || null, recordsStatus: ctx.recordsStatus || 'could_not_read', table: summarizeTable(ctx.table || null),
+  });
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -887,7 +991,7 @@ export function fixtureFeedsDirect(nf, at) {
 /**
  * Parse the query string for replay mode. Fixture names are restricted to a plain file-name alphabet.
  * @param {string} search location.search
- * @returns {{fixture:string|null, at:number|null, explainer:boolean|null}}
+ * @returns {{fixture:string|null, at:number|null}}
  */
 export function parseParams(search) {
   const q = new URLSearchParams(search || '');
@@ -895,8 +999,7 @@ export function parseParams(search) {
   const fixture = name && /^[A-Za-z0-9_.-]{1,80}$/.test(name) && !name.includes('..') ? name : null;
   const atRaw = q.get('at');
   const at = atRaw ? Date.parse(atRaw) : NaN;
-  const ex = q.get('explainer');
-  return { fixture, at: Number.isFinite(at) ? at : null, explainer: ex === null ? null : ex !== '0' };
+  return { fixture, at: Number.isFinite(at) ? at : null };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -945,14 +1048,10 @@ async function getJson(url) {
   }
 }
 
-const COULD_NOT_READ = Object.freeze({ status: 'could_not_read', readT: null, ageMin: null });
-const ALL_FAILED = Object.freeze({ gauge: COULD_NOT_READ, noaa: COULD_NOT_READ, tides: COULD_NOT_READ, basin: COULD_NOT_READ });
-
 async function start() {
   const storage = storageOrNull();
   const params = parseParams(window.location.search);
   const replay = params.fixture !== null;
-  const logKey = replay ? REPLAY_LOG_KEY : LOG_KEY;
 
   const state = {
     view: null,
@@ -974,26 +1073,16 @@ async function start() {
   applyTheme(state.theme);
 
   const ui = render.renderStatic(document, {
-    onRefresh: () => refresh(true),
+    onRefresh: () => refresh(),
     onTheme: () => {
       state.theme = state.theme === 'auto' ? 'light' : state.theme === 'light' ? 'dark' : 'auto';
       applyTheme(state.theme);
       writeJson(storage, THEME_KEY, state.theme);
       render.renderTheme(ui, state.theme);
     },
-    onTap: (kind) => tap(kind),
-    onUndo: (id) => undo(id),
-    onExport: () => exportCsv(),
-    onClear: () => clearAll(),
     replay,
   });
   render.renderTheme(ui, state.theme);
-
-  /** A cached view carries the log as it was; show the log as it is now. */
-  const withFreshLog = (v) => {
-    const log = loadLog(storage, logKey);
-    return deepFreeze({ ...v, log: { ...v.log, available: log.available, entries: log.entries, seasonCount: seasonCount(log.entries, v.nowMs), seasonStartMs: seasonStartMs(v.nowMs) } });
-  };
 
   /** Detector memory saved by an earlier refresh, if recent enough to use. */
   const savedMemory = (nowMs) => {
@@ -1003,10 +1092,10 @@ async function start() {
   const cachedView = (at) => {
     const cached = usableCache(cacheEntry(readJson(storage, CACHE_KEY)), at);
     if (!cached) return null;
-    return withFreshLog(reageCachedView(cached, at, {
+    return reageCachedView(cached, at, {
       mods: state.mods, table: state.table, records: state.records, recordsStatus: state.recordsStatus,
-      log: loadLog(storage, logKey), memory: savedMemory(at),
-    }));
+      memory: savedMemory(at),
+    });
   };
 
   // Show the last good reading at once while the first refresh runs (live mode only).
@@ -1064,7 +1153,7 @@ async function start() {
     return Date.now();
   }
 
-  async function refresh(byUser) {
+  async function refresh() {
     if (state.busy) return;
     state.busy = true;
     render.renderBusy(ui, true);
@@ -1083,14 +1172,15 @@ async function start() {
         feeds = ALL_FAILED;
       }
       if (replay && feeds === null) {
-        render.renderView(ui, deepFreeze({ mode: 'fixture_error', loading: false, nowMs, feeds: ALL_FAILED, observed: {}, forecast: {}, peak: {}, crest: {}, sampling: {}, log: { entries: [] }, chart: null }), {});
+        // the season line of the link's own time when it parsed, else none (round 4, coordinator decision 6)
+        const lineCfs = params.at !== null ? guarded(state.mods.season.seasonLineCfs, [params.at], null, 'seasonLineCfs') : null;
+        render.renderView(ui, fixtureErrorView(nowMs, { records: state.records, recordsStatus: state.recordsStatus, table: state.table, lineCfs }));
         return;
       }
-      const log = loadLog(storage, logKey);
       const memory = savedMemory(nowMs);
       const { view, memory: nextMemory } = buildView({
         nowMs, feeds: feeds || ALL_FAILED, mods: state.mods, table: state.table, records: state.records,
-        recordsStatus: state.recordsStatus, log, memory, mode: replay ? 'replay' : 'live', fixtureName: params.fixture,
+        recordsStatus: state.recordsStatus, memory, mode: replay ? 'replay' : 'live', fixtureName: params.fixture,
         fixtureNotes: replay && state.fixture && !state.fixture.error ? { syntheticTides: state.fixture.syntheticTides } : null,
       });
       if (!replay) {
@@ -1106,8 +1196,7 @@ async function start() {
         }
       }
       state.view = view;
-      render.renderView(ui, view, { focusStatus: byUser === true });
-      maybeExplain();
+      render.renderView(ui, view);
     } finally {
       state.busy = false;
       state.lastRefresh = Date.now();
@@ -1120,86 +1209,15 @@ async function start() {
     clearTimeout(state.timer);
     if (replay) return;
     state.timer = setTimeout(() => {
-      if (document.visibilityState === 'visible') refresh(false); else schedule();
+      if (document.visibilityState === 'visible') refresh(); else schedule();
     }, REFRESH_MS);
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!replay && document.visibilityState === 'visible' && Date.now() - state.lastRefresh >= REFRESH_MS) refresh(false);
+    if (!replay && document.visibilityState === 'visible' && Date.now() - state.lastRefresh >= REFRESH_MS) refresh();
   });
 
-  function maybeExplain() {
-    const want = params.explainer === null ? !replay : params.explainer;
-    if (!want) return;
-    if (params.explainer !== true && readJson(storage, SEEN_KEY)) return;
-    render.showExplainer(ui, () => writeJson(storage, SEEN_KEY, true));
-  }
-
-  function snapshotFor(v) {
-    return {
-      status: S.statusSentence(v),
-      gaugeCfs: v.observed && v.observed.latest ? v.observed.latest.cfs : null,
-      riseCfs: v.observed ? v.observed.riseCfs : null,
-      lineCfs: v.observed ? v.observed.lineAtLatest : null,
-      peakCallT: v.peak && v.peak.call ? v.peak.call.peakT : null,
-      noaaIssuedT: v.forecast ? v.forecast.issuedT : null,
-      mode: replay ? 'replay' : 'live',
-    };
-  }
-
-  function rerenderLog(message) {
-    if (!state.view || !state.view.log) return;
-    const log = loadLog(storage, logKey);
-    const nowMs = state.view.nowMs;
-    const next = deepFreeze({
-      ...state.view,
-      log: { ...state.view.log, available: log.available, entries: log.entries, seasonCount: seasonCount(log.entries, nowMs), seasonStartMs: seasonStartMs(nowMs) },
-    });
-    state.view = next;
-    render.renderLogOnly(ui, next, message);
-  }
-
-  function tap(kind) {
-    const v = state.view;
-    if (!v || !v.log) return;
-    const t = replay ? v.nowMs : Date.now();
-    const cur = loadLog(storage, logKey);
-    const entry = makeEntry(kind, t, snapshotFor(v), cur.entries);
-    const res = storage ? addEntry(storage, entry, logKey) : { ok: false };
-    if (!res.ok) { render.showToast(ui, S.logMessage('failed'), null); rerenderLog(); return; }
-    rerenderLog();
-    render.showToast(ui, S.tapLogged(kind, t, v.nowMs), entry.id);
-  }
-
-  function undo(id) {
-    if (!storage) return;
-    const res = removeEntry(storage, id, logKey);
-    rerenderLog();
-    render.showToast(ui, res.ok ? S.tapUndone() : S.logMessage('failed'), null);
-  }
-
-  function exportCsv() {
-    const log = loadLog(storage, logKey);
-    if (!log.entries.length) { render.showToast(ui, S.logMessage('nothing'), null); return; }
-    const blob = new Blob([`﻿${toCsv(log.entries)}`], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = csvFileName(state.view ? state.view.nowMs : Date.now());
-    document.body.append(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10_000);
-    render.showToast(ui, S.logMessage('exported', log.entries.length), null);
-  }
-
-  function clearAll() {
-    const ok = storage ? clearLog(storage, logKey) : false;
-    rerenderLog();
-    render.showToast(ui, S.logMessage(ok ? 'cleared' : 'failed'), null);
-  }
-
-  await refresh(false);
+  await refresh();
 }
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {

@@ -2,7 +2,7 @@
  * NOAA's forecast crest, the rain clock after radar rain eases, and the sampling card
  * (CONTRACT.md section 3). Pure functions; times are epoch ms UTC.
  */
-import { valueAt, waterYearStartMs } from "./season.js";
+import { valueAt } from "./season.js";
 import { rainEndSupported } from "./basin.js";
 
 const HOUR_MS = 3600 * 1000;
@@ -19,8 +19,6 @@ export const RAIN_CLOCK_MEDIAN_H = 6;
 export const BASIN_MAX_AGE_H = 3;
 /** The sampling card stays up this long after a peak call. */
 export const CALL_VISIBLE_H = 48;
-/** Log entry kinds that count as a bay sample toward the season counter. */
-export const BAY_SAMPLE_KINDS = Object.freeze(["bay_sample", "bay"]);
 
 /** @typedef {{t:number, cfs:number}} Point */
 
@@ -127,15 +125,13 @@ export function samplingVisible(episodeActive, call, nowMs) {
  * Sampling card numbers for a peak call. Hours are counted from the called peak (call.t), the
  * target is Taylor's 6 h after that peak, and the tide shown is the first NOAA prediction
  * (high or low) at or after the target. A premature call (the river rose higher) gives null.
- * The season counter counts log entries of kind "bay_sample" (or "bay") with t from the most
- * recent Oct 1 00:00 Los Angeles time (the water year) up to nowMs.
+ * Nothing else is counted: the page keeps no sample log (CONTRACT.md, Amendment 2026-10-19, phase 5).
  * @param {{t:number, premature?:boolean}|null} call detector call
  * @param {Array<{t:number, type:"H"|"L", ft:number}>|{events:Array<{t:number, type:"H"|"L", ft:number}>}|null} tides
  * @param {number} nowMs
- * @param {Array<{t:number, kind?:string, type?:string}>} log
- * @returns {{hoursSinceCall:number, targetT:number, nextTideAfterTarget:{t:number, type:"H"|"L", ft:number}|null, samplesBanked:number}|null}
+ * @returns {{hoursSinceCall:number, targetT:number, nextTideAfterTarget:{t:number, type:"H"|"L", ft:number}|null}|null}
  */
-export function samplingCard(call, tides, nowMs, log) {
+export function samplingCard(call, tides, nowMs) {
   if (!call || call.premature) return null;
   const targetT = call.t + TAYLOR_TARGET_H * HOUR_MS;
   const events = Array.isArray(tides) ? tides : tides && Array.isArray(tides.events) ? tides.events : [];
@@ -143,14 +139,9 @@ export function samplingCard(call, tides, nowMs, log) {
   for (const e of events) {
     if (e.t >= targetT && (next === null || e.t < next.t)) next = { t: e.t, type: e.type, ft: e.ft };
   }
-  const seasonStart = waterYearStartMs(nowMs);
-  const samplesBanked = (log || []).filter(
-    (entry) => BAY_SAMPLE_KINDS.includes(entry.kind ?? entry.type) && entry.t >= seasonStart && entry.t <= nowMs,
-  ).length;
   return {
     hoursSinceCall: (nowMs - call.t) / HOUR_MS,
     targetT,
     nextTideAfterTarget: next,
-    samplesBanked,
   };
 }

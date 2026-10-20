@@ -71,27 +71,6 @@ export function laWallToUtc(year, month, day, hour = 0, minute = 0) {
 }
 
 /**
- * Start of the water year containing an instant: the latest Oct 1 00:00 America/Los_Angeles at or
- * before it (CONTRACT.md section 3: first-flush storms in October count toward the sample counter).
- * @param {number} ms epoch milliseconds UTC
- * @returns {number} epoch ms
- */
-export function waterYearStartMs(ms) {
-  const p = laParts(ms);
-  const year = p.month >= 10 ? p.year : p.year - 1;
-  return laWallToUtc(year, 10, 1);
-}
-
-/**
- * Same as waterYearStartMs. Kept so earlier imports keep working; the start is Oct 1, not Nov 1.
- * @param {number} ms epoch milliseconds UTC
- * @returns {number} epoch ms
- */
-export function waterSeasonStartMs(ms) {
-  return waterYearStartMs(ms);
-}
-
-/**
  * Season line in cfs by local (America/Los_Angeles) month: Nov-Feb 400, Mar-Apr 200, May-Oct 100.
  * @param {number} msUtc epoch milliseconds UTC
  * @returns {400|200|100}
