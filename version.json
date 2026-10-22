@@ -10,7 +10,7 @@
   "data/fixtures/samples/tides_predictions.json": "fc6eb2bd12ffed007e1a53942891c8e2b4b85fc851fc81f042c9b3dea7927603",
   "data/fixtures/samples/usgs_page1.json": "a91a920c1e518c8ba62e8b05c039f46ba6c274216a140f07b9a0c768652e836b",
   "data/fixtures/samples/usgs_page2.json": "2288f2c0c5eb2b98aff9bc154a25a64758935285704c8af4f88a817c7a2b99e9",
-  "data/live/basin_rain.json": "ee365df6dcb8bf26c66fcf785a32d16039d0a0a50d2b7988e7ce4db3db81e5e4",
+  "data/live/basin_rain.json": "b1c481c10aa6db7db57c8453f75505d0e3937c1a9c727a20b14d1edc340b5f57",
   "data/ratio_table.json": "713e5797d25cdf2b6c19ffdfedf82a07d2e01852cccaaaa93e1429a7da4e7fc7",
   "data/records.json": "af8ee533e3beb71851b24f2a094bed6e6104639b6c6d5879b5389f1cfadff3cc",
   "data/season_lines.json": "e3ad08332016c9bc6e1d46c24db896411051882ed97e84eeab1946ccae152ad9",
@@ -29,5 +29,5 @@
   "README.md": "77d05c18a5538d38a66483363ade6482c686b880ffea953b3f077fe6bfeb916c",
   "styles.css": "697e81e50bfb8e849a861ba6f2c88a9c98247106e8839de3c80471f5127c3fe7"
  },
- "live_updated_utc": "2026-10-22T01:10:13Z"
+ "live_updated_utc": "2026-10-22T02:10:12Z"
 }
