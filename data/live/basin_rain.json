@@ -1,11 +1,7 @@
 {
- "generated_utc": "2026-10-30T23:10:02Z",
+ "generated_utc": "2026-10-31T00:10:01Z",
  "source": "MRMS RadarOnly_QPE_01H",
  "hours": [
-  {
-   "end_utc": "2026-10-29T00:00:00Z",
-   "mm": 0.012
-  },
   {
    "end_utc": "2026-10-29T01:00:00Z",
    "mm": 0.035
@@ -193,8 +189,12 @@
   {
    "end_utc": "2026-10-30T23:00:00Z",
    "mm": 2.18
+  },
+  {
+   "end_utc": "2026-10-31T00:00:00Z",
+   "mm": 0.68
   }
  ],
- "solid_rain_end_utc": null,
+ "solid_rain_end_utc": "2026-10-30T23:00:00Z",
  "rule": "last hour >= 1 mm followed by >= 1 hour < 1 mm"
 }
