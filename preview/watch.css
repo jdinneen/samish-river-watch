@@ -147,3 +147,26 @@ button,select{min-width:48px}
   .number-strip{padding-top:4px;padding-bottom:4px}
 }
 .metric-value.unavailable{font-size:20px;white-space:nowrap;overflow-wrap:normal}
+
+/* Only the separate public preview imports these overrides. */
+#current .rise-headline>.distance-headline{font-size:32px;line-height:1.12}
+#current .rise-headline>.rise-support{font-size:16px;color:var(--muted)}
+#current .flow-row{display:block}.preview-flow{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:14px;margin-top:7px}.preview-flow time{color:var(--muted)}
+#monitor{padding:8px 12px;margin:0 0 8px;border:0;background:var(--surface);border-radius:0 0 10px 10px}
+#monitor h2{font-size:19px;margin:0}#monitor .crest-fact{margin:3px 0;font-size:14px;line-height:1.35}#monitor .section-help{margin-top:6px}
+#monitor .crest-top{display:flex;align-items:center;justify-content:space-between;gap:8px}#monitor .help-toggle{flex-shrink:0}
+#peaks{margin:0 0 10px;padding:12px;border:1px solid var(--line)}#peaks h2{font-size:20px}#peaks p{font-size:14px;line-height:1.4}#peaks h3{font-size:16px}
+#chart{margin-bottom:6px}.chart-cursor{margin-top:8px}.work-grid{display:flex;flex-direction:column;gap:0}
+#rain .rain-secondary{margin-top:8px;padding-top:8px}#rain .rain-secondary h3{font-size:14px}
+@media(max-width:540px){#current .rise-headline>.distance-headline{font-size:29px}#current .rise-headline>.rise-support{font-size:15px}.preview-flow{font-size:13px}#monitor{padding:6px 10px}#monitor h2{font-size:18px}#monitor .crest-fact{font-size:13px}#current .flow-heading{margin-bottom:4px}#current .authority{margin-top:6px}#peaks{padding:10px}}
+
+.chart .reference.reference-official{stroke-dasharray:2 3}
+.rain-total-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+#current .preview-flow .flow-number{font-size:14px;line-height:1.35;font-weight:650;margin:0;letter-spacing:0}
+.help-toggle{min-width:48px;min-height:48px}
+@media(max-width:540px){#current .preview-flow .flow-number{font-size:14px}.rise-history-note{font-size:12px}}
+
+.work-grid>.panel{width:100%}
+
+.rain-total strong{overflow-wrap:anywhere}.rain-total strong.unavailable{font-size:12px}
