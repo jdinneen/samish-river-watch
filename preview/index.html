@@ -24,17 +24,17 @@
     <section id="monitor" class="monitor" aria-label="Experimental turn monitoring"></section>
     <div class="work-grid">
       <section class="panel chart-panel" aria-labelledby="chart-heading">
-        <div class="section-top"><div class="section-heading"><h2 id="chart-heading">Forecast</h2><button id="forecast-help-toggle" class="help-toggle" type="button" data-help-target="forecast-help" aria-controls="forecast-help" aria-expanded="false" aria-label="About the forecast"><span aria-hidden="true">ⓘ</span></button></div><span class="unit-label">Cubic feet per second</span></div>
+        <div class="section-top"><div class="section-heading"><h2 id="chart-heading">Forecast</h2><button id="forecast-help-toggle" class="help-toggle line-guide-toggle" type="button" data-help-target="forecast-help" aria-controls="forecast-help" aria-expanded="false" aria-label="Line guide: About the forecast">Line guide</button></div><span class="unit-label">Cubic feet per second</span></div>
         <div id="forecast-details"></div>
         <div class="chart-controls">
           <div class="segmented" role="group" aria-label="Forecast range"><button data-range="day" type="button" aria-pressed="false">24 hours</button><button data-range="three" type="button" aria-pressed="true">3 days</button><button data-range="full" type="button" aria-pressed="false">Full forecast</button></div>
         </div>
         <p id="forecast-age" class="meta"></p>
         <div id="forecast-problems" class="forecast-problems" role="status"></div>
+        <div class="legend" aria-label="Chart legend"><span><i class="obs"></i>Measured river flow</span><span><i class="raw"></i>Official river forecast</span><span><i class="shifted"></i>Adjusted forecast</span><span><i class="case"></i>Past high / low cases</span><span><i class="reference"></i>24-hour rise reference</span></div>
         <div id="chart" class="chart" aria-label="River flow chart"></div>
         <label class="sr-only" for="chart-cursor">Explore chart readings by time</label><input id="chart-cursor" class="chart-cursor" type="range" min="0" max="1" value="0" step="1" aria-describedby="chart-readout">
         <div id="chart-readout" class="chart-readout" aria-live="polite">Tap the graph or use the time slider to read values.</div>
-        <div class="legend" aria-label="Chart legend"><span><i class="obs"></i>Observed flow</span><span><i class="raw"></i>Issued forecast</span><span><i class="shifted"></i>Forecast adjusted using latest river reading</span><span><i class="case"></i>Past forecast high / low</span><span><i class="reference"></i>Level needed to meet 24h rise</span></div>
         <div id="flow-history" class="flow-history" role="note" aria-label="Recent reference history"></div>
         <section id="peaks" class="peak-block" aria-label="Forecast peak planning"></section>
         <details class="chart-options"><summary>Chart history and moving reference</summary><div class="chart-options-body">
