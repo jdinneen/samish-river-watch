@@ -21,7 +21,7 @@
     <div id="connection" role="status" aria-live="polite" class="connection">Checking the public snapshot and current time…</div>
     <section id="current" class="current panel" aria-label="Current river readings" aria-busy="true"><p>Checking river readings…</p></section>
     <div id="number-strip" class="number-strip" aria-label="River numbers beside the chart"></div>
-    <section id="monitor" class="monitor" aria-label="Observed river crest"></section>
+    <section id="monitor" class="monitor" aria-label="Observed river high"></section>
     <div class="work-grid">
       <section class="panel chart-panel" aria-labelledby="chart-heading">
         <div class="section-top"><div class="section-heading"><h2 id="chart-heading">Forecast</h2><button id="forecast-help-toggle" class="help-toggle line-guide-toggle" type="button" data-help-target="forecast-help" aria-controls="forecast-help" aria-expanded="false" aria-label="Line guide: About the forecast">Line guide</button></div><span class="unit-label">Cubic feet per second</span></div>
@@ -31,7 +31,7 @@
         </div>
         <p id="forecast-age" class="meta"></p>
         <div id="forecast-problems" class="forecast-problems" role="status"></div>
-        <div class="legend" aria-label="Chart legend"><span><i class="obs"></i>Measured river flow</span><span><i class="raw"></i>Official river forecast</span><span><i class="shifted"></i>Adjusted forecast</span><span><i class="case"></i>Past high / low cases</span><span><i class="reference"></i>24-hour rise reference</span></div>
+        <div class="legend" aria-label="Chart legend"><span><i class="obs"></i>Measured river flow</span><span><i class="raw"></i>Official river forecast</span><span><i class="shifted"></i>Adjusted forecast · matched to gauge</span><span><i class="case"></i>High / low cases · based on past errors</span><span><i class="reference"></i>Rise-trigger flow · moving 24h reference</span></div>
         <div id="chart" class="chart" aria-label="River flow chart"></div>
         <label class="sr-only" for="chart-cursor">Explore chart readings by time</label><input id="chart-cursor" class="chart-cursor" type="range" min="0" max="1" value="0" step="1" aria-describedby="chart-readout">
         <div id="chart-readout" class="chart-readout" aria-live="polite">Tap the graph or use the time slider to read values.</div>
