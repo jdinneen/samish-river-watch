@@ -1,0 +1,98 @@
+{
+ "name": "Historical river forecast cases",
+ "version": 3,
+ "apply_to": "flow",
+ "rise_floor_cfs": 50,
+ "storm_flow_cfs": 150,
+ "wet_months": [
+  1,
+  2,
+  3,
+  4,
+  10,
+  11,
+  12
+ ],
+ "training_cutoff_utc": "2026-10-06 00:00:00+00:00",
+ "bins": [
+  {
+   "lead_lo_h": 0,
+   "lead_hi_h": 12,
+   "add_cfs": 11.7,
+   "rise": {
+    "low_factor": 0.697,
+    "high_factor": 1.193
+   },
+   "flat": {
+    "low_factor": 0.93,
+    "high_factor": 1.06
+   }
+  },
+  {
+   "lead_lo_h": 12,
+   "lead_hi_h": 24,
+   "add_cfs": 29.6,
+   "rise": {
+    "low_factor": 0.608,
+    "high_factor": 1.223
+   },
+   "flat": {
+    "low_factor": 0.881,
+    "high_factor": 1.146
+   }
+  },
+  {
+   "lead_lo_h": 24,
+   "lead_hi_h": 36,
+   "add_cfs": 47.7,
+   "rise": {
+    "low_factor": 0.547,
+    "high_factor": 1.223
+   },
+   "flat": {
+    "low_factor": 0.862,
+    "high_factor": 1.229
+   }
+  },
+  {
+   "lead_lo_h": 36,
+   "lead_hi_h": 48,
+   "add_cfs": 63,
+   "rise": {
+    "low_factor": 0.524,
+    "high_factor": 1.228
+   },
+   "flat": {
+    "low_factor": 0.834,
+    "high_factor": 1.299
+   }
+  },
+  {
+   "lead_lo_h": 48,
+   "lead_hi_h": 60,
+   "add_cfs": 84.5,
+   "rise": {
+    "low_factor": 0.505,
+    "high_factor": 1.297
+   },
+   "flat": {
+    "low_factor": 0.807,
+    "high_factor": 1.306
+   }
+  },
+  {
+   "lead_lo_h": 60,
+   "lead_hi_h": 72,
+   "add_cfs": 107.7,
+   "rise": {
+    "low_factor": 0.491,
+    "high_factor": 1.346
+   },
+   "flat": {
+    "low_factor": 0.791,
+    "high_factor": 1.341
+   }
+  }
+ ],
+ "description": "Descriptive examples of past forecast misses; not probabilities or independently validated forecasts."
+}

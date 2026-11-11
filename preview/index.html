@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://raw.githubusercontent.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Samish River Watch · Separate preview</title>
+  <link rel="stylesheet" href="./watch.css">
+  <script type="module" src="./watch.js"></script>
+</head>
+<body>
+  <a class="skip" href="#current">Skip to river readings</a>
+  <header class="masthead">
+    <div class="brand"><span class="river-mark" aria-hidden="true">≈</span><div><h1>Samish River Watch</h1><p>Separate experimental preview · no alerts sent</p></div></div>
+    <div class="header-actions"><button id="theme" type="button" aria-label="Switch color theme">Theme</button><button id="refresh" class="primary" type="button">Refresh</button></div>
+  </header>
+  <main id="watch">
+    <div id="connection" role="status" aria-live="polite" class="connection attention">Checking the public snapshot and current time…</div>
+    <section id="current" class="current panel" aria-label="Current river readings" aria-busy="true"><p>No public snapshot has been verified yet.</p></section>
+    <div id="number-strip" class="number-strip" aria-label="River numbers beside the chart"></div>
+    <section id="monitor" class="monitor" aria-label="Experimental turn monitoring"></section>
+    <div class="work-grid">
+      <section class="panel chart-panel" aria-labelledby="chart-heading">
+        <div class="section-top"><div class="section-heading"><h2 id="chart-heading">Forecast</h2><button id="forecast-help-toggle" class="help-toggle" type="button" data-help-target="forecast-help" aria-controls="forecast-help" aria-expanded="false" aria-label="About the forecast"><span aria-hidden="true">ⓘ</span></button></div><span class="unit-label">Cubic feet per second</span></div>
+        <div id="forecast-details"></div>
+        <div class="chart-controls">
+          <div class="segmented" role="group" aria-label="Forecast range"><button data-range="day" type="button" aria-pressed="false">24 hours</button><button data-range="three" type="button" aria-pressed="true">3 days</button><button data-range="full" type="button" aria-pressed="false">Full forecast</button></div>
+        </div>
+        <p id="forecast-age" class="meta"></p>
+        <div id="forecast-problems" class="forecast-problems" role="status"></div>
+        <div id="chart" class="chart" aria-label="River flow chart"></div>
+        <label class="sr-only" for="chart-cursor">Explore chart readings by time</label><input id="chart-cursor" class="chart-cursor" type="range" min="0" max="1" value="0" step="1" aria-describedby="chart-readout">
+        <div id="chart-readout" class="chart-readout" aria-live="polite">Tap the graph or use the time slider to read values.</div>
+        <div class="legend" aria-label="Chart legend"><span><i class="obs"></i>Observed flow</span><span><i class="raw"></i>Issued forecast</span><span><i class="shifted"></i>Forecast adjusted using latest river reading</span><span><i class="case"></i>Past forecast high / low</span><span><i class="reference"></i>Level needed to meet 24h rise</span></div>
+        <div id="flow-history" class="flow-history" role="note" aria-label="Recent reference history"></div>
+        <section id="peaks" class="peak-block" aria-label="Forecast peak planning"></section>
+        <details class="chart-options"><summary>Chart history and moving reference</summary><div class="chart-options-body">
+          <label class="past-control">Past <select id="past" aria-label="Observed history range"><option value="24">24 hours</option><option value="48">48 hours</option></select></label>
+        <div class="reference-control"><label for="reference">Moving 24-hour reference</label><select id="reference"><option value="endpoint">24-hour change</option><option value="low">Rise from low</option></select></div>
+        </div></details>
+      </section>
+      <aside id="rain" class="panel rain-panel" aria-label="Rainfall context"></aside>
+    </div>
+    <div class="secondary-grid">
+      <details class="panel disclosure"><summary>Bellingham tide predictions</summary><div id="tides"></div></details>
+      <details class="panel disclosure"><summary>Two different sampling programs</summary><div class="disclosure-body sampling"><p class="meta">Described by program staff · November 10, 2026. Confirm current practice with the county.</p><h3>Freshwater in the river</h3><p>Staff sample around the storm peak and afterward until tests show clean water. They try to get out as early as possible. There is no hours-after-peak deadline for these river samples.</p><h3>Water in the bay</h3><p>The separate storm-response program calls for sampling within six hours after the river peak during a qualifying pollution-closure event. Enough tide to reach the stations and laboratory availability also matter.</p></div></details>
+    </div>
+    <details class="panel disclosure"><summary>Sources, timing and limits</summary><div id="sources" class="disclosure-body"></div><div class="disclosure-body">
+      <p>This is a separate experimental preview. No alerts are sent. It is not an official closure or opening decision.</p>
+      <p>The page checks for a saved snapshot every five minutes. Public delivery can take longer; a successful download does not make old readings new. Source observation ages and snapshot age are shown separately.</p>
+      <p>Updates depend on the Lab monitor and publisher remaining running and awake. A stopped computer cannot announce its own failure. Possible downturns can reverse; silence does not mean no turn.</p>
+      <p>These calculations have not established forecast accuracy and do not decide permission to harvest. Dates use Pacific Standard Time (PST) or Pacific Daylight Time (PDT); a rolling day is 24 elapsed hours.</p>
+      <p>If this preview is retired, its publisher is stopped and this page is marked “Preview ended.” Public history remains public.</p>
+      <div class="station-links"><a href="https://waterdata.usgs.gov/monitoring-location/USGS-12201500/" target="_blank" rel="noopener noreferrer">Official river observations ↗</a><a href="https://water.noaa.gov/gauges/SMRW1" target="_blank" rel="noopener noreferrer">Official river forecast ↗</a></div>
+      <div class="station-links"><a href="https://tidesandcurrents.noaa.gov/stationhome.html?id=9449211" target="_blank" rel="noopener noreferrer">Official tide station ↗</a><a href="https://doh.wa.gov/community-and-environment/shellfish" target="_blank" rel="noopener noreferrer">Washington shellfish authority ↗</a></div>
+    </div></details>
+    <footer><span id="snapshot-label">No verified snapshot loaded</span><span>Separate experimental preview · no alerts sent</span></footer>
+  </main>
+  <noscript><p class="panel">JavaScript is needed to show the saved readings. No readings are shown without it.</p></noscript>
+</body>
+</html>

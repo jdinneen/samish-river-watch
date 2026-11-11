@@ -1,0 +1,11 @@
+{
+ "schemaVersion": 1,
+ "state": "active",
+ "builtAt": 1794416157238,
+ "assets": {
+  "index.html": "f251f52b15bdaeeaad701f37ac988c9da29549ceed0bc5cae0160272be4b95f9",
+  "watch.js": "ac47218f1ffcaf36204d816e2142b39e7f4b3f30e8fa61f1f28009600da686fe",
+  "watch.css": "d8556b034e4e344e9edcb5360309103a2327cb37907ac583c4948306298aea4a",
+  "ratio_table.json": "f3dac15fbd081075e8da06d1e99d1167f14548c2c5937f893c45c1659371dc67"
+ }
+}
