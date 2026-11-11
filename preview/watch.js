@@ -1,9 +1,9 @@
 // site/js/season.js
-var hn = "America/Los_Angeles";
-var et = null;
-function pn() {
-  return et === null && (et = new Intl.DateTimeFormat("en-US", {
-    timeZone: hn,
+var _n = "America/Los_Angeles";
+var at = null;
+function wn() {
+  return at === null && (at = new Intl.DateTimeFormat("en-US", {
+    timeZone: _n,
     hourCycle: "h23",
     year: "numeric",
     month: "numeric",
@@ -11,12 +11,12 @@ function pn() {
     hour: "numeric",
     minute: "numeric",
     second: "numeric"
-  })), et;
+  })), at;
 }
-function oe(e) {
+function ie(e) {
   if (!Number.isFinite(e)) throw new RangeError("laParts needs a finite time");
   let t = {};
-  for (let n of pn().formatToParts(new Date(e)))
+  for (let n of wn().formatToParts(new Date(e)))
     n.type !== "literal" && (t[n.type] = Number(n.value));
   return {
     year: t.year,
@@ -27,75 +27,75 @@ function oe(e) {
     second: t.second
   };
 }
-function mt(e) {
-  let t = oe(e);
+function vt(e) {
+  let t = ie(e);
   return Date.UTC(t.year, t.month - 1, t.day, t.hour, t.minute, t.second) - Math.floor(e / 1e3) * 1e3;
 }
-function bt(e, t, n, a = 0, r = 0) {
-  let o = Date.UTC(e, t - 1, n, a, r), i = o - mt(o);
-  return o - mt(i);
+function _t(e, t, n, a = 0, r = 0) {
+  let i = Date.UTC(e, t - 1, n, a, r), o = i - vt(i);
+  return i - vt(o);
 }
-function vt(e) {
-  let t = oe(e).month;
+function wt(e) {
+  let t = ie(e).month;
   return t >= 11 || t <= 2 ? 400 : t <= 4 ? 200 : 100;
 }
 
 // site/js/lines.js
-var gn = 3600 * 1e3, mn = Object.freeze([1, 2, 3, 4, 10, 11, 12]);
-function bn(e, t) {
+var yn = 3600 * 1e3, Tn = Object.freeze([1, 2, 3, 4, 10, 11, 12]);
+function $n(e, t) {
   for (let n = 0; n < e.length; n++) {
     let a = e[n], r = n === e.length - 1;
     if (t >= a.lead_lo_h && (t < a.lead_hi_h || r && t === a.lead_hi_h)) return a;
   }
   return null;
 }
-function vn(e, t) {
-  return (e && Array.isArray(e.wet_months) ? e.wet_months : mn).includes(oe(t).month);
+function xn(e, t) {
+  return (e && Array.isArray(e.wet_months) ? e.wet_months : Tn).includes(ie(t).month);
 }
-var ve = (e) => typeof e == "number" && Number.isFinite(e);
-function _n(e) {
+var _e = (e) => typeof e == "number" && Number.isFinite(e);
+function An(e) {
   if (e.apply_to !== void 0 && e.apply_to !== "flow") throw new Error('past-miss table apply_to must be "flow"');
-  if (!ve(e.rise_floor_cfs) || !ve(e.storm_flow_cfs)) throw new Error("past-miss table needs rise_floor_cfs and storm_flow_cfs");
+  if (!_e(e.rise_floor_cfs) || !_e(e.storm_flow_cfs)) throw new Error("past-miss table needs rise_floor_cfs and storm_flow_cfs");
   for (let t of e.bins) {
-    if (!ve(t.lead_lo_h) || !ve(t.lead_hi_h) || !ve(t.add_cfs)) throw new Error("past-miss table bin needs lead_lo_h, lead_hi_h and add_cfs");
+    if (!_e(t.lead_lo_h) || !_e(t.lead_hi_h) || !_e(t.add_cfs)) throw new Error("past-miss table bin needs lead_lo_h, lead_hi_h and add_cfs");
     for (let n of ["rise", "flat"]) {
       let a = t[n];
-      if (!a || !ve(a.low_factor) || !ve(a.high_factor)) throw new Error(`past-miss table bin ${t.lead_lo_h}-${t.lead_hi_h} h needs ${n} factors`);
+      if (!a || !_e(a.low_factor) || !_e(a.high_factor)) throw new Error(`past-miss table bin ${t.lead_lo_h}-${t.lead_hi_h} h needs ${n} factors`);
     }
   }
 }
-function _t(e, t, n, a = t.t) {
-  let r = [], o = [], i = vn(n, a);
-  if (!i || !n || !Array.isArray(n.bins) || !n.bins.length) return { high: r, low: o, wetSeason: i };
-  _n(n);
+function yt(e, t, n, a = t.t) {
+  let r = [], i = [], o = xn(n, a);
+  if (!o || !n || !Array.isArray(n.bins) || !n.bins.length) return { high: r, low: i, wetSeason: o };
+  An(n);
   let s = n.bins, l = s[s.length - 1].lead_hi_h;
-  for (let c of e) {
-    let u = (c.t - t.t) / gn;
-    if (u <= 0 || u > l) continue;
-    let h = bn(s, u);
-    if (!h) continue;
-    let d, p;
-    if (c.cfs >= n.storm_flow_cfs) {
-      let f = c.cfs - t.cfs >= n.rise_floor_cfs ? h.rise : h.flat;
-      d = c.cfs * f.high_factor, p = c.cfs * f.low_factor;
+  for (let u of e) {
+    let c = (u.t - t.t) / yn;
+    if (c <= 0 || c > l) continue;
+    let p = $n(s, c);
+    if (!p) continue;
+    let h, d;
+    if (u.cfs >= n.storm_flow_cfs) {
+      let f = u.cfs - t.cfs >= n.rise_floor_cfs ? p.rise : p.flat;
+      h = u.cfs * f.high_factor, d = u.cfs * f.low_factor;
     } else
-      d = c.cfs + h.add_cfs, p = c.cfs - h.add_cfs;
-    r.push({ t: c.t, cfs: Math.max(d, c.cfs) }), o.push({ t: c.t, cfs: Math.max(0, Math.min(p, c.cfs)) });
+      h = u.cfs + p.add_cfs, d = u.cfs - p.add_cfs;
+    r.push({ t: u.t, cfs: Math.max(h, u.cfs) }), i.push({ t: u.t, cfs: Math.max(0, Math.min(d, u.cfs)) });
   }
-  return { high: r, low: o, wetSeason: i };
+  return { high: r, low: i, wetSeason: o };
 }
 
 // site/js/watch-model.js
-var xe = 6e4, R = 60 * xe, M = 24 * R, he = 30 * xe, Te = 6 * R, Ae = 15 * xe, wn = [2, 4, 6, 8, 12, 18, 24], L = (e) => typeof e == "number" && Number.isFinite(e), A = (e) => L(e) && Math.abs(e) <= 864e13, m = (e, t = {}) => ({ code: e, details: t }), Se = (e, t) => A(t) ? Math.max(0, e - t) : null, yn = (e, t) => Object.prototype.hasOwnProperty.call(e, t), ze = (e) => ({ t: e.t, cfs: e.cfs }), Z = (e) => e && e.usable !== !1 && L(e.cfs) && e.cfs >= 0;
-function Re(e, t) {
+var Ae = 6e4, U = 60 * Ae, C = 24 * U, fe = 30 * Ae, $e = 6 * U, Se = 15 * Ae, Sn = [2, 4, 6, 8, 12, 18, 24], R = (e) => typeof e == "number" && Number.isFinite(e), S = (e) => R(e) && Math.abs(e) <= 864e13, _ = (e, t = {}) => ({ code: e, details: t }), Me = (e, t) => S(t) ? Math.max(0, e - t) : null, Mn = (e, t) => Object.prototype.hasOwnProperty.call(e, t), Je = (e) => ({ t: e.t, cfs: e.cfs }), Z = (e) => e && e.usable !== !1 && R(e.cfs) && e.cfs >= 0;
+function Ie(e, t) {
   let n = (s) => {
-    let [l, c = "0"] = String(s).toLowerCase().split("e"), u = l.includes(".") ? l.length - l.indexOf(".") - 1 : 0;
-    return { coefficient: BigInt(l.replace(".", "")), exponent: Number(c) - u };
-  }, a = n(e), r = n(t), o = Math.min(a.exponent, r.exponent);
-  return +`${a.coefficient * 10n ** BigInt(a.exponent - o) - r.coefficient * 10n ** BigInt(r.exponent - o)}e${o}`;
+    let [l, u = "0"] = String(s).toLowerCase().split("e"), c = l.includes(".") ? l.length - l.indexOf(".") - 1 : 0;
+    return { coefficient: BigInt(l.replace(".", "")), exponent: Number(u) - c };
+  }, a = n(e), r = n(t), i = Math.min(a.exponent, r.exponent);
+  return +`${a.coefficient * 10n ** BigInt(a.exponent - i) - r.coefficient * 10n ** BigInt(r.exponent - i)}e${i}`;
 }
-function wt(e) {
-  let t = L(e.cfs) && e.cfs >= 0, n = e.usable !== !1 && t, a = e.qualifierPresent === !1 || e.qualifierAvailable === !1 ? !1 : yn(e, "qualifier"), r = {
+function Tt(e) {
+  let t = R(e.cfs) && e.cfs >= 0, n = e.usable !== !1 && t, a = e.qualifierPresent === !1 || e.qualifierAvailable === !1 ? !1 : Mn(e, "qualifier"), r = {
     t: e.t,
     cfs: t ? e.cfs : null,
     approval: e.approval ?? null,
@@ -103,16 +103,16 @@ function wt(e) {
     qualityLabel: e.qualityLabel ?? (a ? "Quality metadata supplied" : "Quality flags unavailable"),
     eligible: e.eligible === !0 && n && a,
     usable: n,
-    reason: n ? null : typeof e.reason == "object" && e.reason ? e.reason : m(typeof e.reason == "string" ? e.reason : "unusable_observation")
+    reason: n ? null : typeof e.reason == "object" && e.reason ? e.reason : _(typeof e.reason == "string" ? e.reason : "unusable_observation")
   };
   return a && (r.qualifier = e.qualifier), r;
 }
-function $t(e = []) {
+function At(e = []) {
   let t = /* @__PURE__ */ new Map();
   for (let n of Array.isArray(e) ? e : []) {
-    if (!n || !A(n.t)) continue;
-    let a = wt(n), r = t.get(n.t);
-    r ? JSON.stringify(r) !== JSON.stringify(a) && t.set(n.t, wt({
+    if (!n || !S(n.t)) continue;
+    let a = Tt(n), r = t.get(n.t);
+    r ? JSON.stringify(r) !== JSON.stringify(a) && t.set(n.t, Tt({
       t: n.t,
       cfs: null,
       usable: !1,
@@ -123,7 +123,7 @@ function $t(e = []) {
   }
   return [...t.values()].sort((n, a) => n.t - a.t);
 }
-function Ie(e, t) {
+function qe(e, t) {
   let n = 0, a = e.length;
   for (; n < a; ) {
     let r = n + a >>> 1;
@@ -131,38 +131,38 @@ function Ie(e, t) {
   }
   return n;
 }
-function xt(e, t) {
-  let n = Ie(e, t);
+function St(e, t) {
+  let n = qe(e, t);
   return { before: n > 0 ? e[n - 1] : null, after: e[n] ?? null };
 }
-function qe(e, t, n = Ae) {
-  let { before: a, after: r } = xt(e, t), o = r?.t === t ? r : a && (!r || t - a.t <= r.t - t) ? a : r;
-  return o && Math.abs(o.t - t) <= n ? o : null;
+function De(e, t, n = Se) {
+  let { before: a, after: r } = St(e, t), i = r?.t === t ? r : a && (!r || t - a.t <= r.t - t) ? a : r;
+  return i && Math.abs(i.t - t) <= n ? i : null;
 }
-function de(e) {
-  if (!A(e)) throw new RangeError("seasonalReference requires a valid UTC timestamp");
-  return vt(e);
+function ue(e) {
+  if (!S(e)) throw new RangeError("seasonalReference requires a valid UTC timestamp");
+  return wt(e);
 }
-function At(e, t) {
-  let n = A(t) ? e[Ie(e, t)] : null, a = A(t) ? t - M : null, r = A(a) ? xt(e, a) : { before: null, after: null };
+function Mt(e, t) {
+  let n = S(t) ? e[qe(e, t)] : null, a = S(t) ? t - C : null, r = S(a) ? St(e, a) : { before: null, after: null };
   return {
     available: !1,
-    reason: m("current_observation_unavailable"),
+    reason: _("current_observation_unavailable"),
     current: n?.t === t ? n : null,
     comparison: null,
     targetT: a,
     elapsedMs: null,
     approximate: !1,
     changeCfs: null,
-    referenceCfs: A(t) ? de(t) : null,
+    referenceCfs: S(t) ? ue(t) : null,
     distanceCfs: null,
     reached: null,
     ...r
   };
 }
-function St(e, t) {
-  let n = Re(e.current.cfs, t.cfs), a = L(n) ? Re(e.referenceCfs, n) : null;
-  return !L(n) || !L(a) ? { ...e, comparison: t, reason: m("non_finite_arithmetic") } : {
+function kt(e, t) {
+  let n = Ie(e.current.cfs, t.cfs), a = R(n) ? Ie(e.referenceCfs, n) : null;
+  return !R(n) || !R(a) ? { ...e, comparison: t, reason: _("non_finite_arithmetic") } : {
     ...e,
     available: !0,
     reason: null,
@@ -174,62 +174,62 @@ function St(e, t) {
     reached: n >= e.referenceCfs
   };
 }
-function tt(e, t) {
-  let n = At(e, t);
+function st(e, t) {
+  let n = Mt(e, t);
   if (!Z(n.current))
-    return { ...n, reason: m(n.current ? "current_observation_unusable" : "current_observation_unavailable") };
-  let a = qe(e, n.targetT);
-  return a ? Z(a) ? St(n, a) : { ...n, comparison: a, reason: m("comparison_unusable") } : { ...n, reason: m("comparison_missing", { toleranceMs: Ae }) };
+    return { ...n, reason: _(n.current ? "current_observation_unusable" : "current_observation_unavailable") };
+  let a = De(e, n.targetT);
+  return a ? Z(a) ? kt(n, a) : { ...n, comparison: a, reason: _("comparison_unusable") } : { ...n, reason: _("comparison_missing", { toleranceMs: Se }) };
 }
-function nt(e, t) {
-  let n = At(e, t), a = {
+function rt(e, t) {
+  let n = Mt(e, t), a = {
     ...n,
     minimum: null,
     windowStartT: n.targetT,
-    windowEndT: A(t) ? t : null,
+    windowEndT: S(t) ? t : null,
     startSupport: null,
     maxGapMs: null
   };
-  if (!Z(a.current)) return { ...a, reason: m(a.current ? "current_observation_unusable" : "current_observation_unavailable") };
-  let r = qe(e, a.targetT);
-  if (!r) return { ...a, reason: m("window_start_missing", { toleranceMs: Ae }) };
-  if (!Z(r)) return { ...a, startSupport: r, reason: m("window_start_unusable") };
-  let o = e.slice(Ie(e, a.targetT), Ie(e, t) + 1), i = o.find((u) => !Z(u));
-  if (i) return { ...a, startSupport: r, reason: m("window_unusable_observation", { t: i.t }) };
-  let s = r.t < a.targetT ? [r, ...o] : o, l = 0;
-  for (let u = 1; u < s.length; u++) l = Math.max(l, s[u].t - s[u - 1].t);
-  if (l > he) return {
+  if (!Z(a.current)) return { ...a, reason: _(a.current ? "current_observation_unusable" : "current_observation_unavailable") };
+  let r = De(e, a.targetT);
+  if (!r) return { ...a, reason: _("window_start_missing", { toleranceMs: Se }) };
+  if (!Z(r)) return { ...a, startSupport: r, reason: _("window_start_unusable") };
+  let i = e.slice(qe(e, a.targetT), qe(e, t) + 1), o = i.find((c) => !Z(c));
+  if (o) return { ...a, startSupport: r, reason: _("window_unusable_observation", { t: o.t }) };
+  let s = r.t < a.targetT ? [r, ...i] : i, l = 0;
+  for (let c = 1; c < s.length; c++) l = Math.max(l, s[c].t - s[c - 1].t);
+  if (l > fe) return {
     ...a,
     startSupport: r,
     maxGapMs: l,
-    reason: m("observation_gap", { maxGapMs: l, allowedMs: he })
+    reason: _("observation_gap", { maxGapMs: l, allowedMs: fe })
   };
-  let c = o.reduce((u, h) => !u || h.cfs < u.cfs ? h : u, null);
-  return c ? {
-    ...St(a, c),
-    minimum: c,
+  let u = i.reduce((c, p) => !c || p.cfs < c.cfs ? p : c, null);
+  return u ? {
+    ...kt(a, u),
+    minimum: u,
     startSupport: r,
     maxGapMs: l,
     // The selected minimum is not an approximation to the 24-hour endpoint.
     approximate: !1
-  } : { ...a, startSupport: r, maxGapMs: l, reason: m("window_empty") };
+  } : { ...a, startSupport: r, maxGapMs: l, reason: _("window_empty") };
 }
-function Ge(e, t, n = !1) {
-  let a = [], r = [], o = [], i = [];
+function Xe(e, t, n = !1) {
+  let a = [], r = [], i = [], o = [];
   for (let s of e) {
     if (!Z(s) || n && s.cfs <= 0) {
-      r.length && a.push(r), r = [], i.push({ t: s.t, reason: n && s.cfs <= 0 ? "non_positive_flow" : s.reason?.code ?? "unusable_observation" });
+      r.length && a.push(r), r = [], o.push({ t: s.t, reason: n && s.cfs <= 0 ? "non_positive_flow" : s.reason?.code ?? "unusable_observation" });
       continue;
     }
     let l = r[r.length - 1];
-    l && s.t - l.t > t && (o.push({ startT: l.t, endT: s.t, reason: "unsupported_gap" }), a.push(r), r = []), r.push(ze(s));
+    l && s.t - l.t > t && (i.push({ startT: l.t, endT: s.t, reason: "unsupported_gap" }), a.push(r), r = []), r.push(Je(s));
   }
-  return r.length && a.push(r), { segments: a, gaps: o, exclusions: i };
+  return r.length && a.push(r), { segments: a, gaps: i, exclusions: o };
 }
-function te(e = "path_unavailable") {
+function ae(e = "path_unavailable") {
   return {
     available: !1,
-    reason: typeof e == "string" ? m(e) : e,
+    reason: typeof e == "string" ? _(e) : e,
     points: [],
     segments: [],
     startT: null,
@@ -238,11 +238,11 @@ function te(e = "path_unavailable") {
     exclusions: []
   };
 }
-function fe(e, t = {}) {
-  let n = e.filter((r) => r.length).map((r) => r.map(ze)), a = n.flat();
+function de(e, t = {}) {
+  let n = e.filter((r) => r.length).map((r) => r.map(Je)), a = n.flat();
   return {
     available: a.length > 0,
-    reason: a.length ? null : m("path_unavailable"),
+    reason: a.length ? null : _("path_unavailable"),
     points: a,
     segments: n,
     startT: a[0]?.t ?? null,
@@ -252,88 +252,88 @@ function fe(e, t = {}) {
     ...t
   };
 }
-function Mt(e, t = Te, n = !1) {
-  let a = Ge(e, t, n);
-  return fe(a.segments, { gaps: a.gaps, exclusions: a.exclusions });
+function Ct(e, t = $e, n = !1) {
+  let a = Xe(e, t, n);
+  return de(a.segments, { gaps: a.gaps, exclusions: a.exclusions });
 }
-function _e(e, t) {
+function we(e, t) {
   if (!e.length || t < e[0].t || t > e[e.length - 1].t) return null;
-  let n = Ie(e, t), a = e[n];
+  let n = qe(e, t), a = e[n];
   if (a.t === t) return a.cfs;
-  let r = e[n - 1], o = (t - r.t) / (a.t - r.t), i = (1 - o) * r.cfs + o * a.cfs;
-  return L(i) ? i : null;
+  let r = e[n - 1], i = (t - r.t) / (a.t - r.t), o = (1 - i) * r.cfs + i * a.cfs;
+  return R(o) ? o : null;
 }
-function Ue(e, t) {
+function Fe(e, t) {
   for (let n of e.segments) {
-    let a = _e(n, t);
+    let a = we(n, t);
     if (a !== null) return a;
   }
   return null;
 }
-function st(e, t, n) {
+function it(e, t, n) {
   let a = [];
   for (let r of e.segments) {
-    let o = Math.max(t, r[0].t), i = Math.min(n, r[r.length - 1].t);
-    if (o > i) continue;
+    let i = Math.max(t, r[0].t), o = Math.min(n, r[r.length - 1].t);
+    if (i > o) continue;
     let s = [
-      { t: o, cfs: _e(r, o) },
-      ...r.filter((l) => l.t > o && l.t < i),
-      ...i > o ? [{ t: i, cfs: _e(r, i) }] : []
+      { t: i, cfs: we(r, i) },
+      ...r.filter((l) => l.t > i && l.t < o),
+      ...o > i ? [{ t: o, cfs: we(r, o) }] : []
     ];
     a.push(s);
   }
-  return fe(a, { gaps: e.gaps, exclusions: e.exclusions });
+  return de(a, { gaps: e.gaps, exclusions: e.exclusions });
 }
-function Oe(e, t, n, a) {
-  let r = Se(n, t);
+function Ue(e, t, n, a) {
+  let r = Me(n, t);
   return {
     available: !!e?.data,
-    dataT: A(t) ? t : null,
+    dataT: S(t) ? t : null,
     ageMs: r,
     stale: r === null || r > a,
-    lastAttemptAt: A(e?.lastAttemptAt) ? e.lastAttemptAt : null,
-    lastSuccessAt: A(e?.lastSuccessAt) ? e.lastSuccessAt : null,
+    lastAttemptAt: S(e?.lastAttemptAt) ? e.lastAttemptAt : null,
+    lastSuccessAt: S(e?.lastSuccessAt) ? e.lastSuccessAt : null,
     error: e?.error ?? null,
     url: e?.url ?? null,
     rawRefs: e?.rawRefs ?? [],
     reasons: [
-      ...e?.data ? [] : [m("source_unavailable")],
-      ...e?.error ? [m("source_fetch_failed")] : [],
-      ...r !== null && r > a ? [m("source_stale", { ageMs: r, maxAgeMs: a })] : []
+      ...e?.data ? [] : [_("source_unavailable")],
+      ...e?.error ? [_("source_fetch_failed")] : [],
+      ...r !== null && r > a ? [_("source_stale", { ageMs: r, maxAgeMs: a })] : []
     ]
   };
 }
-function Tn(e, t, n, a) {
+function kn(e, t, n, a) {
   let r = {
     available: !1,
-    reason: m("current_observation_unavailable"),
+    reason: _("current_observation_unavailable"),
     current: t,
     comparison: null,
     elapsedMs: null,
     changeCfs: null,
     toleranceCfs: null,
     label: "unavailable",
-    asOf: !!(t && n - t.t > 30 * xe)
+    asOf: !!(t && n - t.t > 30 * Ae)
   };
-  if (!Z(t)) return { ...r, reason: m("current_observation_unusable") };
-  let o = qe(e, t.t - R);
-  if (!Z(o)) return { ...r, comparison: o, reason: m("direction_comparison_unavailable") };
-  let i = Re(t.cfs, o.cfs), s = Math.max(1, 0.01 * Math.max(t.cfs, o.cfs)), l = { ...r, comparison: o, elapsedMs: t.t - o.t, changeCfs: i, toleranceCfs: s };
-  if (!L(i)) return { ...l, changeCfs: null, reason: m("non_finite_arithmetic") };
-  if (n - t.t > 2 * R) return { ...l, reason: m("gauge_stale") };
-  if (a?.error) return { ...l, reason: m("source_fetch_failed") };
-  let c = e.filter((u) => u.t >= o.t && u.t <= t.t);
-  return c.some((u) => !Z(u)) || c.some((u, h) => h && u.t - c[h - 1].t > he) ? { ...l, reason: m("direction_observation_gap") } : {
+  if (!Z(t)) return { ...r, reason: _(t ? "current_observation_unusable" : "current_observation_unavailable") };
+  let i = De(e, t.t - U);
+  if (!Z(i)) return { ...r, comparison: i, reason: _("direction_comparison_unavailable") };
+  let o = Ie(t.cfs, i.cfs), s = Math.max(1, 0.01 * Math.max(t.cfs, i.cfs)), l = { ...r, comparison: i, elapsedMs: t.t - i.t, changeCfs: o, toleranceCfs: s };
+  if (!R(o)) return { ...l, changeCfs: null, reason: _("non_finite_arithmetic") };
+  if (n - t.t > 2 * U) return { ...l, reason: _("gauge_stale") };
+  if (a?.error) return { ...l, reason: _("source_fetch_failed") };
+  let u = e.filter((c) => c.t >= i.t && c.t <= t.t);
+  return u.some((c) => !Z(c)) || u.some((c, p) => p && c.t - u[p - 1].t > fe) ? { ...l, reason: _("direction_observation_gap") } : {
     ...l,
     available: !0,
     reason: null,
-    label: Math.abs(i) <= s ? "roughly_level" : i > 0 ? "rising" : "falling"
+    label: Math.abs(o) <= s ? "roughly_level" : o > 0 ? "rising" : "falling"
   };
 }
-function yt(e, t, n) {
-  let a = A(t) ? t - 7 * M : null, r = {
+function $t(e, t, n) {
+  let a = S(t) ? t - 7 * C : null, r = {
     windowStartT: a,
-    windowEndT: A(t) ? t : null,
+    windowEndT: S(t) ? t : null,
     coverageStartT: null,
     coverageEndT: null,
     coverageComplete: !1,
@@ -341,39 +341,39 @@ function yt(e, t, n) {
     unavailableCount: 0,
     last: null
   };
-  if (!A(t)) return r;
-  for (let i of e) {
-    if (i.t < a || i.t > t) continue;
-    let s = n(e, i.t);
-    s.available ? (r.evaluatedCount++, r.coverageStartT ?? (r.coverageStartT = i.t), r.coverageEndT = i.t, s.reached && (r.last = s)) : r.unavailableCount++;
+  if (!S(t)) return r;
+  for (let o of e) {
+    if (o.t < a || o.t > t) continue;
+    let s = n(e, o.t);
+    s.available ? (r.evaluatedCount++, r.coverageStartT ?? (r.coverageStartT = o.t), r.coverageEndT = o.t, s.reached && (r.last = s)) : r.unavailableCount++;
   }
-  let o = e.filter((i) => i.t >= a && i.t <= t);
-  return r.coverageComplete = r.coverageStartT !== null && r.coverageStartT <= a + Ae && r.coverageEndT >= t - he && r.unavailableCount === 0 && !o.some((i, s) => s && i.t - o[s - 1].t > he), r;
+  let i = e.filter((o) => o.t >= a && o.t <= t);
+  return r.coverageComplete = r.coverageStartT !== null && r.coverageStartT <= a + Se && r.coverageEndT >= t - fe && r.unavailableCount === 0 && !i.some((o, s) => s && o.t - i[s - 1].t > fe), r;
 }
-function Tt(e, t, n) {
-  if (!A(t)) return { ...te("observations_unavailable"), steps: [] };
-  let a = [], r = [], o = [], i = [], s = null;
+function xt(e, t, n) {
+  if (!S(t)) return { ...ae("observations_unavailable"), steps: [] };
+  let a = [], r = [], i = [], o = [], s = null;
   for (let l of e) {
-    if (l.t < t - 2 * M) continue;
-    let c = n(e, l.t), u = c.comparison?.cfs;
-    if (!c.available || !L(u + c.referenceCfs)) {
-      i.length && a.push(i), i = [], s = null;
+    if (l.t < t - 2 * C) continue;
+    let u = n(e, l.t), c = u.comparison?.cfs;
+    if (!u.available || !R(c + u.referenceCfs)) {
+      o.length && a.push(o), o = [], s = null;
       continue;
     }
-    if (s && l.t - s.t > he && (o.push({ startT: s.t, endT: l.t, reason: "unsupported_gap" }), i.length && a.push(i), i = [], s = null), s) for (let d of rt(s.t, l.t)) {
-      let p = (d - s.t) / (l.t - s.t), f = (1 - p) * s.base + p * u, b = f + de(d - 1), O = f + de(d);
-      i.push({ t: d, cfs: b }), a.push(i), i = [{ t: d, cfs: O }], r.push({ t: d, beforeCfs: b, afterCfs: O });
+    if (s && l.t - s.t > fe && (i.push({ startT: s.t, endT: l.t, reason: "unsupported_gap" }), o.length && a.push(o), o = [], s = null), s) for (let h of ot(s.t, l.t)) {
+      let d = (h - s.t) / (l.t - s.t), f = (1 - d) * s.base + d * c, m = f + ue(h - 1), A = f + ue(h);
+      o.push({ t: h, cfs: m }), a.push(o), o = [{ t: h, cfs: A }], r.push({ t: h, beforeCfs: m, afterCfs: A });
     }
-    let h = { t: l.t, cfs: u + c.referenceCfs };
-    i.at(-1)?.t !== l.t && i.push(h), s = { t: l.t, base: u };
+    let p = { t: l.t, cfs: c + u.referenceCfs };
+    o.at(-1)?.t !== l.t && o.push(p), s = { t: l.t, base: c };
   }
-  return i.length && a.push(i), { ...fe(a, { gaps: o }), steps: r };
+  return o.length && a.push(o), { ...de(a, { gaps: i }), steps: r };
 }
-function at(e, t = "forecast_unavailable") {
-  let n = () => te(t), a = () => ({ endpoint: $e(t), low: $e(t) });
+function ze(e, t = "forecast_unavailable") {
+  let n = () => ae(t), a = () => ({ endpoint: xe(t), low: xe(t) });
   return {
     available: !1,
-    reason: m(t),
+    reason: _(t),
     issuedT: null,
     issueAgeMs: null,
     older: !1,
@@ -389,21 +389,21 @@ function at(e, t = "forecast_unavailable") {
     crests: [],
     nextCrest: null,
     laterHigherCrests: [],
-    higherLater: { available: !1, reason: m(t), aboveCurrent: null, peakCfs: null, peakT: null, largeAdjustment: !1 },
+    higherLater: { available: !1, reason: _(t), aboveCurrent: null, peakCfs: null, peakT: null, largeAdjustment: !1 },
     cases: {
       available: !1,
-      reason: m(t),
-      wetSeason: [1, 2, 3, 4, 10, 11, 12].includes(oe(e).month),
+      reason: _(t),
+      wetSeason: [1, 2, 3, 4, 10, 11, 12].includes(ie(e).month),
       maxLeadHours: 72,
       tableVersion: null,
       trainingCutoff: null
     }
   };
 }
-function $e(e = "path_unavailable", t = !1) {
+function xe(e = "path_unavailable", t = !1) {
   return {
     available: !1,
-    reason: typeof e == "string" ? m(e) : e,
+    reason: typeof e == "string" ? _(e) : e,
     t: null,
     currentCfs: null,
     comparisonCfs: null,
@@ -413,232 +413,243 @@ function $e(e = "path_unavailable", t = !1) {
     largeAdjustment: t
   };
 }
-function rt(e, t) {
-  if (!A(e) || !A(t) || e >= t) return [];
-  let n = oe(e), a = oe(t), r = [];
-  for (let o = n.year; o <= a.year; o++)
-    for (let i of [3, 5, 11]) {
-      let s = bt(o, i, 1);
+function ot(e, t) {
+  if (!S(e) || !S(t) || e >= t) return [];
+  let n = ie(e), a = ie(t), r = [];
+  for (let i = n.year; i <= a.year; i++)
+    for (let o of [3, 5, 11]) {
+      let s = _t(i, o, 1);
       s > e && s <= t && r.push(s);
     }
-  return r.sort((o, i) => o - i);
+  return r.sort((i, o) => i - o);
 }
-function $n(e, t, n) {
-  let a = st(e, n.t - 2 * M, n.t), r = st(t, n.t, t.endT ?? n.t), o = a.segments.map((i) => [...i]);
-  for (let i of r.segments) {
-    let s = i.filter((u) => u.t > n.t);
+function Cn(e, t, n) {
+  let a = it(e, n.t - 2 * C, n.t), r = it(t, n.t, t.endT ?? n.t), i = a.segments.map((o) => [...o]);
+  for (let o of r.segments) {
+    let s = o.filter((c) => c.t > n.t);
     if (!s.length) continue;
-    let l = o[o.length - 1];
-    i[0].t === n.t && l?.[l.length - 1].t === n.t ? l.push(...s) : o.push(s);
+    let l = i[i.length - 1];
+    o[0].t === n.t && l?.[l.length - 1].t === n.t ? l.push(...s) : i.push(s);
   }
-  return fe(o);
+  return de(i);
 }
-function kt(e, t) {
-  let n = t - M, a = Ue(e, t);
+function Et(e, t) {
+  let n = t - C, a = Fe(e, t);
   if (a === null) return null;
-  let r = Ue(e, n);
+  let r = Fe(e, n);
   if (r === null) return null;
-  let o = e.segments.find((s) => s[0].t <= n && s[s.length - 1].t >= t), i = null;
-  if (o) {
-    i = r;
-    for (let s of o) s.t > n && s.t <= t && (i = Math.min(i, s.cfs));
-    i = Math.min(i, a);
+  let i = e.segments.find((s) => s[0].t <= n && s[s.length - 1].t >= t), o = null;
+  if (i) {
+    o = r;
+    for (let s of i) s.t > n && s.t <= t && (o = Math.min(o, s.cfs));
+    o = Math.min(o, a);
   }
-  return { current: a, endpoint: r, low: i };
+  return { current: a, endpoint: r, low: o };
 }
-function xn(e, t, n, a, r, o) {
-  let i = Ue(t, r);
-  if (i === null) return null;
-  let s = r - M;
+function En(e, t, n, a, r, i) {
+  let o = Fe(t, r);
+  if (o === null) return null;
+  let s = r - C;
   if (s > a.t) {
-    let f = kt(e, r);
-    return f && f[o] !== null ? { current: i, base: f[o] } : null;
+    let f = Et(e, r);
+    return f && f[i] !== null ? { current: o, base: f[i] } : null;
   }
-  if (o === "endpoint") {
-    let f = qe(n, s);
-    return Z(f) ? { current: i, base: f.cfs, comparisonT: f.t } : null;
+  if (i === "endpoint") {
+    let f = De(n, s);
+    return Z(f) ? { current: o, base: f.cfs, comparisonT: f.t } : null;
   }
-  let l = qe(n, s);
+  let l = De(n, s);
   if (!Z(l)) return null;
-  let c = n.filter((f) => f.t >= s && f.t <= a.t), u = l.t < s ? [l, ...c] : c;
-  if (!c.length || c.some((f) => !Z(f)) || u.some((f, b) => b && f.t - u[b - 1].t > he)) return null;
-  let h = t.segments.find((f) => f[0].t <= a.t && f[f.length - 1].t >= r);
-  if (!h) return null;
-  let d = i, p = null;
-  for (let f of c) f.cfs <= d && (d = f.cfs, p = f.t);
-  for (let f of h) f.t > a.t && f.t <= r && f.cfs < d && (d = f.cfs, p = null);
-  return { current: i, base: d, minimumObservedT: p };
+  let u = n.filter((f) => f.t >= s && f.t <= a.t), c = l.t < s ? [l, ...u] : u;
+  if (!u.length || u.some((f) => !Z(f)) || c.some((f, m) => m && f.t - c[m - 1].t > fe)) return null;
+  let p = t.segments.find((f) => f[0].t <= a.t && f[f.length - 1].t >= r);
+  if (!p) return null;
+  let h = o, d = null;
+  for (let f of u) f.cfs <= h && (h = f.cfs, d = f.t);
+  for (let f of p) f.t > a.t && f.t <= r && f.cfs < h && (h = f.cfs, d = null);
+  return { current: o, base: h, minimumObservedT: d };
 }
-function An(e, t, n, a, r) {
-  let o = [], i = (s) => {
-    s > n && s <= a && o.push(s);
+function Nn(e, t, n, a, r) {
+  let i = [], o = (s) => {
+    s > n && s <= a && i.push(s);
   };
   if (r === "endpoint") {
     for (let s = 1; s < e.length; s++)
-      i(Math.floor((e[s - 1].t + e[s].t) / 2) + M + 1);
+      o(Math.floor((e[s - 1].t + e[s].t) / 2) + C + 1);
     for (let s of e)
-      i(s.t - Ae + M), i(s.t + Ae + M + 1);
-  } else for (let s of e) i(s.t + M + 1);
-  return o.filter((s) => s - M <= t.t);
+      o(s.t - Se + C), o(s.t + Se + C + 1);
+  } else for (let s of e) o(s.t + C + 1);
+  return i.filter((s) => s - C <= t.t);
 }
-function Sn(e, t, n, a, r = []) {
-  let o = /* @__PURE__ */ new Set([t, n]);
+function Ln(e, t, n, a, r = []) {
+  let i = /* @__PURE__ */ new Set([t, n]);
   for (let s of e.points)
-    for (let l of [s.t, s.t + M]) l >= t && l <= n && o.add(l);
-  for (let s of rt(t, n))
-    o.add(s), s - 1 >= t && o.add(s - 1);
+    for (let l of [s.t, s.t + C]) l >= t && l <= n && i.add(l);
+  for (let s of ot(t, n))
+    i.add(s), s - 1 >= t && i.add(s - 1);
   for (let s of r)
-    o.add(s), s - 1 >= t && o.add(s - 1);
-  let i = [...o].sort((s, l) => s - l);
-  for (let s = 1; s < i.length; s++) {
-    let l = i[s - 1], c = i[s], u = (l + c) / 2, h = kt(e, u);
-    if (!h || a === "low" && h.low === null) {
-      o.add(u);
+    i.add(s), s - 1 >= t && i.add(s - 1);
+  let o = [...i].sort((s, l) => s - l);
+  for (let s = 1; s < o.length; s++) {
+    let l = o[s - 1], u = o[s], c = (l + u) / 2, p = Et(e, c);
+    if (!p || a === "low" && p.low === null) {
+      i.add(c);
       continue;
     }
     if (a !== "low") continue;
-    let d = e.segments.find((b) => b[0].t <= u - M && b[b.length - 1].t >= u);
-    if (!d) continue;
-    let p = 1 / 0;
-    for (let b of d) b.t > u - M && b.t < u && (p = Math.min(p, b.cfs));
+    let h = e.segments.find((m) => m[0].t <= c - C && m[m.length - 1].t >= c);
+    if (!h) continue;
+    let d = 1 / 0;
+    for (let m of h) m.t > c - C && m.t < c && (d = Math.min(d, m.cfs));
     let f = [
-      [_e(d, l - M), _e(d, c - M)],
-      [_e(d, l), _e(d, c)],
-      ...L(p) ? [[p, p]] : []
-    ].filter((b) => b.every(L));
-    for (let b = 0; b < f.length; b++) for (let O = b + 1; O < f.length; O++) {
-      let q = f[b][0] - f[O][0], g = f[b][1] - f[O][1];
-      if (!L(q) || !L(g) || q === g) continue;
-      let $ = q / (q - g);
-      $ > 0 && $ < 1 && o.add(l + $ * (c - l));
+      [we(h, l - C), we(h, u - C)],
+      [we(h, l), we(h, u)],
+      ...R(d) ? [[d, d]] : []
+    ].filter((m) => m.every(R));
+    for (let m = 0; m < f.length; m++) for (let A = m + 1; A < f.length; A++) {
+      let O = f[m][0] - f[A][0], g = f[m][1] - f[A][1];
+      if (!R(O) || !R(g) || O === g) continue;
+      let y = O / (O - g);
+      y > 0 && y < 1 && i.add(l + y * (u - l));
     }
   }
-  return [...o].sort((s, l) => s - l);
+  return [...i].sort((s, l) => s - l);
 }
-function Mn(e, t, n, a, r, o) {
-  if (!t.available) return { reference: { ...te(t.reason), steps: [] }, crossing: $e(t.reason, r) };
-  let i = $n(e, t, n), s = t.endT, l = n.t, c = An(o, n, l, s, a), u = Sn(i, l, s, a, c), h = /* @__PURE__ */ new Set([...rt(l, s), ...c]), d = [], p = [], f = [], b = $e("comparison_coverage_missing", r), O = 0, q = !1, g = null, $ = (x) => {
-    if (Ue(t, x) === null) return null;
-    let w = xn(i, t, o, n, x, a), y = w?.base;
-    if (!w || y === null || !L(y)) return null;
-    let H = de(x), D = y + H, j = Re(w.current, y);
-    return L(D) && L(j) ? {
-      t: x,
+function On(e, t, n, a, r, i) {
+  if (!t.available) return { reference: { ...ae(t.reason), steps: [] }, crossing: xe(t.reason, r) };
+  let o = Cn(e, t, n), s = t.endT, l = n.t, u = Nn(i, n, l, s, a), c = Ln(o, l, s, a, u), p = /* @__PURE__ */ new Set([...ot(l, s), ...u]), h = [], d = [], f = [], m = xe("comparison_coverage_missing", r), A = 0, O = !1, g = null, y = (T) => {
+    if (Fe(t, T) === null) return null;
+    let w = En(o, t, i, n, T, a), $ = w?.base;
+    if (!w || $ === null || !R($)) return null;
+    let V = ue(T), j = $ + V, F = Ie(w.current, $);
+    return R(j) && R(F) ? {
+      t: T,
       current: w.current,
-      base: y,
-      line: D,
-      delta: j,
-      threshold: H,
+      base: $,
+      line: j,
+      delta: F,
+      threshold: V,
       comparisonT: w.comparisonT ?? null,
       minimumObservedT: w.minimumObservedT ?? null
     } : null;
   };
-  for (let x of u) {
-    let w = $(x);
+  for (let T of c) {
+    let w = y(T);
     if (!w) {
-      b.t === null && (q = !0), f.length && d.push(f), f = [], g = null;
+      m.t === null && (O = !0), f.length && h.push(f), f = [], g = null;
       continue;
     }
-    if (O++, h.has(x)) {
-      let y = $(x - 1), H = de(x - 1) !== w.threshold, D = y && y.base !== w.base && (a === "endpoint" ? y.comparisonT !== w.comparisonT : y.minimumObservedT !== null && y.minimumObservedT + M + 1 === x);
-      if (y && f.length && (H || D)) {
-        let j = D ? y.line : w.base + de(x - 1);
-        f.push({ t: x, cfs: j }), d.push(f), f = [], j !== w.line && p.push({ t: x, beforeCfs: j, afterCfs: w.line });
+    if (A++, p.has(T)) {
+      let $ = y(T - 1), V = ue(T - 1) !== w.threshold, j = $ && $.base !== w.base && (a === "endpoint" ? $.comparisonT !== w.comparisonT : $.minimumObservedT !== null && $.minimumObservedT + C + 1 === T);
+      if ($ && f.length && (V || j)) {
+        let F = j ? $.line : w.base + ue(T - 1);
+        f.push({ t: T, cfs: F }), h.push(f), f = [], F !== w.line && d.push({ t: T, beforeCfs: F, afterCfs: w.line });
       }
     }
-    if (f.push({ t: x, cfs: w.line }), b.t === null && w.delta >= w.threshold && !q) {
-      let y = w;
-      if (g && g.delta < g.threshold && !h.has(x) && de(g.t) === w.threshold) {
-        let H = g.t, D = x;
-        for (; D - H > 1; ) {
-          let j = Math.floor((D + H) / 2), K = $(j);
-          !K || K.delta < K.threshold ? H = j : D = j;
+    if (f.push({ t: T, cfs: w.line }), m.t === null && w.delta >= w.threshold && !O) {
+      let $ = w;
+      if (g && g.delta < g.threshold && !p.has(T) && ue(g.t) === w.threshold) {
+        let V = g.t, j = T;
+        for (; j - V > 1; ) {
+          let F = Math.floor((j + V) / 2), G = y(F);
+          !G || G.delta < G.threshold ? V = F : j = F;
         }
-        y = $(D) ?? w;
+        $ = y(j) ?? w;
       }
-      b = {
+      m = {
         available: !0,
         reason: null,
-        t: y.t,
-        currentCfs: y.current,
-        comparisonCfs: y.base,
-        changeCfs: y.delta,
-        referenceCfs: y.threshold,
-        alreadyReached: y.t === n.t,
+        t: $.t,
+        currentCfs: $.current,
+        comparisonCfs: $.base,
+        changeCfs: $.delta,
+        referenceCfs: $.threshold,
+        alreadyReached: $.t === n.t,
         largeAdjustment: r
       };
     }
     g = w;
   }
-  f.length && d.push(f), b.t === null && O && !q ? b = { ...$e(null, r), available: !0, reason: null } : b.t === null && q && (b = $e("comparison_coverage_missing", r));
-  let U = d.map((x) => {
+  f.length && h.push(f), m.t === null && A && !O ? m = { ...xe(null, r), available: !0, reason: null } : m.t === null && O && (m = xe("comparison_coverage_missing", r));
+  let D = h.map((T) => {
     let w = [];
-    for (let y of x)
-      w.length >= 2 && w.at(-2).cfs === w.at(-1).cfs && w.at(-1).cfs === y.cfs && w.pop(), w.push(y);
+    for (let $ of T)
+      w.length >= 2 && w.at(-2).cfs === w.at(-1).cfs && w.at(-1).cfs === $.cfs && w.pop(), w.push($);
     return w;
   });
-  return { reference: { ...fe(U), steps: p }, crossing: b };
+  return { reference: { ...de(D), steps: d }, crossing: m };
 }
-function kn(e, t) {
+function Rn(e, t) {
   let n = [e, t];
-  for (let r = e + xe; r < t; r += xe) n.push(r);
+  for (let r = e + Ae; r < t; r += Ae) n.push(r);
   let a = n.map((r) => {
-    let o = oe(r);
-    return o.hour >= 8 && (o.hour < 17 || o.hour === 17 && o.minute === 0 && o.second === 0);
+    let i = ie(r);
+    return i.hour >= 8 && (i.hour < 17 || i.hour === 17 && i.minute === 0 && i.second === 0);
   });
   return a.every(Boolean) ? "inside_08_17" : a.every((r) => !r) ? "outside_08_17" : "spans_both";
 }
-function Cn(e, t) {
+function Un(e, t) {
   let n = [];
   for (let a of e.segments) {
     let r = 0;
     for (; r < a.length; ) {
-      let o = r;
-      for (; o + 1 < a.length && a[o + 1].cfs === a[r].cfs; ) o++;
-      let i = a[r - 1], s = a[o + 1];
-      if (i && s && i.cfs < a[r].cfs && s.cfs < a[o].cfs && a[o].t > t) {
+      let i = r;
+      for (; i + 1 < a.length && a[i + 1].cfs === a[r].cfs; ) i++;
+      let o = a[r - 1], s = a[i + 1];
+      if (o && s && o.cfs < a[r].cfs && s.cfs < a[i].cfs && a[i].t > t) {
         let l = r - 1;
         for (; l > 0 && a[l - 1].cfs <= a[l].cfs; ) l--;
-        let c = ze(a[l]);
+        let u = Je(a[l]);
         n.push({
           startT: a[r].t,
-          endT: a[o].t,
+          endT: a[i].t,
           cfs: a[r].cfs,
-          precedingLow: c,
-          riseCfs: a[r].cfs - c.cfs,
-          bracketStartT: i.t,
+          precedingLow: u,
+          riseCfs: a[r].cfs - u.cfs,
+          bracketStartT: o.t,
           bracketEndT: s.t,
-          clockRange: kn(i.t, s.t)
+          clockRange: Rn(o.t, s.t)
         });
       }
-      r = o + 1;
+      r = i + 1;
     }
   }
   return n.sort((a, r) => a.startT - r.startT);
 }
-function En(e, t, n, a, r, o, i) {
-  let s = at(e), l = t?.data;
+function In(e, t, n, a, r, i, o) {
+  let s = ze(e), l = t?.data;
   if (!l) return s;
-  let c = l.issuedT;
-  s.issuedT = A(c) ? c : null, s.issueAgeMs = Se(e, c), s.older = s.issueAgeMs !== null && s.issueAgeMs > 12 * R, s.cases.tableVersion = i?.version ?? null, s.cases.trainingCutoff = i?.training_cutoff_utc ?? null;
-  let u = (g) => ({
-    ...at(e, g),
+  let u = l.issuedT;
+  s.issuedT = S(u) ? u : null, s.issueAgeMs = Me(e, u), s.older = s.issueAgeMs !== null && s.issueAgeMs > 12 * U, s.cases.tableVersion = o?.version ?? null, s.cases.trainingCutoff = o?.training_cutoff_utc ?? null;
+  let c = (g) => ({
+    ...ze(e, g),
     issuedT: s.issuedT,
     issueAgeMs: s.issueAgeMs,
     older: s.older,
-    cases: { ...s.cases, reason: m(g) }
+    cases: { ...s.cases, reason: _(g) }
   });
-  if (!A(c)) return u("forecast_issue_missing");
-  if (c > e) return u("forecast_issue_future");
-  if (e - c > 48 * R) return u("forecast_issue_too_old");
-  let h = $t(l.points).filter((g) => g.t <= e + 10 * M), d = Mt(h, Te);
-  if (!d.segments.some((g) => g[0].t <= e + Te && g[g.length - 1].t >= e + M))
-    return u("forecast_next_day_coverage_missing");
-  if (s.available = d.available, s.reason = d.reason, s.raw = d, s.crests = Cn(d, o?.t ?? e), s.nextCrest = s.crests[0] ?? null, s.laterHigherCrests = s.nextCrest ? s.crests.slice(1).filter((g) => g.cfs > s.nextCrest.cfs) : [], !Z(o))
-    return s.shifted = te("current_observation_unusable"), s.higherLater.reason = m("current_observation_unusable"), s;
-  let p = Ue(d, o.t);
-  if (p === null) {
-    let g = at(e, "forecast_alignment_unsupported");
+  if (!S(u)) return c("forecast_issue_missing");
+  if (u > e) return c("forecast_issue_future");
+  if (e - u > 48 * U) return c("forecast_issue_too_old");
+  let p = At(l.points).filter((g) => g.t <= e + 10 * C), h = Ct(p, $e);
+  if (!h.segments.some((g) => g[0].t <= e + $e && g[g.length - 1].t >= e + C))
+    return c("forecast_next_day_coverage_missing");
+  if (s.available = h.available, s.reason = h.reason, s.raw = h, s.crests = Un(h, i?.t ?? e), s.nextCrest = s.crests[0] ?? null, s.laterHigherCrests = s.nextCrest ? s.crests.slice(1).filter((g) => g.cfs > s.nextCrest.cfs) : [], !Z(i)) {
+    let y = ze(e, i ? "current_observation_unusable" : "current_observation_unavailable");
+    return {
+      ...s,
+      shifted: y.shifted,
+      high: y.high,
+      low: y.low,
+      references: y.references,
+      crossings: y.crossings,
+      higherLater: y.higherLater,
+      cases: { ...s.cases, reason: y.cases.reason }
+    };
+  }
+  let d = Fe(h, i.t);
+  if (d === null) {
+    let g = ze(e, "forecast_alignment_unsupported");
     return {
       ...s,
       shifted: g.shifted,
@@ -650,110 +661,110 @@ function En(e, t, n, a, r, o, i) {
       cases: { ...s.cases, reason: g.cases.reason }
     };
   }
-  let f = Re(o.cfs, p);
-  if (!L(f)) return u("non_finite_arithmetic");
-  s.offsetCfs = f, s.largeAdjustment = Math.abs(f) > Math.max(10, 0.1 * o.cfs);
-  let b = [], O = [];
-  for (let g of d.segments) {
-    let $ = g.map((x) => ({ t: x.t, cfs: x.cfs + f })), U = Ge($, Te, !0);
-    b.push(...U.segments), O.push(...U.exclusions);
+  let f = Ie(i.cfs, d);
+  if (!R(f)) return c("non_finite_arithmetic");
+  s.offsetCfs = f, s.largeAdjustment = Math.abs(f) > Math.max(10, 0.1 * i.cfs);
+  let m = [], A = [];
+  for (let g of h.segments) {
+    let y = g.map((T) => ({ t: T.t, cfs: T.cfs + f })), D = Xe(y, $e, !0);
+    m.push(...D.segments), A.push(...D.exclusions);
   }
-  s.shifted = st(fe(b, { gaps: d.gaps, exclusions: O }), o.t, o.t + 72 * R), s.shifted.points.some((g) => g.t > o.t) || (s.shifted = { ...te("non_positive_shifted_flow"), exclusions: O, gaps: d.gaps }), s.freshContext = !s.older && !t.error && !n?.error && e - o.t <= 2 * R, s.higherLater = {
+  s.shifted = it(de(m, { gaps: h.gaps, exclusions: A }), i.t, i.t + 72 * U), s.shifted.points.some((g) => g.t > i.t) || (s.shifted = { ...ae("non_positive_shifted_flow"), exclusions: A, gaps: h.gaps }), s.freshContext = !s.older && !t.error && !n?.error && e - i.t <= 2 * U, s.higherLater = {
     available: !1,
-    reason: m("forecast_context_not_current"),
+    reason: _("forecast_context_not_current"),
     aboveCurrent: null,
     peakCfs: null,
     peakT: null,
     largeAdjustment: s.largeAdjustment
   };
-  let q = s.shifted.points.filter((g) => g.t > o.t);
-  if (s.freshContext && q.length) {
-    let g = q.reduce(($, U) => U.cfs > $.cfs ? U : $);
+  let O = s.shifted.points.filter((g) => g.t > i.t);
+  if (s.freshContext && O.length) {
+    let g = O.reduce((y, D) => D.cfs > y.cfs ? D : y);
     s.higherLater = {
       available: !0,
       reason: null,
-      aboveCurrent: g.cfs > o.cfs,
+      aboveCurrent: g.cfs > i.cfs,
       peakCfs: g.cfs,
       peakT: g.t,
       largeAdjustment: s.largeAdjustment
     };
   }
-  if (s.cases.wetSeason = [1, 2, 3, 4, 10, 11, 12].includes(oe(e).month), !s.cases.wetSeason)
-    s.cases.reason = m("historical_cases_off_season"), s.high = te(s.cases.reason), s.low = te(s.cases.reason);
-  else if (!i || i.version !== 3 || i.apply_to !== "flow" || !Array.isArray(i.bins) || !i.bins.length)
-    s.cases.reason = m("historical_table_unavailable"), s.high = te(s.cases.reason), s.low = te(s.cases.reason);
+  if (s.cases.wetSeason = [1, 2, 3, 4, 10, 11, 12].includes(ie(e).month), !s.cases.wetSeason)
+    s.cases.reason = _("historical_cases_off_season"), s.high = ae(s.cases.reason), s.low = ae(s.cases.reason);
+  else if (!o || o.version !== 3 || o.apply_to !== "flow" || !Array.isArray(o.bins) || !o.bins.length)
+    s.cases.reason = _("historical_table_unavailable"), s.high = ae(s.cases.reason), s.low = ae(s.cases.reason);
   else
     try {
-      let g = [], $ = [], U = [], x = [];
+      let g = [], y = [], D = [], T = [];
       for (let w of s.shifted.segments) {
-        let y = _t(w, o, i, e), H = w[0]?.t === o.t && o.cfs > 0 ? [ze(o)] : [], D = Ge([...H, ...y.high], Te, !0), j = Ge([...H, ...y.low], Te, !0);
-        g.push(...D.segments), $.push(...j.segments), U.push(...D.exclusions), x.push(...j.exclusions);
+        let $ = yt(w, i, o, e), V = w[0]?.t === i.t && i.cfs > 0 ? [Je(i)] : [], j = Xe([...V, ...$.high], $e, !0), F = Xe([...V, ...$.low], $e, !0);
+        g.push(...j.segments), y.push(...F.segments), D.push(...j.exclusions), T.push(...F.exclusions);
       }
-      s.high = fe(g, { gaps: s.shifted.gaps, exclusions: U }), s.low = fe($, { gaps: s.shifted.gaps, exclusions: x });
-      for (let w of ["high", "low"]) s[w].points.some((y) => y.t > o.t) || (s[w] = { ...te("historical_case_values_unsupported"), exclusions: s[w].exclusions, gaps: s[w].gaps });
-      s.cases.available = s.high.available || s.low.available, s.cases.reason = s.cases.available ? null : m("historical_case_values_unsupported");
+      s.high = de(g, { gaps: s.shifted.gaps, exclusions: D }), s.low = de(y, { gaps: s.shifted.gaps, exclusions: T });
+      for (let w of ["high", "low"]) s[w].points.some(($) => $.t > i.t) || (s[w] = { ...ae("historical_case_values_unsupported"), exclusions: s[w].exclusions, gaps: s[w].gaps });
+      s.cases.available = s.high.available || s.low.available, s.cases.reason = s.cases.available ? null : _("historical_case_values_unsupported");
     } catch {
-      s.cases.reason = m("historical_table_invalid"), s.high = te(s.cases.reason), s.low = te(s.cases.reason);
+      s.cases.reason = _("historical_table_invalid"), s.high = ae(s.cases.reason), s.low = ae(s.cases.reason);
     }
   for (let g of ["shifted", "high", "low"])
-    for (let $ of ["endpoint", "low"]) {
-      let U = Mn(r, s[g], o, $, s.largeAdjustment, a);
-      s.crossings[g][$] = U.crossing, g === "shifted" && (s.references[$] = U.reference);
+    for (let y of ["endpoint", "low"]) {
+      let D = On(r, s[g], i, y, s.largeAdjustment, a);
+      s.crossings[g][y] = D.crossing, g === "shifted" && (s.references[y] = D.reference);
     }
   return s;
 }
-function Nn(e, t) {
+function qn(e, t) {
   let n = t?.data, a = /* @__PURE__ */ new Map(), r = /* @__PURE__ */ new Set();
-  for (let u of n?.conflicts ?? []) A(u) && u <= e && u % R === 0 && r.add(u);
-  for (let u of n?.hours ?? [])
-    if (!(!A(u.endT) || u.endT > e || u.endT % R !== 0)) {
-      if (!L(u.mm) || u.mm < 0) {
-        r.add(u.endT);
+  for (let c of n?.conflicts ?? []) S(c) && c <= e && c % U === 0 && r.add(c);
+  for (let c of n?.hours ?? [])
+    if (!(!S(c.endT) || c.endT > e || c.endT % U !== 0)) {
+      if (!R(c.mm) || c.mm < 0) {
+        r.add(c.endT);
         continue;
       }
-      a.has(u.endT) && a.get(u.endT) !== u.mm ? r.add(u.endT) : a.set(u.endT, u.mm);
+      a.has(c.endT) && a.get(c.endT) !== c.mm ? r.add(c.endT) : a.set(c.endT, c.mm);
     }
-  let o = [...a.keys(), ...r], i = o.length ? Math.max(...o) : null, s = Se(e, i), l = wn.map((u) => {
-    let h = {
-      hours: u,
+  let i = [...a.keys(), ...r], o = i.length ? Math.max(...i) : null, s = Me(e, o), l = Sn.map((c) => {
+    let p = {
+      hours: c,
       available: !1,
-      reason: m("radar_unavailable"),
-      startT: i === null ? null : i - u * R,
-      endT: i,
+      reason: _("radar_unavailable"),
+      startT: o === null ? null : o - c * U,
+      endT: o,
       ageMs: s,
       mm: null,
       inches: null
     };
-    if (i === null) return h;
-    let d = 0;
-    for (let p = 0; p < u; p++) {
-      let f = i - p * R;
-      if (r.has(f)) return { ...h, reason: m("radar_conflicting_hour", { endT: f }) };
-      if (!a.has(f)) return { ...h, reason: m("radar_missing_hour", { endT: f }) };
-      d += a.get(f);
+    if (o === null) return p;
+    let h = 0;
+    for (let d = 0; d < c; d++) {
+      let f = o - d * U;
+      if (r.has(f)) return { ...p, reason: _("radar_conflicting_hour", { endT: f }) };
+      if (!a.has(f)) return { ...p, reason: _("radar_missing_hour", { endT: f }) };
+      h += a.get(f);
     }
-    return L(d) ? { ...h, available: !0, reason: null, mm: d, inches: d / 25.4 } : { ...h, reason: m("non_finite_arithmetic") };
-  }), c = l.some((u) => u.available);
+    return R(h) ? { ...p, available: !0, reason: null, mm: h, inches: h / 25.4 } : { ...p, reason: _("non_finite_arithmetic") };
+  }), u = l.some((c) => c.available);
   return {
-    available: c,
-    reason: c ? null : m("radar_windows_unavailable"),
-    endT: i,
-    generatedT: A(n?.generatedT) ? n.generatedT : null,
+    available: u,
+    reason: u ? null : _("radar_windows_unavailable"),
+    endT: o,
+    generatedT: S(n?.generatedT) ? n.generatedT : null,
     ageMs: s,
-    historical: s !== null && s > 2 * R,
-    stale: s === null || s > 3 * R,
+    historical: s !== null && s > 2 * U,
+    stale: s === null || s > 3 * U,
     windows: l
   };
 }
-function Ln(e, t) {
-  let n = t?.data, a = Se(e, n?.updatedT), r = {
+function Dn(e, t) {
+  let n = t?.data, a = Me(e, n?.updatedT), r = {
     available: !1,
-    reason: m("grid_forecast_unavailable"),
+    reason: _("grid_forecast_unavailable"),
     startT: e,
-    endT: e + M,
-    updatedT: A(n?.updatedT) ? n.updatedT : null,
+    endT: e + C,
+    updatedT: S(n?.updatedT) ? n.updatedT : null,
     issueAgeMs: a,
-    stale: a === null || a > 12 * R,
+    stale: a === null || a > 12 * U,
     mm: null,
     inches: null,
     prorated: !1,
@@ -762,117 +773,117 @@ function Ln(e, t) {
     gridY: n?.gridY ?? null
   };
   if (!n) return r;
-  if (!A(n.updatedT) || n.updatedT > e) return { ...r, reason: m("grid_issue_invalid") };
-  let o = (n.periods ?? []).filter((c) => A(c.startT) && A(c.endT) && c.endT > e && c.startT < e + M).sort((c, u) => c.startT - u.startT || c.endT - u.endT), i = e, s = 0, l = !1;
-  for (let c of o) {
-    if (c.startT >= c.endT || !L(c.mm) || c.mm < 0) return { ...r, reason: m("grid_interval_invalid") };
-    let u = Math.max(e, c.startT), h = Math.min(e + M, c.endT);
-    if (u < i) return { ...r, reason: m("grid_interval_overlap", { t: u }) };
-    if (u > i) return { ...r, reason: m("grid_interval_gap", { startT: i, endT: u }) };
-    let d = (h - u) / (c.endT - c.startT);
-    s += c.mm * d, l || (l = d !== 1), i = h;
+  if (!S(n.updatedT) || n.updatedT > e) return { ...r, reason: _("grid_issue_invalid") };
+  let i = (n.periods ?? []).filter((u) => S(u.startT) && S(u.endT) && u.endT > e && u.startT < e + C).sort((u, c) => u.startT - c.startT || u.endT - c.endT), o = e, s = 0, l = !1;
+  for (let u of i) {
+    if (u.startT >= u.endT || !R(u.mm) || u.mm < 0) return { ...r, reason: _("grid_interval_invalid") };
+    let c = Math.max(e, u.startT), p = Math.min(e + C, u.endT);
+    if (c < o) return { ...r, reason: _("grid_interval_overlap", { t: c }) };
+    if (c > o) return { ...r, reason: _("grid_interval_gap", { startT: o, endT: c }) };
+    let h = (p - c) / (u.endT - u.startT);
+    s += u.mm * h, l || (l = h !== 1), o = p;
   }
-  return i < e + M ? { ...r, reason: m("grid_interval_gap", { startT: i, endT: e + M }) } : L(s) ? { ...r, available: !0, reason: null, mm: s, inches: s / 25.4, prorated: l } : { ...r, reason: m("non_finite_arithmetic") };
+  return o < e + C ? { ...r, reason: _("grid_interval_gap", { startT: o, endT: e + C }) } : R(s) ? { ...r, available: !0, reason: null, mm: s, inches: s / 25.4, prorated: l } : { ...r, reason: _("non_finite_arithmetic") };
 }
-function On(e, t) {
-  let n = t?.data, a = Se(e, t?.lastSuccessAt), r = {
+function Fn(e, t) {
+  let n = t?.data, a = Me(e, t?.lastSuccessAt), r = {
     available: !1,
-    reason: m("tides_unavailable"),
+    reason: _("tides_unavailable"),
     stationId: "9449211",
     datum: "MLLW",
     fetchAgeMs: a,
-    stale: a === null || a > 36 * R,
+    stale: a === null || a > 36 * U,
     startT: e,
-    endT: e + 2 * M,
+    endT: e + 2 * C,
     events: []
   };
   if (!n) return r;
-  if (String(n.stationId) !== "9449211" || n.datum !== "MLLW") return { ...r, reason: m("tide_identity_or_datum_invalid") };
-  let o = /* @__PURE__ */ new Map(), i = /* @__PURE__ */ new Set();
+  if (String(n.stationId) !== "9449211" || n.datum !== "MLLW") return { ...r, reason: _("tide_identity_or_datum_invalid") };
+  let i = /* @__PURE__ */ new Map(), o = /* @__PURE__ */ new Set();
   for (let l of n.points ?? []) {
-    if (!A(l.t) || l.t < e || l.t > e + 2 * M || !L(l.ft) || !["H", "L"].includes(l.type)) continue;
-    let c = o.get(l.t);
-    c && (c.ft !== l.ft || c.type !== l.type) && i.add(l.t), o.set(l.t, { t: l.t, ft: l.ft, type: l.type });
+    if (!S(l.t) || l.t < e || l.t > e + 2 * C || !R(l.ft) || !["H", "L"].includes(l.type)) continue;
+    let u = i.get(l.t);
+    u && (u.ft !== l.ft || u.type !== l.type) && o.add(l.t), i.set(l.t, { t: l.t, ft: l.ft, type: l.type });
   }
-  let s = [...o.values()].filter((l) => !i.has(l.t)).sort((l, c) => l.t - c.t);
-  return { ...r, available: s.length > 0, reason: s.length ? null : m("tide_events_unavailable"), events: s };
+  let s = [...i.values()].filter((l) => !o.has(l.t)).sort((l, u) => l.t - u.t);
+  return { ...r, available: s.length > 0, reason: s.length ? null : _("tide_events_unavailable"), events: s };
 }
-function Ct({ nowMs: e, sources: t = {}, ratioTable: n = null } = {}) {
-  if (!A(e)) throw new RangeError("buildWatchModel requires a valid nowMs");
-  let a = t.gauge?.data, r = $t(a?.points).filter((b) => b.t <= e), o = r[r.length - 1] ?? null, i = [...r].reverse().find((b) => Z(b)) ?? null, s = Mt(r, he), l = o?.t ?? null, c = Oe(t.gauge, l, e, 2 * R), u = {
-    latest: o,
-    lastNumericObservation: i,
+function Nt({ nowMs: e, sources: t = {}, ratioTable: n = null } = {}) {
+  if (!S(e)) throw new RangeError("buildWatchModel requires a valid nowMs");
+  let a = t.gauge?.data, r = At(a?.points).filter((m) => m.t <= e), i = r[r.length - 1] ?? null, o = [...r].reverse().find((m) => Z(m)) ?? null, s = Ct(r, fe), l = i?.t ?? null, u = Ue(t.gauge, l, e, 2 * U), c = {
+    latest: i,
+    lastNumericObservation: o,
     points: r,
     segments: s.segments,
     exclusions: a?.exclusions ?? [],
     coveredWindow: a?.coveredWindow ?? null,
-    ageMs: Se(e, l),
-    stale: c.stale,
-    referenceCfs: A(l) ? de(l) : null,
-    endpoint: tt(r, l),
-    low: nt(r, l),
-    references: { endpoint: Tt(r, l, tt), low: Tt(r, l, nt) },
-    direction: Tn(r, o, e, t.gauge),
-    history: { endpoint: yt(r, l, tt), low: yt(r, l, nt) }
-  }, h = En(e, t.noaa, t.gauge, r, s, o, n), d = Nn(e, t.radar), p = Ln(e, t.grid), f = On(e, t.tides);
+    ageMs: Me(e, l),
+    stale: u.stale,
+    referenceCfs: S(l) ? ue(l) : null,
+    endpoint: st(r, l),
+    low: rt(r, l),
+    references: { endpoint: xt(r, l, st), low: xt(r, l, rt) },
+    direction: kn(r, i, e, t.gauge),
+    history: { endpoint: $t(r, l, st), low: $t(r, l, rt) }
+  }, p = In(e, t.noaa, t.gauge, r, s, i, n), h = qn(e, t.radar), d = Dn(e, t.grid), f = Fn(e, t.tides);
   return {
     schemaVersion: 1,
     nowMs: e,
-    actualCurrentObservation: o,
+    actualCurrentObservation: i,
     sources: {
-      gauge: c,
-      noaa: Oe(t.noaa, h.issuedT, e, 12 * R),
-      radar: Oe(t.radar, d.endT, e, 3 * R),
-      grid: Oe(t.grid, p.updatedT, e, 12 * R),
-      tides: Oe(t.tides, t.tides?.lastSuccessAt, e, 36 * R)
+      gauge: u,
+      noaa: Ue(t.noaa, p.issuedT, e, 12 * U),
+      radar: Ue(t.radar, h.endT, e, 3 * U),
+      grid: Ue(t.grid, d.updatedT, e, 12 * U),
+      tides: Ue(t.tides, t.tides?.lastSuccessAt, e, 36 * U)
     },
-    gauge: u,
-    forecast: h,
-    rain: { radar: d, grid: p },
+    gauge: c,
+    forecast: p,
+    rain: { radar: h, grid: d },
     tides: f
   };
 }
 
 // site/js/watch-render.js
-function Xe(e, t) {
+function Ze(e, t) {
   for (let n = e.length - 1; n >= 0; n--) if (t(e[n], n)) return e[n];
 }
-var v = (e) => String(e ?? "").replace(/[&<>"']/g, (t) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[t]), F = (e) => typeof e == "number" && Number.isFinite(e);
-function De(e, t = !1) {
-  if (!F(e)) return "Unavailable";
+var b = (e) => String(e ?? "").replace(/[&<>"']/g, (t) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[t]), q = (e) => typeof e == "number" && Number.isFinite(e);
+function Pe(e, t = !1) {
+  if (!q(e)) return "Unavailable";
   let n = Math.abs(e), a = n !== 0 && (n >= 1e7 || n < 1e-5) ? e.toExponential(5) : new Intl.NumberFormat("en-US", { maximumFractionDigits: 6, maximumSignificantDigits: 12 }).format(e);
   return t && e > 0 ? `+${a}` : a;
 }
-function pe(e, t = !1) {
-  if (!F(e)) return "Unavailable";
+function he(e, t = !1) {
+  if (!q(e)) return "Unavailable";
   let n = e !== 0 && Math.abs(e) < 0.1 ? Number(e.toPrecision(2)).toString() : new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(e);
   return t && e > 0 ? `+${n}` : n;
 }
-function W(e, t = !1) {
-  if (!F(e)) return "Unavailable";
+function B(e, t = !1) {
+  if (!q(e)) return "Unavailable";
   let n = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Math.round(e));
   return t && e > 0 ? `+${n}` : n;
 }
 function P(e, t = !1) {
-  return F(e) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", ...t ? {} : { weekday: "short" }, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(e) : "time unavailable";
+  return q(e) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", ...t ? {} : { weekday: "short" }, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(e) : "time unavailable";
 }
-function z(e) {
-  if (!F(e) || e < 0) return "unknown age";
+function X(e) {
+  if (!q(e) || e < 0) return "unknown age";
   if (e < 6e4) return "less than 1 minute";
   let t = Math.floor(e / 6e4), n = Math.floor(t / 60), a = Math.floor(n / 24);
   return a ? `${a}d ${n % 24}h ${t % 60}m` : n ? `${n}h ${t % 60}m` : `${t} minute${t === 1 ? "" : "s"}`;
 }
-function Et(e) {
-  return F(e) ? e > 0 && e < 0.01 ? "less than 0.01" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(e) : "Unavailable";
+function Lt(e) {
+  return q(e) ? e > 0 && e < 0.01 ? "less than 0.01" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(e) : "Unavailable";
 }
-var Nt = { missing_comparison: "No supported comparison reading near the required time.", missing_current: "The latest reading is not usable.", insufficient_history: "There is not enough supported history.", missing_history: "There is not enough supported history.", incomplete_window: "Missing readings leave this window incomplete.", gap: "A gap in the readings prevents this calculation.", stale: "The retained data are old.", forecast_stale: "This forecast is too old to use.", missing_source: "This source is unavailable.", off_season: "Historical cases are available only for October\u2013April.", nonpositive_shift: "The adjustment would create a non-positive flow, so that part is withheld.", unsupported_units: "The source units are unsupported.", ineligible_quality: "The newest reading does not support automatic turn checks.", clock_uncertain: "The monitor could not confirm its clock.", missing_quarter_hours: "Required quarter-hour readings are missing.", rate_limited: "The warning rate limit has been reached." };
-function Y(e) {
+var Ot = { missing_comparison: "No supported comparison reading near the required time.", missing_current: "The latest reading is not usable.", insufficient_history: "There is not enough supported history.", missing_history: "There is not enough supported history.", incomplete_window: "Missing readings leave this window incomplete.", gap: "A gap in the readings prevents this calculation.", stale: "The retained data are old.", forecast_stale: "This forecast is too old to use.", missing_source: "This source is unavailable.", off_season: "Historical cases are available only for October\u2013April.", nonpositive_shift: "The adjustment would create a non-positive flow, so that part is withheld.", unsupported_units: "The source units are unsupported.", ineligible_quality: "The newest reading does not support automatic turn checks.", clock_uncertain: "The monitor could not confirm its clock.", missing_quarter_hours: "Required quarter-hour readings are missing.", rate_limited: "The warning rate limit has been reached." };
+function oe(e) {
   if (!e) return "Insufficient supported data.";
-  if (Array.isArray(e)) return e.map(Y).join(" ");
+  if (Array.isArray(e)) return e.map(oe).join(" ");
   let t = typeof e == "string" ? e : e.code;
-  return Nt[t] || (typeof e == "object" && typeof e.message == "string" ? e.message : "Insufficient supported data.");
+  return Ot[t] || (typeof e == "object" && typeof e.message == "string" ? e.message : "Insufficient supported data.");
 }
-Object.assign(Nt, {
+Object.assign(Ot, {
   ice: "Ice-affected values are unusable.",
   malformed_value: "Invalid numeric values are unusable.",
   negative_value: "Negative discharge values are unusable.",
@@ -942,495 +953,513 @@ Object.assign(Nt, {
   preview_ended: "This preview has ended; the retained readings are earlier evidence.",
   non_finite_arithmetic: "The supplied values cannot produce a finite calculation."
 });
-function ne(e, t) {
+function Q(e, t) {
   let n = document.getElementById(e);
   n && (n.innerHTML = t);
 }
-var Lt = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}"><span aria-hidden="true">\u24D8</span></button>`, it = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, ae = (e) => `<time datetime="${F(e) ? new Date(e).toISOString() : ""}">${v(P(e, !0))}</time>`;
-function Ot(e) {
+var Rt = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}"><span aria-hidden="true">\u24D8</span></button>`, lt = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, ee = (e) => `<time datetime="${q(e) ? new Date(e).toISOString() : ""}">${b(P(e, !0))}</time>`;
+function Ut(e) {
   let t = (e?.qualityLabel || e?.quality || "quality unknown").replace(/; no qualifier supplied$/, ""), n = t.toLowerCase() === "provisional" ? "not yet finalized" : t, a = { ice: "ice-affected value", malformed_value: "invalid numeric value", negative_value: "invalid negative flow", conflicting_duplicate: "conflicting readings", unsupported_quality: "unsupported quality flag", quality_flags_unavailable: "quality flags unavailable", approval_unavailable: "approval unavailable" }[typeof e?.reason == "object" ? e.reason?.code : e?.reason];
   return a ? `${n} \xB7 ${a}` : n;
 }
-function Rt(e) {
-  return e?.available ? e.distanceCfs === 0 ? `At ${W(e.referenceCfs)} cfs line` : `${W(Math.abs(e.distanceCfs))} cfs ${e.distanceCfs > 0 ? "below" : "past"} the ${W(e.referenceCfs)} cfs line` : "";
+function It(e) {
+  return e?.available ? e.distanceCfs === 0 ? `At ${B(e.referenceCfs)} cfs line` : `${B(Math.abs(e.distanceCfs))} cfs ${e.distanceCfs > 0 ? "below" : "past"} the ${B(e.referenceCfs)} cfs line` : "";
 }
-function It(e, t = !1) {
+function qt(e, t = !1) {
   if (!e?.available) {
-    let i = [["Before", e?.before], ["After", e?.after]].filter(([, s]) => s);
-    return `${v(Y(e?.reason))}${i.length ? "<br>Nearest readings: " + i.map(([s, l]) => `${s} ${ae(l.t)}: ${W(l.cfs)} cfs`).join("; ") + "." : ""}`;
+    let o = [["Before", e?.before], ["After", e?.after]].filter(([, s]) => s);
+    return `${b(oe(e?.reason))}${o.length ? "<br>Nearest readings: " + o.map(([s, l]) => `${s} ${ee(l.t)}: ${B(l.cfs)} cfs`).join("; ") + "." : ""}`;
   }
-  let n = t ? e.minimum : e.comparison, a = P(n.t, !0), r = a.slice(-3) === P(e.current?.t, !0).slice(-3), o = `<time datetime="${new Date(n.t).toISOString()}" title="${v(P(n.t))}">${v(r ? a.replace(/ PST$| PDT$/, "") : a)}</time>`;
-  return `${t ? "Low" : "From"} <strong>${W(n.cfs)} cfs</strong><br>${o}${t || e.elapsedMs === 24 * 36e5 ? "" : `<span class="comparison-interval">${v(z(e.elapsedMs))} earlier</span>`}`;
+  let n = t ? e.minimum : e.comparison, a = P(n.t, !0), r = a.slice(-3) === P(e.current?.t, !0).slice(-3), i = `<time datetime="${new Date(n.t).toISOString()}" title="${b(P(n.t))}">${b(r ? a.replace(/ PST$| PDT$/, "") : a)}</time>`;
+  return `${t ? "Low" : "From"} <strong>${B(n.cfs)} cfs</strong><br>${i}${t || e.elapsedMs === 24 * 36e5 ? "" : `<span class="comparison-interval">${b(X(e.elapsedMs))} earlier</span>`}`;
 }
-function Rn(e, t, n = !1, a = "") {
-  return `<div class="metric"><div class="metric-heading"><h3>${v(t)}</h3><div class="metric-value">${e?.available ? W(e.changeCfs, !0) : "Unavailable"}${e?.available ? "<small> cfs</small>" : ""}</div></div><p class="distance" aria-label="Distance from rolling reference">${v(Rt(e))}</p>${a ? `<p class="metric-note">${v(a)}</p>` : ""}<p>${It(e, n)}</p></div>`;
-}
-function In(e) {
-  let t = e.gauge || {}, n = e.actualCurrentObservation || t.latest, a = t.direction || {}, r = a.available && { rising: "Rising", falling: "Falling", roughly_level: "Roughly level" }[a.label] || "Direction unavailable", o = t.endpoint?.available && t.low?.available && W(t.endpoint.changeCfs, !0) === W(t.low.changeCfs, !0), i = t.endpoint?.approximate ? "About 24-hour change" : "24-hour change", s = t.endpoint?.available ? `<div class="rise-source">${It(t.endpoint, !1)}</div>` : "", l = it("flow", "How flow comparisons work", `<p>Flow means water passing the gauge, in cubic feet per second (cfs). The reading time, source quality and age describe this observation.</p><p><strong>24-hour change</strong> compares the reading nearest 24 elapsed hours earlier (within 15 minutes). <strong>Rise from the 24-hour low</strong> compares the lowest actual reading in that same window. They answer different questions and may differ. Missing readings are not filled; gaps over 30 minutes make the comparison unavailable.</p><p>The descriptive line is ${De(t.referenceCfs)} cfs of rolling change: 400 in November\u2013February, 200 in March\u2013April, and 100 in May\u2013October. This is a planning reference; the official live closure calculation has not been confirmed.</p>`), c = o ? "" : `<div class="metrics">${Rn(t.low, "Rise from 24h low", !0)}</div>`, u = o ? t.endpoint.changeCfs === t.low.changeCfs ? "24h change; same as rise from 24h low" : "Rounds to same value as rise from 24h low" : "", h = F(n?.cfs) ? `${W(n.cfs)} cfs` : "Unavailable", d = e.timeUncertain ? "Age unknown" : `${z(t.ageMs)} old${t.stale ? " \xB7 STALE" : ""}`;
-  ne("current", `<div class="flow-row"><div><div class="section-heading flow-heading"><h2>Flow</h2>${Lt("flow", "About flow readings")}<span class="actual-flow flow-number">Actual flow: ${h} \xB7 ${v(d)}</span></div><div class="rise-headline"><span${o ? ' class="equal-label" title="The 24-hour change and rise from the 24-hour low are rounded for display"' : ""}>${o ? u : i}</span><strong class="distance-headline">${t.endpoint?.available ? v(Rt(t.endpoint)) : "24-hour reference unavailable"}</strong><b class="rise-support">24-hour change: ${t.endpoint?.available ? W(t.endpoint.changeCfs, !0) + " cfs" : "unavailable"}</b>${s}</div></div><div class="flow-context"><strong>${v(r)}</strong>${n ? ae(n.t) : ""}<span class="reading-age">${v(Ot(n))}${t.stale && !e.timeUncertain ? " \xB7 STALE" : ""}</span></div></div>${c}<p class="authority">Health authorities decide closures and reopening.</p>${l}`), ne("flow-history", ""), document.getElementById("current").setAttribute("aria-busy", "false");
-  let p = F(n?.cfs) ? W(n.cfs) : "Unavailable", f = e.timeUncertain ? "Age unknown" : z(t.ageMs).replace("less than 1 minute", "<1m").replace(" minutes", "m").replace(" minute", "m");
-  ne("number-strip", `<span aria-label="Actual flow ${v(h)}, ${v(e.timeUncertain ? "age unknown" : z(t.ageMs) + " old")}${t.stale && !e.timeUncertain ? " and stale" : ""}">Flow (cfs) <strong>${p}</strong><small>${v(f)}${t.stale && !e.timeUncertain ? " \xB7 STALE" : ""}</small></span><span aria-label="Rolling 24-hour change ${t.endpoint?.available ? W(t.endpoint.changeCfs, !0) + " cfs" : "unavailable"}">24h change <strong>${t.endpoint?.available ? W(t.endpoint.changeCfs, !0) : "unavailable"}</strong></span><span aria-label="Rise from 24-hour low ${t.low?.available ? W(t.low.changeCfs, !0) + " cfs" : "unavailable"}">Low rise <strong>${t.low?.available ? W(t.low.changeCfs, !0) : "unavailable"}</strong></span>`);
-}
-function qn(e, t = !1) {
-  return (e || []).map((n) => v(t && ["rate_limited", "rate_limit", "rate_suppression"].includes(typeof n == "string" ? n : n?.code) ? "Saved monitoring updates are temporarily rate-limited; this page only displays saved status." : Y(n))).filter((n, a, r) => r.indexOf(n) === a).join(" ");
-}
-function Un(e, t, n, a, { publicView: r = !1 } = {}) {
-  let o = e.monitor?.summary || {}, i = o.capability || {}, s = o.preparation || {}, l = o.support || {}, u = F(o.supportObservationT) && a - o.supportObservationT > 60 * 6e4 ? { ...i, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: [...i.reasons || [], "observation_older_than_60min"] } : i, h = F(n?.lastCommitAt) ? a - n.lastCommitAt : null, d = !!n?.workerStale || F(h) && h > 12 * 6e4, p = o.standing, f = p?.active === !0 && (p.kind === "correction" || p.state === "rising_again"), b = { unarmed: "No downturn detected yet", tracking: "Watching for a possible downturn", possible_downturn: "Possible downturn \u2014 it may reverse", ended: "Earlier event retained for reference" }[o.phase] || "Turn monitor is starting";
-  f && o.phase !== "ended" && (b = "Rising again after a possible downturn"), u.status === "unavailable" || d ? b = "Turn monitoring unavailable" : u.status === "partial" ? b = "New downturn checks unavailable" : u.status === "warming_up" && (b = "Turn checks are warming up");
-  let O = e.monitor?.transitions || [], q = (G) => ["downturn", "possible_downturn"].includes(G?.kind), g = o.phase === "ended" && (q(p) ? p : p ? null : Xe(O, q)), $ = g && Xe(O, (G) => q(G) && G.t === (g.t ?? g.observationT)), U = $ && O.some((G) => G.kind === "event_end" && G.event === $.event && G.detected_at === $.detected_at), x = g ? `A possible downturn was recorded at ${ae(g.t ?? g.observationT)} \xB7 ${De(g.cfs ?? Number(g.q))} cfs. The event grouping has ended; this turn remains earlier evidence.${U ? " The turn and event end were recorded in the same check, so no current-turn preview was prepared." : ""}` : F(p?.t) ? `${p.active === !0 ? "" : "Earlier event: "}${p.kind === "correction" || p.state === "rising_again" ? "Rising again after a possible downturn; correction observed" : "Possible downturn recorded"} at ${ae(p.t)} \xB7 ${De(p.cfs)} cfs.${p.active === !0 ? "" : " This is earlier evidence, separate from the current event."}` : "", w = F(s.nextEligibleAt) && s.nextEligibleAt > a ? r ? ` Saved monitoring status is rate-limited until ${P(s.nextEligibleAt, !0)}.` : ` River-warning previews are rate-limited until ${P(s.nextEligibleAt, !0)}.` : "", y = d ? r ? " The published snapshot is old; current monitoring status cannot be confirmed." : " The monitor has not saved a recent check; silence does not mean no turn." : "", H = u.status === "partial" ? " Above-high corrections remain available." : "", D = Ot(t.actualCurrentObservation), j = t.actualCurrentObservation?.eligible === !1 ? `Latest quality: ${D}; this reading cannot support an automatic turn notice.` : "", K = t.gauge?.direction, B = K?.available ? `Measured hour change: ${pe(K.changeCfs, !0)} cfs over ${z(K.elapsedMs)}, from ${pe(K.comparison?.cfs)} to ${pe(K.current?.cfs)} cfs. The roughly-level tolerance is ${pe(K.toleranceCfs)} cfs, an engineering choice, not instrument precision. These hour-change values are rounded for readability.` : Y(K?.reason);
-  ne("monitor", `<details><summary><h2>${v(b)}</h2><span>Details</span></summary><p>Experimental checks follow observed river flow. A possible turn can reverse.</p><p>${v(B)}</p><p>${qn([...u.reasons || [], ...s.blockingReasons || []], r)}</p><p>${l.monitoringGapMs ? `Recorded monitoring gap: ${v(z(l.monitoringGapMs))}. ` : ""}These event groupings do not set a sampling deadline or reset a closure rule. ${r ? "Display only \xB7 no alerts sent. This page does not prepare or send alerts." : "Warning delivery is disabled."}</p></details>${x || H || w || y ? `<p class="monitor-fact">${x}${v(H + w + y)}</p>` : ""}${j ? `<p>${v(j)}</p>` : ""}`), document.getElementById("monitor").classList.toggle("attention", u.status === "unavailable" || u.status === "partial" || d);
-}
-function Dn(e, t) {
-  let n = e.forecast || {};
-  ne("forecast-age", n.issuedT ? `Issued ${ae(n.issuedT)} \xB7 ${v(e.timeUncertain ? "age unknown" : z(n.issueAgeMs) + " old")}${n.older && !e.timeUncertain ? " \xB7 older forecast" : ""}.${n.available === !1 ? ` ${v(Y(n.reason))}` : ""}` : `Forecast unavailable. ${v(Y(n.reason))}`);
-  let a = [];
-  e.sources?.noaa?.error && a.push("Latest forecast retrieval failed; retained values keep their issue time."), n.largeAdjustment && a.push({ text: `Gauge adjustment makes the forecast ${n.offsetCfs < 0 ? "lower" : "higher"} by ${pe(Math.abs(n.offsetCfs))} cfs.`, neutral: n.offsetCfs < 0 });
-  let r = n.available && n.shifted?.reason?.code === "forecast_alignment_unsupported";
-  r ? a.push({ text: Y(n.shifted.reason), neutral: !0 }) : n.available && n.shifted?.available === !1 && a.push(`Adjusted forecast unavailable. ${Y(n.shifted.reason)}`), n.available && n.cases?.available === !1 && !(r && n.cases?.reason?.code === "forecast_alignment_unsupported") && a.push(`Historical cases unavailable. ${Y(n.cases.reason)}`), ne("forecast-problems", a.map((d) => `<p${typeof d == "object" && d.neutral ? ' class="neutral"' : ""}>${v(typeof d == "object" ? d.text : d)}</p>`).join(""));
-  let o = document.getElementById("forecast-problems");
-  (r && a.length === 1 ? document.querySelector?.(".legend") : document.getElementById("forecast-age"))?.insertAdjacentElement?.("afterend", o);
-  let s = n.crossings?.shifted?.[t.reference], l = s?.available ? F(s.t) ? `The adjusted forecast ${s.alreadyReached ? "already meets" : "first reaches"} the reference at ${P(s.t, !0)}.` : "No supported adjusted-forecast crossing is calculated." : `Crossing unavailable. ${Y(s?.reason)}`, c = F(n.offsetCfs) ? `Adjustment to the gauge reading: ${pe(n.offsetCfs, !0)} cfs.` : "A supported adjustment to the gauge reading is unavailable.", u = Date.parse(n.cases?.trainingCutoff ?? ""), h = F(n.cases?.tableVersion) ? `<p>Frozen historical-case table version ${De(n.cases.tableVersion)}${F(u) ? `; training cutoff ${ae(u)}` : ""}.</p><div class="station-links"><a href="/data/ratio_table.json" target="_blank" rel="noopener noreferrer">View the frozen table and its source history</a></div>` : "";
-  ne("forecast-details", it("forecast", "Forecast and chart", `<p>National Weather Service river forecast for SMRW1; available through ${ae(n.raw?.endT)}.</p><p>${v(c)} The original forecast remains visible.</p><p>The reference adds a seasonal rise to the selected earlier flow; it is not a fixed flow limit. ${v(l)}</p><p>Between readings, values follow straight-line estimates. Observation gaps over 30 minutes and forecast gaps over six hours stay blank. Nothing extends beyond supported points. Estimates are rounded; headline comparisons use actual readings.</p><p>Past high and low ranges reflect earlier forecast misses. They are not probabilities or proven forecasts. They cover the first 72 hours in October\u2013April; later points show the issued forecast alone.</p>${h}<p>Peak cards show high points in the forecast, including any later peak higher than the first. A dip may precede another rise.</p><p>Nearby forecast times show the spacing of model readings. They do not bound when the river will actually crest.</p>`));
+function Pn(e, t, n = !1, a = "") {
+  return `<div class="metric"><div class="metric-heading"><h3>${b(t)}</h3><div class="metric-value${e?.available ? "" : " unavailable"}">${e?.available ? B(e.changeCfs, !0) : "Unavailable"}${e?.available ? "<small> cfs</small>" : ""}</div></div><p class="distance" aria-label="Distance from rolling reference">${b(It(e))}</p>${a ? `<p class="metric-note">${b(a)}</p>` : ""}<p>${qt(e, n)}</p></div>`;
 }
 function jn(e) {
-  let t = e.rain?.radar || {}, n = e.rain?.grid || {}, a = t.endT ? `All totals end ${P(t.endT, !0)} \xB7 ${e.timeUncertain ? "age unknown" : z(t.ageMs) + " ago"}${e.timeUncertain ? "" : t.stale ? " \xB7 STALE" : t.historical ? " \xB7 historical" : ""}.` : "Hour-ending rainfall time unavailable.", r = t.windows || [2, 4, 6, 8, 12, 18, 24].map((s) => ({ hours: s, available: !1 })), o = [...new Set(r.filter((s) => !s.available).map((s) => Y(s.reason || t.reason)))], i = it("rain", "How rainfall is estimated", "<p>Totals use complete hourly radar estimates averaged over the drainage area. Missing or conflicting hours make that total unavailable; partial hours are excluded. Radar cannot confirm whether rain has stopped upriver.</p><p>The rainfall forecast is for one grid cell near the watershed, not measured watershed rainfall. Partial forecast intervals are prorated.</p><p>Mount Vernon and Sakuma links open official Washington State University station pages; those readings are not imported here.</p>");
-  ne("rain", `<div class="section-heading"><h2>Rain</h2>${Lt("rain", "About rainfall")}</div><p class="meta">Radar estimate over the drainage area; not a rain gauge.</p><p class="meta" id="rain-end">${v(a)}</p><div class="station-links"><a href="https://weather.wsu.edu/widget/current?unit_id=100090" target="_blank" rel="noopener noreferrer">Mount Vernon station \u2197</a><a href="https://weather.wsu.edu/widget/current?unit_id=330159" target="_blank" rel="noopener noreferrer">Sakuma station \u2197</a></div>${i}<div class="rain-total-grid">${r.map((s) => `<div class="rain-total" aria-label="${s.hours}-hour total ending ${v(P(s.endT ?? t.endT, !0))}, ${v(e.timeUncertain ? "age unknown" : z(s.ageMs ?? t.ageMs) + " old")}"><span>${s.hours} hours</span><strong>${s.available ? Et(s.inches) + " in" : "Unavailable"}</strong></div>`).join("")}</div>${o.length ? `<p class="meta">${o.map(v).join(" ")}</p>` : ""}<div class="rain-secondary"><h3>Forecast rain \xB7 one nearby grid point</h3><p>${e.timeUncertain ? "Unavailable while current time is uncertain." : n.available ? `<strong>${Et(n.inches)} inches</strong> over the next 24 hours.` : `Unavailable. ${v(Y(n.reason))}`}</p>${n.updatedT ? `<p class="meta">Updated ${ae(n.updatedT)} \xB7 ${v(e.timeUncertain ? "age unknown" : z(n.issueAgeMs) + " old")}${n.stale && !e.timeUncertain ? " \xB7 STALE" : ""}.</p>` : ""}<p class="meta">National Weather Service forecast; not measured watershed rainfall.</p></div>`);
+  let t = e.gauge || {}, n = e.actualCurrentObservation || t.latest, a = t.direction || {}, r = a.available && { rising: "Rising", falling: "Falling", roughly_level: "Roughly level" }[a.label] || "Direction unavailable", i = t.endpoint?.available && t.low?.available && B(t.endpoint.changeCfs, !0) === B(t.low.changeCfs, !0), o = t.endpoint?.approximate ? "About 24-hour change" : "24-hour change", s = t.endpoint?.available ? `<div class="rise-source">${qt(t.endpoint, !1)}</div>` : "", l = lt("flow", "How flow comparisons work", `<p>Flow means water passing the gauge, in cubic feet per second (cfs). The reading time, source quality and age describe this observation.</p><p><strong>24-hour change</strong> compares the reading nearest 24 elapsed hours earlier (within 15 minutes). <strong>Rise from the 24-hour low</strong> compares the lowest actual reading in that same window. They answer different questions and may differ. Missing readings are not filled; gaps over 30 minutes make the comparison unavailable.</p><p>The descriptive line is ${Pe(t.referenceCfs)} cfs of rolling change: 400 in November\u2013February, 200 in March\u2013April, and 100 in May\u2013October. This is a planning reference; the official live closure calculation has not been confirmed.</p>`), u = i ? "" : `<div class="metrics">${Pn(t.low, "Rise from 24h low", !0)}</div>`, c = i ? t.endpoint.changeCfs === t.low.changeCfs ? "24h change; same as rise from 24h low" : "Rounds to same value as rise from 24h low" : "", p = q(n?.cfs) ? `${B(n.cfs)} cfs` : "Unavailable", h = e.timeUncertain ? "Age unknown" : `${X(t.ageMs)} old${t.stale ? " \xB7 STALE" : ""}`;
+  Q("current", `<div class="flow-row"><div><div class="section-heading flow-heading"><h2>Flow</h2>${Rt("flow", "About flow readings")}<span class="actual-flow flow-number">Actual flow: ${p} \xB7 ${b(h)}</span></div><div class="rise-headline"><span${i ? ' class="equal-label" title="The 24-hour change and rise from the 24-hour low are rounded for display"' : ""}>${i ? c : o}</span><strong class="distance-headline">${t.endpoint?.available ? b(It(t.endpoint)) : "24-hour reference unavailable"}</strong><b class="rise-support">24-hour change: ${t.endpoint?.available ? B(t.endpoint.changeCfs, !0) + " cfs" : "unavailable"}</b>${s}</div></div><div class="flow-context"><strong>${b(r)}</strong>${n ? ee(n.t) : ""}<span class="reading-age">${b(Ut(n))}${t.stale && !e.timeUncertain ? " \xB7 STALE" : ""}</span></div></div>${u}<p class="authority">Health authorities decide closures and reopening.</p>${l}`), Q("flow-history", ""), document.getElementById("current").setAttribute("aria-busy", "false");
+  let d = q(n?.cfs) ? B(n.cfs) : "Unavailable", f = e.timeUncertain ? "Age unknown" : X(t.ageMs).replace("less than 1 minute", "<1m").replace(" minutes", "m").replace(" minute", "m");
+  Q("number-strip", `<span aria-label="Actual flow ${b(p)}, ${b(e.timeUncertain ? "age unknown" : X(t.ageMs) + " old")}${t.stale && !e.timeUncertain ? " and stale" : ""}">Flow (cfs) <strong>${d}</strong><small>${b(f)}${t.stale && !e.timeUncertain ? " \xB7 STALE" : ""}</small></span><span aria-label="Rolling 24-hour change ${t.endpoint?.available ? B(t.endpoint.changeCfs, !0) + " cfs" : "unavailable"}">24h change <strong>${t.endpoint?.available ? B(t.endpoint.changeCfs, !0) : "unavailable"}</strong></span><span aria-label="Rise from 24-hour low ${t.low?.available ? B(t.low.changeCfs, !0) + " cfs" : "unavailable"}">Low rise <strong>${t.low?.available ? B(t.low.changeCfs, !0) : "unavailable"}</strong></span>`);
 }
-function Fn(e, t) {
-  let n = e.forecast || {}, a = n.nextCrest, r = a ? [a, ...n.laterHigherCrests || []] : [], o = t.range === "full" ? n.raw?.endT ?? e.nowMs : e.nowMs + (t.range === "day" ? 24 : 72) * 36e5, i = (l) => `<time datetime="${new Date(l).toISOString()}">${v(P(l))}</time>`, s = r.map((l, c) => `<article class="peak-card"><p class="eyebrow">${c === 0 ? e.timeUncertain ? "First listed forecast peak" : "Next local peak" : "Later peak above the first"}</p><h3>${i(l.startT)}${l.endT !== l.startT ? ` to ${i(l.endT)}` : ""}</h3><p class="peak-values"><strong class="peak-flow">${W(l.cfs)} cfs</strong><span>Issued forecast flow</span><span>${W(l.riseCfs, !0)} cfs from prior forecast low</span></p><p class="meta">${l.endT !== l.startT ? "Several forecast readings at this level" : "One forecast reading at this time"}; timing is uncertain.${l.startT > o ? " Outside the selected chart range." : ""}</p>${c === 0 ? '<p class="sampling-lines"><strong>River samples:</strong> around the river peak and afterward, as early as possible; no fixed hours-after-peak deadline.<br><strong>Bay samples:</strong> within six hours after the river peak for a qualifying pollution closure; tide and laboratory availability also matter.</p>' : ""}<details class="peak-resolution"><summary>Surrounding issued times</summary><p>${i(l.bracketStartT)} to ${i(l.bracketEndT)}. ${{ inside_08_17: "Both are between 8 AM and 5 PM", outside_08_17: "Both are outside 8 AM\u20135 PM", spans_both: "This interval spans daytime and overnight hours" }[l.clockRange] || "Clock range unavailable"}.</p></details></article>`).join("");
-  ne("peaks", `<div class="section-top"><h2>${e.timeUncertain ? "Peaks in the saved forecast" : "Next river peak"}</h2></div><p class="meta">Peak values use the issued forecast, without a gauge adjustment.${e.timeUncertain ? " Current time is uncertain; these are saved forecast points." : ""}</p>${s ? `<div class="peak-grid">${s}</div>` : '<p class="meta">No supported future peak is identifiable. A rising or level tail does not establish a crest.</p>'}`);
+function Hn(e, t = !1) {
+  return (e || []).map((n) => b(t && ["rate_limited", "rate_limit", "rate_suppression"].includes(typeof n == "string" ? n : n?.code) ? "Saved monitoring updates are temporarily rate-limited; this page only displays saved status." : oe(n))).filter((n, a, r) => r.indexOf(n) === a).join(" ");
 }
-function Pn(e) {
-  let t = e.tides || {};
-  ne("tides", `<div class="disclosure-body"><p>Predicted high and low tides for Bellingham, station 9449211. Feet relative to Mean Lower Low Water (MLLW).</p><p class="meta">${e.timeUncertain ? "Saved predicted events; the current 48-hour window cannot be confirmed. Retrieval age unknown." : "Next 48 hours. Retrieved " + v(z(t.fetchAgeMs)) + " ago" + (t.stale ? " \xB7 STALE" : "")}. Predictions do not establish boat clearance or access to sampling stations.</p>${t.available ? `<table class="tide-table"><thead><tr><th>Pacific time</th><th>Tide</th><th>Feet MLLW</th></tr></thead><tbody>${(t.events || []).map((n) => `<tr><td>${ae(n.t)}</td><td>${n.type === "H" ? "High" : "Low"}</td><td>${De(n.ft)}</td></tr>`).join("")}</tbody></table>` : `<p>${v(Y(t.reason))}</p>`}</div>`);
+function Bn(e, t, n, a, { publicView: r = !1 } = {}) {
+  let i = e.monitor?.summary || {}, o = i.capability || {}, s = i.preparation || {}, l = i.support || {}, c = q(i.supportObservationT) && a - i.supportObservationT > 60 * 6e4 ? { ...o, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: [...o.reasons || [], "observation_older_than_60min"] } : o, p = q(n?.lastCommitAt) ? a - n.lastCommitAt : null, h = !!n?.workerStale || q(p) && p > 12 * 6e4, d = i.standing, f = d?.active === !0 && (d.kind === "correction" || d.state === "rising_again"), m = { unarmed: "No downturn detected yet", tracking: "Watching for a possible downturn", possible_downturn: "Possible downturn \u2014 it may reverse", ended: "Earlier event retained for reference" }[i.phase] || "Turn monitor is starting";
+  f && i.phase !== "ended" && (m = "Rising again after a possible downturn"), c.status === "unavailable" || h ? m = "Turn monitoring unavailable" : c.status === "partial" ? m = "New downturn checks unavailable" : c.status === "warming_up" && (m = "Turn checks are warming up");
+  let A = e.monitor?.transitions || [], O = (re) => ["downturn", "possible_downturn"].includes(re?.kind), g = i.phase === "ended" && (O(d) ? d : d ? null : Ze(A, O)), y = g && Ze(A, (re) => O(re) && re.t === (g.t ?? g.observationT)), D = y && A.some((re) => re.kind === "event_end" && re.event === y.event && re.detected_at === y.detected_at), T = g ? `A possible downturn was recorded at ${ee(g.t ?? g.observationT)} \xB7 ${Pe(g.cfs ?? Number(g.q))} cfs. The event grouping has ended; this turn remains earlier evidence.${D ? " The turn and event end were recorded in the same check, so no current-turn preview was prepared." : ""}` : q(d?.t) ? `${d.active === !0 ? "" : "Earlier event: "}${d.kind === "correction" || d.state === "rising_again" ? "Rising again after a possible downturn; correction observed" : "Possible downturn recorded"} at ${ee(d.t)} \xB7 ${Pe(d.cfs)} cfs.${d.active === !0 ? "" : " This is earlier evidence, separate from the current event."}` : "", w = q(s.nextEligibleAt) && s.nextEligibleAt > a ? r ? ` Saved monitoring status is rate-limited until ${P(s.nextEligibleAt, !0)}.` : ` River-warning previews are rate-limited until ${P(s.nextEligibleAt, !0)}.` : "", $ = h ? r ? " The published snapshot is old; current monitoring status cannot be confirmed." : " The monitor has not saved a recent check; silence does not mean no turn." : "", V = c.status === "partial" ? " Above-high corrections remain available." : "", j = Ut(t.actualCurrentObservation), F = t.actualCurrentObservation?.eligible === !1 ? `Latest quality: ${j}; this reading cannot support an automatic turn notice.` : "", G = t.gauge?.direction, We = G?.available ? `Measured hour change: ${he(G.changeCfs, !0)} cfs over ${X(G.elapsedMs)}, from ${he(G.comparison?.cfs)} to ${he(G.current?.cfs)} cfs. The roughly-level tolerance is ${he(G.toleranceCfs)} cfs, an engineering choice, not instrument precision. These hour-change values are rounded for readability.` : oe(G?.reason);
+  Q("monitor", `<details><summary><h2>${b(m)}</h2><span>Details</span></summary><p>Experimental checks follow observed river flow. A possible turn can reverse.</p><p>${b(We)}</p><p>${Hn([...c.reasons || [], ...s.blockingReasons || []], r)}</p><p>${l.monitoringGapMs ? `Recorded monitoring gap: ${b(X(l.monitoringGapMs))}. ` : ""}These event groupings do not set a sampling deadline or reset a closure rule. ${r ? "Display only \xB7 no alerts sent. This page does not prepare or send alerts." : "Warning delivery is disabled."}</p></details>${T || V || w || $ ? `<p class="monitor-fact">${T}${b(V + w + $)}</p>` : ""}${F ? `<p>${b(F)}</p>` : ""}`), document.getElementById("monitor").classList.toggle("attention", c.status === "unavailable" || c.status === "partial" || h);
 }
-function Hn(e, t, n) {
-  ne("sources", Object.entries({ gauge: "U.S. Geological Survey (USGS) \xB7 gauge 12201500", noaa: "NOAA issued river forecast \xB7 SMRW1", radar: "Multi-Radar/Multi-Sensor (MRMS) radar rainfall estimate", grid: "National Weather Service \xB7 forecast grid cell", tides: "NOAA Bellingham tide predictions" }).map(([r, o]) => {
-    let i = t.sources?.[r] || {}, s = n?.sources?.[r] || {};
-    return `<div class="source-row"><strong>${v(o)}</strong>${r === "tides" ? "<p>Prediction event times are listed in the tide panel; they are not observation times.</p>" : `<p>Data time: ${ae(i.dataT)} \xB7 ${v(t.timeUncertain ? "age unknown" : z(i.ageMs) + " old")}${i.stale && !t.timeUncertain ? " \xB7 STALE" : ""}.</p>`}<p>Last successful retrieval: ${ae(s.lastSuccessAt ?? i.lastSuccessAt)}.${s.error || i.error ? " Latest retrieval failed; any retained values keep their original data time." : ""}</p></div>`;
-  }).join("") + `<p>Snapshot saved ${ae(e.createdAt)}. This save time is not the observation time. Provisional readings may be revised; estimated or otherwise unsupported readings cannot support automatic turn notices.</p>`);
+var Wn = ["forecast_issue_future", "forecast_issue_too_old", "forecast_next_day_coverage_missing", "historical_cases_off_season"];
+function Dt(e, t) {
+  let n = typeof t == "string" ? t : t?.code;
+  if (e.timeUncertain && n === "forecast_context_not_current") return oe("public_time_uncertain");
+  let a = oe(t);
+  return e.timeUncertain && Wn.includes(n) ? `At the snapshot save time: ${a}` : a;
 }
-function qt(e, t, n, a, r, o = {}) {
-  In(t), Un(e, t, n, r, o), Dn(t, a), jn(t), Fn(t, a), Pn(t), Hn(e, t, n);
-  let i = t.gauge?.exclusions || [], s = {};
-  for (let l of i) {
-    let c = typeof l.reason == "string" ? l.reason : l.reason?.code || "unspecified";
-    s[c] = (s[c] || 0) + 1;
+function Vn(e, t) {
+  let n = e.forecast || {}, a = (d) => Dt(e, d);
+  Q("forecast-age", n.issuedT ? `Issued ${ee(n.issuedT)} \xB7 ${b(e.timeUncertain ? "age unknown" : X(n.issueAgeMs) + " old")}${n.older && !e.timeUncertain ? " \xB7 older forecast" : ""}.${n.available === !1 ? ` ${b(a(n.reason))}` : ""}` : `Forecast unavailable. ${b(a(n.reason))}`);
+  let r = [];
+  e.sources?.noaa?.error && r.push("Latest forecast retrieval failed; retained values keep their issue time."), n.largeAdjustment && r.push({ text: `Gauge adjustment makes the forecast ${n.offsetCfs < 0 ? "lower" : "higher"} by ${he(Math.abs(n.offsetCfs))} cfs.`, neutral: n.offsetCfs < 0 });
+  let i = n.available && n.shifted?.reason?.code === "forecast_alignment_unsupported";
+  i ? r.push({ text: a(n.shifted.reason), neutral: !0 }) : n.available && n.shifted?.available === !1 && r.push(`Adjusted forecast unavailable. ${a(n.shifted.reason)}`), n.available && n.cases?.available === !1 && !(i && n.cases?.reason?.code === "forecast_alignment_unsupported") && r.push(`Historical cases unavailable. ${a(n.cases.reason)}`), Q("forecast-problems", r.map((d) => `<p${typeof d == "object" && d.neutral ? ' class="neutral"' : ""}>${b(typeof d == "object" ? d.text : d)}</p>`).join(""));
+  let o = document.getElementById("forecast-problems");
+  (i && r.length === 1 ? document.querySelector?.(".legend") : document.getElementById("forecast-age"))?.insertAdjacentElement?.("afterend", o);
+  let l = n.crossings?.shifted?.[t.reference], u = l?.available ? q(l.t) ? `The adjusted forecast ${l.alreadyReached ? "already meets" : "first reaches"} the reference at ${P(l.t, !0)}.` : "No supported adjusted-forecast crossing is calculated." : `Crossing unavailable. ${a(l?.reason)}`, c = q(n.offsetCfs) ? `Adjustment to the gauge reading: ${he(n.offsetCfs, !0)} cfs.` : "A supported adjustment to the gauge reading is unavailable.", p = Date.parse(n.cases?.trainingCutoff ?? ""), h = q(n.cases?.tableVersion) ? `<p>Frozen historical-case table version ${Pe(n.cases.tableVersion)}${q(p) ? `; training cutoff ${ee(p)}` : ""}.</p><div class="station-links"><a href="/data/ratio_table.json" target="_blank" rel="noopener noreferrer">View the frozen table and its source history</a></div>` : "";
+  Q("forecast-details", lt("forecast", "Forecast and chart", `<p>National Weather Service river forecast for SMRW1${q(n.raw?.endT) ? `; available through ${ee(n.raw.endT)}` : ""}.</p><p>${b(c)} ${n.available === !1 ? `The issued forecast is unavailable. ${b(a(n.reason))}` : "The original forecast remains visible."}</p><p>The reference adds a seasonal rise to the selected earlier flow; it is not a fixed flow limit. ${b(u)}</p><p>Between readings, values follow straight-line estimates. Observation gaps over 30 minutes and forecast gaps over six hours stay blank. Nothing extends beyond supported points. Estimates are rounded; headline comparisons use actual readings.</p><p>Past high and low ranges reflect earlier forecast misses. They are not probabilities or proven forecasts. They cover the first 72 hours in October\u2013April; later points show the issued forecast alone.</p>${h}<p>Peak cards show high points in the forecast, including any later peak higher than the first. A dip may precede another rise.</p><p>Nearby forecast times show the spacing of model readings. They do not bound when the river will actually crest.</p>`));
+}
+function Gn(e) {
+  let t = e.rain?.radar || {}, n = e.rain?.grid || {}, a = t.endT ? `All totals end ${P(t.endT, !0)} \xB7 ${e.timeUncertain ? "age unknown" : X(t.ageMs) + " ago"}${e.timeUncertain ? "" : t.stale ? " \xB7 STALE" : t.historical ? " \xB7 historical" : ""}.` : "Hour-ending rainfall time unavailable.", r = t.windows || [2, 4, 6, 8, 12, 18, 24].map((s) => ({ hours: s, available: !1 })), i = [...new Set(r.filter((s) => !s.available).map((s) => oe(s.reason || t.reason)))], o = lt("rain", "How rainfall is estimated", "<p>Totals use complete hourly radar estimates averaged over the drainage area. Missing or conflicting hours make that total unavailable; partial hours are excluded. Radar cannot confirm whether rain has stopped upriver.</p><p>The rainfall forecast is for one grid cell near the watershed, not measured watershed rainfall. Partial forecast intervals are prorated.</p><p>Mount Vernon and Sakuma links open official Washington State University station pages; those readings are not imported here.</p>");
+  Q("rain", `<div class="section-heading"><h2>Rain</h2>${Rt("rain", "About rainfall")}</div><p class="meta">Radar estimate over the drainage area; not a rain gauge.</p><p class="meta" id="rain-end">${b(a)}</p><div class="station-links"><a href="https://weather.wsu.edu/widget/current?unit_id=100090" target="_blank" rel="noopener noreferrer">Mount Vernon station \u2197</a><a href="https://weather.wsu.edu/widget/current?unit_id=330159" target="_blank" rel="noopener noreferrer">Sakuma station \u2197</a></div>${o}<div class="rain-total-grid">${r.map((s) => `<div class="rain-total" aria-label="${s.hours}-hour total ending ${b(P(s.endT ?? t.endT, !0))}, ${b(e.timeUncertain ? "age unknown" : X(s.ageMs ?? t.ageMs) + " old")}"><span>${s.hours} hours</span><strong>${s.available ? Lt(s.inches) + " in" : "Unavailable"}</strong></div>`).join("")}</div>${i.length ? `<p class="meta">${i.map(b).join(" ")}</p>` : ""}<div class="rain-secondary"><h3>Forecast rain \xB7 one nearby grid point</h3><p>${e.timeUncertain ? "Unavailable while current time is uncertain." : n.available ? `<strong>${Lt(n.inches)} inches</strong> over the next 24 hours.` : `Unavailable. ${b(oe(n.reason))}`}</p>${n.updatedT ? `<p class="meta">Updated ${ee(n.updatedT)} \xB7 ${b(e.timeUncertain ? "age unknown" : X(n.issueAgeMs) + " old")}${n.stale && !e.timeUncertain ? " \xB7 STALE" : ""}.</p>` : ""}<p class="meta">National Weather Service forecast; not measured watershed rainfall.</p></div>`);
+}
+function zn(e, t) {
+  let n = e.forecast || {};
+  if (n.available === !1) {
+    Q("peaks", `<div class="section-top"><h2>Forecast peaks unavailable</h2></div><p class="meta">${b(Dt(e, n.reason))}</p>`);
+    return;
   }
-  document.getElementById("sources").insertAdjacentHTML("beforeend", `<p>Gauge source exclusions: ${i.length} recorded exclusions${i.length ? ". " + Object.entries(s).map(([l, c]) => `${c} ${v(Y(l))}`).join(" ") : "."} These records do not support automatic notices.</p>`), ne("snapshot-label", `Saved snapshot ${v(e.id)} \xB7 ${v(P(e.createdAt))}`);
+  let a = Array.isArray(n.crests) ? n.crests : [n.nextCrest, ...n.laterHigherCrests || []].filter(Boolean), r = Math.max(e.nowMs, e.gauge?.latest?.t ?? -1 / 0), i = [...a].filter((d) => e.timeUncertain || d.endT > r).sort((d, f) => d.startT - f.startT), o = i[0], s = o ? [o, ...i.slice(1).filter((d) => d.cfs > o.cfs)] : [], l = !e.timeUncertain && o && o.startT <= e.nowMs && o.endT > e.nowMs, u = e.timeUncertain ? e.gauge?.latest?.t : e.nowMs, c = q(u) ? t.range === "full" ? Math.max(u + 36e5, n.raw?.endT ?? u + 72 * 36e5) : u + (t.range === "day" ? 24 : 72) * 36e5 : 1 / 0, p = (d) => `<time datetime="${new Date(d).toISOString()}">${b(P(d))}</time>`, h = s.map((d, f) => `<article class="peak-card"><p class="eyebrow">${f === 0 ? e.timeUncertain ? "First listed forecast peak" : l ? "Forecast plateau in progress" : "Next local peak" : "Later peak above the first"}</p><h3>${p(d.startT)}${d.endT !== d.startT ? ` to ${p(d.endT)}` : ""}</h3><p class="peak-values"><strong class="peak-flow">${B(d.cfs)} cfs</strong><span>Issued forecast flow</span><span>${B(d.riseCfs, !0)} cfs from prior forecast low</span></p><p class="meta">${d.endT !== d.startT ? "Several forecast readings at this level" : "One forecast reading at this time"}; timing is uncertain.${f === 0 && l ? " This forecast plateau spans the current time; its end is still ahead." : ""}${d.startT > c ? " Outside the selected chart range." : ""}</p>${f === 0 ? '<p class="sampling-lines"><strong>River samples:</strong> around the river peak and afterward, as early as possible; no fixed hours-after-peak deadline.<br><strong>Bay samples:</strong> within six hours after the river peak for a qualifying pollution closure; tide and laboratory availability also matter.</p>' : ""}<details class="peak-resolution"><summary>Surrounding issued times</summary><p>${p(d.bracketStartT)} to ${p(d.bracketEndT)}. ${{ inside_08_17: "Both are between 8 AM and 5 PM", outside_08_17: "Both are outside 8 AM\u20135 PM", spans_both: "This interval spans daytime and overnight hours" }[d.clockRange] || "Clock range unavailable"}.</p></details></article>`).join("");
+  Q("peaks", `<div class="section-top"><h2>${e.timeUncertain ? "Peaks in the saved forecast" : l ? "Forecast peak in progress" : "Next river peak"}</h2></div><p class="meta">Peak values use the issued forecast, without a gauge adjustment.${e.timeUncertain ? " Current time is uncertain; these are saved forecast points." : ""}</p>${h ? `<div class="peak-grid">${h}</div>` : `<p class="meta">${e.timeUncertain ? "No supported peak is identifiable in this saved forecast." : "No supported upcoming peak is identifiable."} A rising or level tail does not establish a crest.</p>`}`);
+}
+function Xn(e) {
+  let t = e.tides || {};
+  Q("tides", `<div class="disclosure-body"><p>Predicted high and low tides for Bellingham, station 9449211. Feet relative to Mean Lower Low Water (MLLW).</p><p class="meta">${e.timeUncertain ? "Saved predicted events; the current 48-hour window cannot be confirmed. Retrieval age unknown" : "Next 48 hours. Retrieved " + b(X(t.fetchAgeMs)) + " ago" + (t.stale ? " \xB7 STALE" : "")}. Predictions do not establish boat clearance or access to sampling stations.</p>${t.available ? `<table class="tide-table"><thead><tr><th>Pacific time</th><th>Tide</th><th>Feet MLLW</th></tr></thead><tbody>${(t.events || []).map((n) => `<tr><td>${ee(n.t)}</td><td>${n.type === "H" ? "High" : "Low"}</td><td>${Pe(n.ft)}</td></tr>`).join("")}</tbody></table>` : `<p>${b(oe(t.reason))}</p>`}</div>`);
+}
+function Jn(e, t, n) {
+  Q("sources", Object.entries({ gauge: "U.S. Geological Survey (USGS) \xB7 gauge 12201500", noaa: "NOAA issued river forecast \xB7 SMRW1", radar: "Multi-Radar/Multi-Sensor (MRMS) radar rainfall estimate", grid: "National Weather Service \xB7 forecast grid cell", tides: "NOAA Bellingham tide predictions" }).map(([r, i]) => {
+    let o = t.sources?.[r] || {}, s = n?.sources?.[r] || {};
+    return `<div class="source-row"><strong>${b(i)}</strong>${r === "tides" ? "<p>Prediction event times are listed in the tide panel; they are not observation times.</p>" : `<p>Data time: ${ee(o.dataT)} \xB7 ${b(t.timeUncertain ? "age unknown" : X(o.ageMs) + " old")}${o.stale && !t.timeUncertain ? " \xB7 STALE" : ""}.</p>`}<p>Last successful retrieval: ${ee(s.lastSuccessAt ?? o.lastSuccessAt)}.${s.error || o.error ? " Latest retrieval failed; any retained values keep their original data time." : ""}</p></div>`;
+  }).join("") + `<p>Snapshot saved ${ee(e.createdAt)}. This save time is not the observation time. Provisional readings may be revised; estimated or otherwise unsupported readings cannot support automatic turn notices.</p>`);
+}
+function Ft(e, t, n, a, r, i = {}) {
+  jn(t), Bn(e, t, n, r, i), Vn(t, a), Gn(t), zn(t, a), Xn(t), Jn(e, t, n);
+  let o = t.gauge?.exclusions || [], s = {};
+  for (let l of o) {
+    let u = typeof l.reason == "string" ? l.reason : l.reason?.code || "unspecified";
+    s[u] = (s[u] || 0) + 1;
+  }
+  document.getElementById("sources").insertAdjacentHTML("beforeend", `<p>Gauge source exclusions: ${o.length} recorded exclusions${o.length ? ". " + Object.entries(s).map(([l, u]) => `${u} ${b(oe(l))}`).join(" ") : "."} These records do not support automatic notices.</p>`), Q("snapshot-label", `Saved snapshot ${b(e.id)} \xB7 ${b(P(e.createdAt))}`);
 }
 
 // site/js/watch-chart.js
-var X = Number.isFinite, I = null, Bn = (e, t, n) => X(e?.t) && X(e?.cfs) && e.t >= t && e.t <= n;
-function Je(e, t, n) {
+var H = Number.isFinite, I = null, Zn = (e, t, n) => H(e?.t) && H(e?.cfs) && e.t >= t && e.t <= n;
+function Ye(e, t, n) {
   for (let a of e || []) {
-    let r = Xe(a, (o) => o.t === t);
+    let r = Ze(a, (i) => i.t === t);
     if (r) return r.cfs;
-    for (let o = 1; o < a.length; o++) {
-      let i = a[o], s = a[o - 1];
-      if (s.t < t && i.t > t)
-        return i.t - s.t > n ? null : s.cfs + (i.cfs - s.cfs) * (t - s.t) / (i.t - s.t);
+    for (let i = 1; i < a.length; i++) {
+      let o = a[i], s = a[i - 1];
+      if (s.t < t && o.t > t)
+        return o.t - s.t > n ? null : s.cfs + (o.cfs - s.cfs) * (t - s.t) / (o.t - s.t);
     }
   }
   return null;
 }
-function Ut(e, t, n, a) {
-  let r = e.filter((o) => Bn(o, t, n));
-  for (let o of [t, n])
-    if (!r.some((i) => i.t === o)) {
-      let i = Je([e], o, a);
-      X(i) && r.push({ t: o, cfs: i });
+function Pt(e, t, n, a) {
+  let r = e.filter((i) => Zn(i, t, n));
+  for (let i of [t, n])
+    if (!r.some((o) => o.t === i)) {
+      let o = Ye([e], i, a);
+      H(o) && r.push({ t: i, cfs: o });
     }
-  return r.sort((o, i) => o.t - i.t);
+  return r.sort((i, o) => i.t - o.t);
 }
-function Wn(e, t, n) {
+function Yn(e, t, n) {
   return e.map((a, r) => `${r ? "L" : "M"}${t(a.t).toFixed(2)},${n(a.cfs).toFixed(2)}`).join(" ");
 }
-function Vn(e, t, n) {
+function Qn(e, t, n) {
   return (e?.segments || []).map((a) => {
-    let r = Ut(a, t, n, 1 / 0);
-    for (let o of e.steps || []) {
-      if (o.t < t || o.t > n || !a.length || o.t < a[0].t || o.t > a.at(-1).t) continue;
-      let i = r.findIndex((l) => l.t >= o.t), s = i < 0 ? r.length : i;
-      for (; r[s]?.t === o.t; ) r.splice(s, 1);
-      r.splice(s, 0, { t: o.t, cfs: o.beforeCfs }, { t: o.t, cfs: o.afterCfs });
+    let r = Pt(a, t, n, 1 / 0);
+    for (let i of e.steps || []) {
+      if (i.t < t || i.t > n || !a.length || i.t < a[0].t || i.t > a.at(-1).t) continue;
+      let o = r.findIndex((l) => l.t >= i.t), s = o < 0 ? r.length : o;
+      for (; r[s]?.t === i.t; ) r.splice(s, 1);
+      r.splice(s, 0, { t: i.t, cfs: i.beforeCfs }, { t: i.t, cfs: i.afterCfs });
     }
     return r;
   });
 }
-var Gn = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23" });
-function ot(e) {
-  let t = Object.fromEntries(Gn.formatToParts(e).filter((n) => n.type !== "literal").map((n) => [n.type, Number(n.value)]));
+var Kn = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23" });
+function ct(e) {
+  let t = Object.fromEntries(Kn.formatToParts(e).filter((n) => n.type !== "literal").map((n) => [n.type, Number(n.value)]));
   return Date.UTC(t.year, t.month - 1, t.day, t.hour, t.minute, t.second);
 }
-function zn(e) {
+function ea(e) {
   let t = e;
-  for (let n = 0; n < 3; n++) t += e - ot(t);
+  for (let n = 0; n < 3; n++) t += e - ct(t);
   return t;
 }
-function Xn(e, t, n) {
-  let a = Math.max(2, Math.floor(n / 70) + 1), r = ot(e), o = ot(t), i = [];
+function ta(e, t, n) {
+  let a = Math.max(2, Math.floor(n / 70) + 1), r = ct(e), i = ct(t), o = [];
   for (let s of [6, 12, 24, 48, 72, 96, 120, 144, 168, 192, 240, 336, 504, 672]) {
-    let l = Math.min(s, 12) * 36e5, c = [];
-    for (let h = Math.ceil(r / l) * l; h <= o + 36e5; h += s * 36e5) {
-      let d = zn(h);
-      d >= e && d <= t && c.push(d);
+    let l = Math.min(s, 12) * 36e5, u = [];
+    for (let p = Math.ceil(r / l) * l; p <= i + 36e5; p += s * 36e5) {
+      let h = ea(p);
+      h >= e && h <= t && u.push(h);
     }
-    if (c.length < 2) continue;
-    i = c;
-    let u = Math.min(...c.slice(1).map((h, d) => (h - c[d]) / (t - e) * n));
-    if (c.length <= a && u >= 40) return c;
+    if (u.length < 2) continue;
+    o = u;
+    let c = Math.min(...u.slice(1).map((p, h) => (p - u[h]) / (t - e) * n));
+    if (u.length <= a && c >= 40) return u;
   }
-  return i.length > 2 ? [i[0], i.at(-1)] : i;
+  return o.length > 2 ? [o[0], o.at(-1)] : o;
 }
-function Me(e, t, n) {
-  let a = Math.max(1, Math.floor(e.clientWidth)), r = globalThis.innerHeight, o = a < 500 ? 240 : X(r) && r < 500 ? Math.max(180, Math.min(280, r - 80)) : 280, i = { left: Math.min(49, a / 4), right: Math.min(14, a / 4), top: 26, bottom: 38 }, s = i.left, l = a - i.right, c = i.top, u = o - i.bottom, h = t.gauge?.latest?.t, d = Math.round(t.nowMs), p = d - Number(n.past || 24) * 36e5, f = n.range === "full" ? Math.max(d + 36e5, t.forecast?.raw?.endT ?? d + 72 * 36e5) : d + (n.range === "day" ? 24 : 72) * 36e5, b = t.forecast || {}, O = t.gauge?.references?.[n.reference], q = b.references?.[n.reference], g = { segments: [...O?.segments || [], ...q?.segments || []], steps: [...O?.steps || [], ...q?.steps || []] }, $ = [{ key: "observed", name: "Observed river flow", segments: t.gauge?.segments || [], gap: 30 * 6e4 }, { key: "raw", name: "NOAA river forecast", segments: b.raw?.segments || [], gap: 6 * 36e5 }, { key: "shifted", name: "Forecast adjusted to current gauge", segments: b.shifted?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past high case", segments: b.high?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past low case", segments: b.low?.segments || [], gap: 6 * 36e5 }, { key: "reference", name: "Level to meet the rolling 24-hour reference", segments: Vn(g, p, f), gap: 1 / 0 }].map((_) => ({ ..._, visible: _.key === "reference" ? _.segments : _.segments.map((N) => Ut(N, p, f, _.gap)) })), U = $.flatMap((_) => _.visible.flat()).filter((_) => X(_.cfs)), x = { obs: "observed", raw: "raw", shifted: "shifted", case: "case", reference: "reference" };
-  for (let _ of document.querySelectorAll?.(".legend span") ?? []) {
-    let N = x[_.querySelector("i")?.className];
-    _.hidden = !!N && !$.some((Ve) => Ve.key === N && Ve.visible.some((Ke) => Ke.length));
+function ke(e, t, n) {
+  let a = Math.max(1, Math.floor(e.clientWidth)), r = globalThis.innerHeight, i = a < 500 ? 240 : H(r) && r < 500 ? Math.max(180, Math.min(280, r - 80)) : 280, o = { left: Math.min(49, a / 4), right: Math.min(14, a / 4), top: 26, bottom: 38 }, s = o.left, l = a - o.right, u = o.top, c = i - o.bottom, p = t.gauge?.latest?.t, h = Math.round(t.nowMs), d = document.getElementById("chart-cursor");
+  if (t.timeUncertain && !H(p)) {
+    let v = "Chart unavailable. No saved river-reading time is available; current time is unconfirmed.";
+    e.innerHTML = `<svg viewBox="0 0 ${a} ${i}" width="${a}" height="${i}" role="img" aria-label="${v}"><text x="${a / 2}" y="${i / 2 - 12}" text-anchor="middle">Chart unavailable</text><text x="${a / 2}" y="${i / 2 + 4}" text-anchor="middle">${a < 220 ? "No saved time" : "No saved river-reading time"}</text></svg>`;
+    for (let k of document.querySelectorAll?.(".legend span") ?? []) k.hidden = !0;
+    I = null, d.min = "0", d.max = "1", d.step = "1", d.value = "0", d.disabled = !0, d.style.marginLeft = `${s - 10}px`, d.style.width = `${l - s + 20}px`, d.setAttribute("aria-valuetext", v), document.getElementById("chart-readout").textContent = v;
+    return;
   }
-  let w = Math.max(10, ...U.map((_) => _.cfs)) * 1.08, y = w / 4, H = Math.pow(10, Math.floor(Math.log10(y))), D = y / H, j = (D <= 1 ? 1 : D <= 2 ? 2 : D <= 5 ? 5 : 10) * H, K = j * 4, B = (_) => s + (_ - p) / (f - p) * (l - s), G = (_) => u - _ / K * (u - c), Qt = Array.from({ length: 5 }, (_, N) => j * N), Kt = Xn(p, f, l - s), en = Qt.map((_) => `<line class="grid" x1="${s}" x2="${l}" y1="${G(_)}" y2="${G(_)}"/><text x="${s - 7}" y="${G(_) + 4}" text-anchor="end">${v(pe(_))}</text>`).join("") + Kt.map((_) => {
-    let N = B(_), Ve = N < 24 ? "start" : N > a - 24 ? "end" : "middle", Ke = `<tspan x="${N}">${v(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "numeric", day: "numeric" }).format(_))}</tspan><tspan x="${N}" dy="14">${v(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric" }).format(_))}</tspan>`;
-    return `<text class="x-axis-label" x="${N}" y="${o - 24}" text-anchor="${Ve}">${Ke}</text>`;
-  }).join(""), tn = $.map((_) => _.visible.filter((N) => N.length).map((N) => N.length === 1 ? `<circle class="${_.key}" cx="${B(N[0].t)}" cy="${G(N[0].cfs)}" r="2" fill="var(--${_.key === "observed" ? "obs" : _.key})"/>` : `<path class="plot-line ${_.key}" d="${Wn(N, B, G)}"/>`).join("")).join(""), ht = Je(g.segments, p, 1 / 0) ?? Je(g.segments, d, 1 / 0), be = X(ht) ? G(ht) : c + 14;
-  be = be - c > 32 ? be - 10 : be + 24, be = Math.max(c + 12, Math.min(u - 6, be));
-  let nn = $.find((_) => _.key === "reference")?.visible.flat() || [], Be = nn.reduce((_, N) => !_ || N.t > _.t ? N : _, null), We = Be ? Math.max(s + 4, Math.min(l - 88, B(Be.t) - 84)) : s + 4, pt = be, an = We + 84, sn = X(n.cursorT) && n.cursorT >= p && n.cursorT <= f ? B(n.cursorT) : null, rn = X(h) && h >= p && h <= f ? B(h) : null, on = Be && B(Be.t) - s >= 84, ln = [sn, rn].some((_) => X(_) && _ >= We && _ <= an), cn = l - s < 200 || !on || ln ? "" : `<rect class="reference-label-bg" x="${We}" y="${pt - 12}" width="84" height="16" rx="3"/><text class="reference-label" x="${We + 4}" y="${pt}">Required level</text>`, un = X(h) && h >= p && h <= f ? `<line x1="${B(h)}" x2="${B(h)}" y1="${c}" y2="${u}" stroke="var(--obs)" opacity=".5"/><text x="${Math.max(s, Math.min(l - 90, B(h) + 5))}" y="${c - 9}">Latest observed</text>` : "", dn = d >= p && d <= f ? `<line class="now" x1="${B(d)}" x2="${B(d)}" y1="${c}" y2="${u}"/><text x="${Math.min(l - 25, B(d) + 5)}" y="${c + 15}">Now</text>` : "", ye = X(n.cursorT) ? Math.max(p, Math.min(f, n.cursorT)) : null, fn = ye !== null ? `<line class="cursor" x1="${B(ye)}" x2="${B(ye)}" y1="${c}" y2="${u}"/>` : "";
-  e.innerHTML = `<svg viewBox="0 0 ${a} ${o}" width="${a}" height="${o}" role="img" aria-label="River flow in cubic feet per second. The comparison line marks the level needed for the rolling 24-hour rise to meet its reference. Observations and forecast paths from ${v(P(p, !0))} through ${v(P(f, !0))}. Gaps are not connected."><defs><clipPath id="plot-clip"><rect x="${s}" y="${c}" width="${l - s}" height="${u - c}"/></clipPath></defs>${en}<g clip-path="url(#plot-clip)">${tn}${fn}</g>${cn}${un}${dn}${U.length ? "" : `<text x="${(s + l) / 2}" y="${o / 2}" text-anchor="middle">No supported readings to draw</text>`}</svg>`, I = { lines: $, hasData: U.length > 0, start: p, end: f, left: s, right: l, width: a, host: e };
-  let ue = document.getElementById("chart-cursor");
-  ue.min = String(p), ue.max = String(f), ue.step = "1", ue.disabled = !I.hasData, ue.style.marginLeft = `${s - 10}px`, ue.style.width = `${l - s + 20}px`;
-  let gt = ye ?? Math.max(p, Math.min(f, X(h) ? h : d));
-  ue.value = String(Math.round(gt)), ue.setAttribute("aria-valuetext", P(gt)), ye !== null ? Jn(ye) : document.getElementById("chart-readout").textContent = "Tap the graph or drag the slider to inspect a time.";
+  let f = t.timeUncertain ? p : h, m = f - Number(n.past || 24) * 36e5, A = n.range === "full" ? Math.max(f + 36e5, t.forecast?.raw?.endT ?? f + 72 * 36e5) : f + (n.range === "day" ? 24 : 72) * 36e5, O = t.forecast || {}, g = t.gauge?.references?.[n.reference], y = O.references?.[n.reference], D = { segments: [...g?.segments || [], ...y?.segments || []], steps: [...g?.steps || [], ...y?.steps || []] }, T = [{ key: "observed", name: "Observed river flow", segments: t.gauge?.segments || [], gap: 30 * 6e4 }, { key: "raw", name: "NOAA river forecast", segments: O.raw?.segments || [], gap: 6 * 36e5 }, { key: "shifted", name: "Forecast adjusted to current gauge", segments: O.shifted?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past high case", segments: O.high?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past low case", segments: O.low?.segments || [], gap: 6 * 36e5 }, { key: "reference", name: "Level to meet the rolling 24-hour reference", segments: Qn(D, m, A), gap: 1 / 0 }].map((v) => ({ ...v, visible: v.key === "reference" ? v.segments : v.segments.map((k) => Pt(k, m, A, v.gap)) })), w = T.flatMap((v) => v.visible.flat()).filter((v) => H(v.cfs)), $ = { obs: "observed", raw: "raw", shifted: "shifted", case: "case", reference: "reference" };
+  for (let v of document.querySelectorAll?.(".legend span") ?? []) {
+    let k = $[v.querySelector("i")?.className];
+    v.hidden = !!k && !T.some((ve) => ve.key === k && ve.visible.some((nt) => nt.length));
+  }
+  let V = Math.max(10, ...w.map((v) => v.cfs)) * 1.08, j = V / 4, F = Math.pow(10, Math.floor(Math.log10(j))), G = j / F, We = (G <= 1 ? 1 : G <= 2 ? 2 : G <= 5 ? 5 : 10) * F, re = We * 4, z = (v) => s + (v - m) / (A - m) * (l - s), Te = (v) => c - v / re * (c - u), tn = Array.from({ length: 5 }, (v, k) => We * k), nn = ta(m, A, l - s), an = tn.map((v) => `<line class="grid" x1="${s}" x2="${l}" y1="${Te(v)}" y2="${Te(v)}"/><text x="${s - 7}" y="${Te(v) + 4}" text-anchor="end">${b(he(v))}</text>`).join("") + nn.map((v) => {
+    let k = z(v), ve = k < 24 ? "start" : k > a - 24 ? "end" : "middle", nt = `<tspan x="${k}">${b(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "numeric", day: "numeric" }).format(v))}</tspan><tspan x="${k}" dy="14">${b(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric" }).format(v))}</tspan>`;
+    return `<text class="x-axis-label" x="${k}" y="${i - 24}" text-anchor="${ve}">${nt}</text>`;
+  }).join(""), sn = T.map((v) => v.visible.filter((k) => k.length).map((k) => k.length === 1 ? `<circle class="${v.key}" cx="${z(k[0].t)}" cy="${Te(k[0].cfs)}" r="2" fill="var(--${v.key === "observed" ? "obs" : v.key})"/>` : `<path class="plot-line ${v.key}" d="${Yn(k, z, Te)}"/>`).join("")).join(""), gt = Ye(D.segments, m, 1 / 0) ?? Ye(D.segments, f, 1 / 0), me = H(gt) ? Te(gt) : u + 14;
+  me = me - u > 32 ? me - 10 : me + 24, me = Math.max(u + 12, Math.min(c - 6, me));
+  let rn = T.find((v) => v.key === "reference")?.visible.flat() || [], Ve = rn.reduce((v, k) => !v || k.t > v.t ? k : v, null), Ge = Ve ? Math.max(s + 4, Math.min(l - 88, z(Ve.t) - 84)) : s + 4, mt = me, on = Ge + 84, ln = H(n.cursorT) && n.cursorT >= m && n.cursorT <= A ? z(n.cursorT) : null, cn = H(p) && p >= m && p <= A ? z(p) : null, un = Ve && z(Ve.t) - s >= 84, dn = [ln, cn].some((v) => H(v) && v >= Ge && v <= on), fn = l - s < 200 || !un || dn ? "" : `<rect class="reference-label-bg" x="${Ge}" y="${mt - 12}" width="84" height="16" rx="3"/><text class="reference-label" x="${Ge + 4}" y="${mt}">Required level</text>`, bt = t.timeUncertain && l - s < 132, hn = t.timeUncertain ? bt ? "Last reading" : "Last saved river reading" : "Latest observed", pn = t.timeUncertain ? bt ? 80 : 132 : 90, gn = H(p) && p >= m && p <= A ? `<line x1="${z(p)}" x2="${z(p)}" y1="${u}" y2="${c}" stroke="var(--obs)" opacity=".5"/><text x="${Math.max(s, Math.min(l - pn, z(p) + 5))}" y="${u - 9}">${hn}</text>` : "", mn = !t.timeUncertain && h >= m && h <= A ? `<line class="now" x1="${z(h)}" x2="${z(h)}" y1="${u}" y2="${c}"/><text x="${Math.min(l - 25, z(h) + 5)}" y="${u + 15}">Now</text>` : "", be = H(n.cursorT) ? Math.max(m, Math.min(A, n.cursorT)) : null, bn = be !== null ? `<line class="cursor" x1="${z(be)}" x2="${z(be)}" y1="${u}" y2="${c}"/>` : "", vn = T.some((v) => v.segments.some((k) => k.some((ve) => H(ve.t) && H(ve.cfs)))) ? "No supported points fall within the selected chart range." : "No supported source readings are available to draw.";
+  e.innerHTML = `<svg viewBox="0 0 ${a} ${i}" width="${a}" height="${i}" role="img" aria-label="River flow in cubic feet per second. ${t.timeUncertain ? "Chart based on the last saved river reading; current time is unconfirmed. " : ""}The comparison line marks the level needed for the rolling 24-hour rise to meet its reference. Observations and forecast paths from ${b(P(m, !0))} through ${b(P(A, !0))}. Gaps are not connected."><defs><clipPath id="plot-clip"><rect x="${s}" y="${u}" width="${l - s}" height="${c - u}"/></clipPath></defs>${an}<g clip-path="url(#plot-clip)">${sn}${bn}</g>${fn}${gn}${mn}${w.length ? "" : `<text x="${(s + l) / 2}" y="${i / 2}" text-anchor="middle">${vn}</text>`}</svg>`, I = { lines: T, hasData: w.length > 0, start: m, end: A, left: s, right: l, width: a, host: e }, d.min = String(m), d.max = String(A), d.step = "1", d.disabled = !I.hasData, d.style.marginLeft = `${s - 10}px`, d.style.width = `${l - s + 20}px`;
+  let tt = be ?? Math.max(m, Math.min(A, H(p) ? p : h));
+  d.value = String(Math.round(tt)), d.setAttribute("aria-valuetext", t.timeUncertain ? `${be === null ? "Last saved river reading" : "Saved chart selection"}: ${P(tt)}. Current time is unconfirmed.` : P(tt)), be !== null ? na(be) : document.getElementById("chart-readout").textContent = "Tap the graph or drag the slider to inspect a time.";
 }
-function Jn(e) {
+function na(e) {
   if (!I) return;
   let t = I.lines.map((n) => {
-    let a = Je(n.visible, e, n.gap);
-    return X(a) ? `${n.name}: ${Math.round(a).toLocaleString("en-US")} cfs` : null;
+    let a = Ye(n.visible, e, n.gap);
+    return H(a) ? `${n.name}: ${Math.round(a).toLocaleString("en-US")} cfs` : null;
   }).filter(Boolean);
-  document.getElementById("chart-readout").innerHTML = `<strong>${v(P(e))}</strong><br>${t.map(v).join(" \xB7 ") || "No supported value at this time."}${t.length ? '<br><span class="meta">Between readings: estimated. Gaps stay blank.</span>' : ""}`;
+  document.getElementById("chart-readout").innerHTML = `<strong>${b(P(e))}</strong><br>${t.map(b).join(" \xB7 ") || "No supported value at this time."}${t.length ? '<br><span class="meta">Between readings: estimated. Gaps stay blank.</span>' : ""}`;
 }
-function Dt(e) {
+function jt(e) {
   if (!I?.hasData) return null;
   let t = I.host.getBoundingClientRect(), n = t.width / I.width, a = Math.max(0, Math.min(1, ((e.clientX - t.left) / n - I.left) / (I.right - I.left)));
   return Math.round(I.start + a * (I.end - I.start));
 }
-function lt() {
+function ut() {
   if (!I?.hasData) return null;
   let e = Number(document.getElementById("chart-cursor").value);
-  return X(e) ? Math.max(I.start, Math.min(I.end, e)) : null;
+  return H(e) ? Math.max(I.start, Math.min(I.end, e)) : null;
 }
-function jt(e) {
-  let t = lt();
+function Ht(e) {
+  let t = ut();
   if (t === null) return null;
   let n = { ArrowLeft: -15 * 6e4, ArrowDown: -15 * 6e4, ArrowRight: 15 * 6e4, ArrowUp: 15 * 6e4, PageDown: -6 * 36e5, PageUp: 6 * 36e5 };
-  return e === "Home" ? I.start : e === "End" ? I.end : X(n[e]) ? Math.max(I.start, Math.min(I.end, t + n[e])) : null;
+  return e === "Home" ? I.start : e === "End" ? I.end : H(n[e]) ? Math.max(I.start, Math.min(I.end, t + n[e])) : null;
 }
 
 // fixed-public-table:ratio
-var Ft = { name: "Historical river forecast cases", version: 3, apply_to: "flow", rise_floor_cfs: 50, storm_flow_cfs: 150, wet_months: [1, 2, 3, 4, 10, 11, 12], training_cutoff_utc: "2026-10-06 00:00:00+00:00", bins: [{ lead_lo_h: 0, lead_hi_h: 12, add_cfs: 11.7, rise: { low_factor: 0.697, high_factor: 1.193 }, flat: { low_factor: 0.93, high_factor: 1.06 } }, { lead_lo_h: 12, lead_hi_h: 24, add_cfs: 29.6, rise: { low_factor: 0.608, high_factor: 1.223 }, flat: { low_factor: 0.881, high_factor: 1.146 } }, { lead_lo_h: 24, lead_hi_h: 36, add_cfs: 47.7, rise: { low_factor: 0.547, high_factor: 1.223 }, flat: { low_factor: 0.862, high_factor: 1.229 } }, { lead_lo_h: 36, lead_hi_h: 48, add_cfs: 63, rise: { low_factor: 0.524, high_factor: 1.228 }, flat: { low_factor: 0.834, high_factor: 1.299 } }, { lead_lo_h: 48, lead_hi_h: 60, add_cfs: 84.5, rise: { low_factor: 0.505, high_factor: 1.297 }, flat: { low_factor: 0.807, high_factor: 1.306 } }, { lead_lo_h: 60, lead_hi_h: 72, add_cfs: 107.7, rise: { low_factor: 0.491, high_factor: 1.346 }, flat: { low_factor: 0.791, high_factor: 1.341 } }], description: "Descriptive examples of past forecast misses; not probabilities or independently validated forecasts." };
+var Bt = { name: "Historical river forecast cases", version: 3, apply_to: "flow", rise_floor_cfs: 50, storm_flow_cfs: 150, wet_months: [1, 2, 3, 4, 10, 11, 12], training_cutoff_utc: "2026-10-06 00:00:00+00:00", bins: [{ lead_lo_h: 0, lead_hi_h: 12, add_cfs: 11.7, rise: { low_factor: 0.697, high_factor: 1.193 }, flat: { low_factor: 0.93, high_factor: 1.06 } }, { lead_lo_h: 12, lead_hi_h: 24, add_cfs: 29.6, rise: { low_factor: 0.608, high_factor: 1.223 }, flat: { low_factor: 0.881, high_factor: 1.146 } }, { lead_lo_h: 24, lead_hi_h: 36, add_cfs: 47.7, rise: { low_factor: 0.547, high_factor: 1.223 }, flat: { low_factor: 0.862, high_factor: 1.229 } }, { lead_lo_h: 36, lead_hi_h: 48, add_cfs: 63, rise: { low_factor: 0.524, high_factor: 1.228 }, flat: { low_factor: 0.834, high_factor: 1.299 } }, { lead_lo_h: 48, lead_hi_h: 60, add_cfs: 84.5, rise: { low_factor: 0.505, high_factor: 1.297 }, flat: { low_factor: 0.807, high_factor: 1.306 } }, { lead_lo_h: 60, lead_hi_h: 72, add_cfs: 107.7, rise: { low_factor: 0.491, high_factor: 1.346 }, flat: { low_factor: 0.791, high_factor: 1.341 } }], description: "Descriptive examples of past forecast misses; not probabilities or independently validated forecasts." };
 
 // site/watch-public.js
-var Yn = "https://raw.githubusercontent.com/jdinneen/samish-river-watch/preview-data/current.json", Bt = new URL("./", import.meta.url), Wt = "samish.public.preview.packet.v1", Vt = "samish.public.preview.preferences.v1", Ze = 9466848e5, Ee = 41024448e5, we = 5 * 6e4, Gt = 2 * 1024 * 1024, T = (e) => document.getElementById(e), Pe = Number.isFinite;
-function Ne() {
-  let e = T("number-strip"), t = T("current").querySelector(".flow-number");
+var sa = "https://raw.githubusercontent.com/jdinneen/samish-river-watch/preview-data/current.json", Gt = new URL("./", import.meta.url), zt = "samish.public.preview.packet.v1", Xt = "samish.public.preview.preferences.v1", Qe = 9466848e5, Ne = 41024448e5, ye = 5 * 6e4, Jt = 2 * 1024 * 1024, x = (e) => document.getElementById(e), Le = Number.isFinite;
+function Oe() {
+  let e = x("number-strip"), t = x("current").querySelector(".flow-number");
   e.dataset.visible = String(!!t && t.getBoundingClientRect().top <= 0), document.documentElement.style.setProperty("--reading-strip-height", `${e.offsetHeight}px`);
 }
-window.addEventListener("scroll", Ne, { passive: !0 });
-window.addEventListener("resize", Ne);
-function ft(e) {
+window.addEventListener("scroll", Oe, { passive: !0 });
+window.addEventListener("resize", Oe);
+function pt(e) {
   document.querySelectorAll("button[data-help-target]").forEach((t) => {
-    let n = T(t.dataset.helpTarget);
+    let n = x(t.dataset.helpTarget);
     if (t.disabled = !n, !n) return;
     e && (n.open = e.has(n.id)), t.setAttribute("aria-expanded", String(n.open));
     let a = n.querySelector("button[data-help-close]");
     a && !a.id && (a.id = `${n.id}-close`);
   });
 }
-function ut(e, t, n = !1) {
-  let a = T(e), r = T(`${e}-toggle`);
-  if (!(!a || !r) && (a.open = t, ft(), Ne(), n)) {
+function ft(e, t, n = !1) {
+  let a = x(e), r = x(`${e}-toggle`);
+  if (!(!a || !r) && (a.open = t, pt(), Oe(), n)) {
     r.focus({ preventScroll: !0 });
-    let o = T("number-strip"), i = o.dataset.visible === "true" ? o.getBoundingClientRect().bottom : 0, s = r.getBoundingClientRect();
-    (s.top < i + 8 || s.bottom > innerHeight - 8) && r.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }), Ne();
+    let i = x("number-strip"), o = i.dataset.visible === "true" ? i.getBoundingClientRect().bottom : 0, s = r.getBoundingClientRect();
+    (s.top < o + 8 || s.bottom > innerHeight - 8) && r.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }), Oe();
   }
 }
 document.addEventListener("click", (e) => {
   let t = e.target.closest("button[data-help-target]"), n = e.target.closest("button[data-help-close]");
-  t ? (e.preventDefault(), ut(t.dataset.helpTarget, !T(t.dataset.helpTarget)?.open)) : n && (e.preventDefault(), ut(n.dataset.helpClose, !1, !0));
+  t ? (e.preventDefault(), ft(t.dataset.helpTarget, !x(t.dataset.helpTarget)?.open)) : n && (e.preventDefault(), ft(n.dataset.helpClose, !1, !0));
 });
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  let t = e.target.closest("details.section-help") || T(e.target.closest("button[data-help-target]")?.dataset.helpTarget);
-  t?.open && (e.preventDefault(), ut(t.id, !1, !0));
+  let t = e.target.closest("details.section-help") || x(e.target.closest("button[data-help-target]")?.dataset.helpTarget);
+  t?.open && (e.preventDefault(), ft(t.id, !1, !0));
 });
-ft();
-var zt = (e) => {
+pt();
+var Zt = (e) => {
   try {
     return JSON.parse(localStorage.getItem(e));
   } catch {
     return null;
   }
-}, Xt = (e, t) => {
+}, Yt = (e, t) => {
   try {
     localStorage.setItem(e, JSON.stringify(t));
   } catch {
   }
-}, E = () => {
+}, L = () => {
   throw new Error("invalid_public_packet");
 };
-function k(e, t, n = []) {
-  return (!e || typeof e != "object" || Array.isArray(e) || t.some((a) => !Object.prototype.hasOwnProperty.call(e, a)) || Object.keys(e).some((a) => ![...t, ...n].includes(a))) && E(), e;
+function E(e, t, n = []) {
+  return (!e || typeof e != "object" || Array.isArray(e) || t.some((a) => !Object.prototype.hasOwnProperty.call(e, a)) || Object.keys(e).some((a) => ![...t, ...n].includes(a))) && L(), e;
 }
-function re(e, t = !1, n = !1, a = !1, r = Number.MAX_SAFE_INTEGER) {
-  e === null && t || (typeof e != "number" || !Pe(e) || !n && e < 0 || a && !Number.isInteger(e) || e > r) && E();
+function ne(e, t = !1, n = !1, a = !1, r = Number.MAX_SAFE_INTEGER) {
+  e === null && t || (typeof e != "number" || !Le(e) || !n && e < 0 || a && !Number.isInteger(e) || e > r) && L();
 }
-function S(e, t = !1) {
-  re(e, t, !1, !0, Ee), e !== null && e < Ze && E();
+function M(e, t = !1) {
+  ne(e, t, !1, !0, Ne), e !== null && e < Qe && L();
 }
-function Ce(e) {
-  typeof e != "boolean" && E();
+function Ee(e) {
+  typeof e != "boolean" && L();
 }
-function se(e, t, n = !1) {
-  e === null && n || (typeof e != "string" || !t.includes(e)) && E();
+function te(e, t, n = !1) {
+  e === null && n || (typeof e != "string" || !t.includes(e)) && L();
 }
-function ie(e, t, n) {
-  (!Array.isArray(e) || e.length > t) && E(), e.forEach(n);
+function se(e, t, n) {
+  (!Array.isArray(e) || e.length > t) && L(), e.forEach(n);
 }
-var Qn = ["negative_value", "ice", "malformed_value", "estimated", "quality_flags_unavailable", "approval_unavailable", "unsupported_quality", "conflicting_duplicate", "wrong_station", "wrong_parameter", "unsupported_unit", "invalid_timestamp", "future_timestamp", "unusable_observation", "ineligible_quality"], Kn = ["latest_ineligible", "no_data", "observation_older_than_60min", "missing_quarter_hours", "clock_uncertain", "rate_suppression", "rate_limit"], ea = ["conflicting duplicate readings", "Conflicting readings at this time", "Quality metadata supplied", "Quality flags unavailable", "quality unknown", "approved", "provisional", "Approved", "Provisional", "estimated", "ineligible", ...["approved", "provisional", "approval unavailable"].flatMap((e) => ["no qualifier supplied", "estimated", "flags unavailable"].map((t) => `${e}; ${t}`))];
-function dt(e, t = !1) {
-  k(e, t ? ["t"] : ["t", "cfs"], ["cfs", "eligible", "usable", "qualifierPresent", "approval", "qualifier", "qualityLabel", "quality", "reason", ...t ? ["currentCandidate"] : []]), S(e.t, t), "cfs" in e && re(e.cfs, !0);
-  for (let n of ["eligible", "usable", "qualifierPresent", "currentCandidate"]) n in e && Ce(e[n]);
-  "approval" in e && se(e.approval, ["Approved", "Provisional", "approved", "provisional"], !0), "qualifier" in e && se(e.qualifier, ["", "e", "E", "estimated", "Estimated"], !0);
-  for (let n of ["quality", "qualityLabel"]) n in e && se(e[n], ea);
-  "reason" in e && se(e.reason, Qn, !0);
+var ra = ["negative_value", "ice", "malformed_value", "estimated", "quality_flags_unavailable", "approval_unavailable", "unsupported_quality", "conflicting_duplicate", "wrong_station", "wrong_parameter", "unsupported_unit", "invalid_timestamp", "future_timestamp", "unusable_observation", "ineligible_quality"], ia = ["latest_ineligible", "no_data", "observation_older_than_60min", "missing_quarter_hours", "clock_uncertain", "rate_suppression", "rate_limit"], oa = ["conflicting duplicate readings", "Conflicting readings at this time", "Quality metadata supplied", "Quality flags unavailable", "quality unknown", "approved", "provisional", "Approved", "Provisional", "estimated", "ineligible", ...["approved", "provisional", "approval unavailable"].flatMap((e) => ["no qualifier supplied", "estimated", "flags unavailable"].map((t) => `${e}; ${t}`))];
+function ht(e, t = !1) {
+  E(e, t ? ["t"] : ["t", "cfs"], ["cfs", "eligible", "usable", "qualifierPresent", "approval", "qualifier", "qualityLabel", "quality", "reason", ...t ? ["currentCandidate"] : []]), M(e.t, t), "cfs" in e && ne(e.cfs, !0);
+  for (let n of ["eligible", "usable", "qualifierPresent", "currentCandidate"]) n in e && Ee(e[n]);
+  "approval" in e && te(e.approval, ["Approved", "Provisional", "approved", "provisional"], !0), "qualifier" in e && te(e.qualifier, ["", "e", "E", "estimated", "Estimated"], !0);
+  for (let n of ["quality", "qualityLabel"]) n in e && te(e[n], oa);
+  "reason" in e && te(e.reason, ra, !0);
 }
 function je(e, t = !1) {
-  e !== null && (k(e, ["t", "cfs", ...t ? ["eligibleT"] : []]), S(e.t), re(e.cfs, !0), t && S(e.eligibleT, !0));
+  e !== null && (E(e, ["t", "cfs", ...t ? ["eligibleT"] : []]), M(e.t), ne(e.cfs, !0), t && M(e.eligibleT, !0));
 }
-function ta(e, t) {
-  k(t, ["data", "lastAttemptAt", "lastSuccessAt", "error"]), S(t.lastAttemptAt, !0), S(t.lastSuccessAt, !0), se(t.error, ["source_fetch_failed"], !0);
+function la(e, t) {
+  E(t, ["data", "lastAttemptAt", "lastSuccessAt", "error"]), M(t.lastAttemptAt, !0), M(t.lastSuccessAt, !0), te(t.error, ["source_fetch_failed"], !0);
   let n = t.data;
   if (n !== null) {
-    if (e === "gauge" && (k(n, ["points", "exclusions", "coveredWindow"]), ie(n.points, 4096, (a) => dt(a)), ie(n.exclusions, 4096, (a) => dt(a, !0)), n.coveredWindow !== null)) {
-      let a = k(n.coveredWindow, ["startT", "endT", "complete"]);
-      S(a.startT), S(a.endT), (a.complete !== !0 || a.startT > a.endT) && E();
+    if (e === "gauge" && (E(n, ["points", "exclusions", "coveredWindow"]), se(n.points, 4096, (a) => ht(a)), se(n.exclusions, 4096, (a) => ht(a, !0)), n.coveredWindow !== null)) {
+      let a = E(n.coveredWindow, ["startT", "endT", "complete"]);
+      M(a.startT), M(a.endT), (a.complete !== !0 || a.startT > a.endT) && L();
     }
-    if (e === "noaa" && (k(n, ["issuedT", "points", "conflicts"]), S(n.issuedT), ie(n.points, 1024, (a) => {
-      k(a, ["t", "cfs"]), S(a.t), re(a.cfs);
-    }), ie(n.conflicts, 1024, (a) => S(a))), e === "radar") {
-      k(n, ["generatedT", "hours", "conflicts"]), S(n.generatedT);
+    if (e === "noaa" && (E(n, ["issuedT", "points", "conflicts"]), M(n.issuedT), se(n.points, 1024, (a) => {
+      E(a, ["t", "cfs"]), M(a.t), ne(a.cfs);
+    }), se(n.conflicts, 1024, (a) => M(a))), e === "radar") {
+      E(n, ["generatedT", "hours", "conflicts"]), M(n.generatedT);
       let a = (r) => {
-        S(r), r % 36e5 && E();
+        M(r), r % 36e5 && L();
       };
-      ie(n.hours, 256, (r) => {
-        k(r, ["endT", "mm"]), a(r.endT), re(r.mm, !0);
-      }), ie(n.conflicts, 256, a);
+      se(n.hours, 256, (r) => {
+        E(r, ["endT", "mm"]), a(r.endT), ne(r.mm, !0);
+      }), se(n.conflicts, 256, a);
     }
-    e === "grid" && (k(n, ["updatedT", "periods", "gridId", "gridX", "gridY"]), S(n.updatedT), (n.gridId !== "SEW" || n.gridX !== 136 || n.gridY !== 112) && E(), ie(n.periods, 1024, (a) => {
-      k(a, ["startT", "endT", "mm"]), S(a.startT), S(a.endT), re(a.mm, !0), a.endT <= a.startT && E();
-    })), e === "tides" && (k(n, ["points", "stationId", "datum"]), (n.stationId !== "9449211" || n.datum !== "MLLW") && E(), ie(n.points, 128, (a) => {
-      k(a, ["t", "ft", "type"]), S(a.t), re(a.ft, !1, !0), se(a.type, ["H", "L"]);
+    e === "grid" && (E(n, ["updatedT", "periods", "gridId", "gridX", "gridY"]), M(n.updatedT), (n.gridId !== "SEW" || n.gridX !== 136 || n.gridY !== 112) && L(), se(n.periods, 1024, (a) => {
+      E(a, ["startT", "endT", "mm"]), M(a.startT), M(a.endT), ne(a.mm, !0), a.endT <= a.startT && L();
+    })), e === "tides" && (E(n, ["points", "stationId", "datum"]), (n.stationId !== "9449211" || n.datum !== "MLLW") && L(), se(n.points, 128, (a) => {
+      E(a, ["t", "ft", "type"]), M(a.t), ne(a.ft, !1, !0), te(a.type, ["H", "L"]);
     }));
   }
 }
-function na(e) {
-  k(e, ["summary", "transitions"]);
-  let t = k(e.summary, ["schemaVersion", "asOf", "phase", "event", "standing", "actualCurrentObservation", "supportObservationT", "capability", "preparation", "support", "experimental", "deliveryDisabled"]);
-  if ((t.schemaVersion !== 1 || t.experimental !== !0 || t.deliveryDisabled !== !0) && E(), S(t.asOf), se(t.phase, ["unarmed", "tracking", "possible_downturn", "ended"]), t.actualCurrentObservation !== null && dt(t.actualCurrentObservation), S(t.supportObservationT, !0), t.event !== null) {
-    let i = k(t.event, ["openedT", "high", "cycle"]);
-    S(i.openedT), je(i.high);
-    let s = k(i.cycle, ["ordinal", "openedT", "high", "low", "endingPending"]);
-    re(s.ordinal, !1, !1, !0, 1e5), S(s.openedT), je(s.high, !0), je(s.low), Ce(s.endingPending);
+function ca(e) {
+  E(e, ["summary", "transitions"]);
+  let t = E(e.summary, ["schemaVersion", "asOf", "phase", "event", "standing", "actualCurrentObservation", "supportObservationT", "capability", "preparation", "support", "experimental", "deliveryDisabled"]);
+  if ((t.schemaVersion !== 1 || t.experimental !== !0 || t.deliveryDisabled !== !0) && L(), M(t.asOf), te(t.phase, ["unarmed", "tracking", "possible_downturn", "ended"]), t.actualCurrentObservation !== null && ht(t.actualCurrentObservation), M(t.supportObservationT, !0), t.event !== null) {
+    let o = E(t.event, ["openedT", "high", "cycle"]);
+    M(o.openedT), je(o.high);
+    let s = E(o.cycle, ["ordinal", "openedT", "high", "low", "endingPending"]);
+    ne(s.ordinal, !1, !1, !0, 1e5), M(s.openedT), je(s.high, !0), je(s.low), Ee(s.endingPending);
   }
   if (t.standing !== null) {
-    let i = k(t.standing, ["kind", "state", "t", "detectedAt", "cfs", "active", "supportingHigh", "low"]);
-    se(i.kind, ["downturn", "correction"]), se(i.state, ["possible_downturn", "rising_again"]), S(i.t), S(i.detectedAt), re(i.cfs), Ce(i.active), je(i.supportingHigh), je(i.low);
+    let o = E(t.standing, ["kind", "state", "t", "detectedAt", "cfs", "active", "supportingHigh", "low"]);
+    te(o.kind, ["downturn", "correction"]), te(o.state, ["possible_downturn", "rising_again"]), M(o.t), M(o.detectedAt), ne(o.cfs), Ee(o.active), je(o.supportingHigh), je(o.low);
   }
-  let n = (i) => ie(i, 16, (s) => se(s, Kn)), a = k(t.capability, ["status", "newDownturnAvailable", "aboveHighCorrectionAvailable", "reasons"]);
-  se(a.status, ["available", "warming_up", "partial", "unavailable"]), Ce(a.newDownturnAvailable), Ce(a.aboveHighCorrectionAvailable), n(a.reasons);
-  let r = k(t.preparation, ["blockingReasons", "nextEligibleAt"]);
-  n(r.blockingReasons), S(r.nextEligibleAt, !0);
-  let o = k(t.support, ["lastSuccessfulPollAt", "monitoringGapMs", "missingQuarterHours", "observationAgeMs", "clockTrusted"]);
-  S(o.lastSuccessfulPollAt, !0), re(o.monitoringGapMs, !0, !1, !1, Ee), re(o.observationAgeMs, !0, !1, !1, Ee), ie(o.missingQuarterHours, 7, (i) => S(i)), Ce(o.clockTrusted), ie(e.transitions, 32, (i) => {
-    k(i, ["kind", "t", "cfs", "event", "detected_at"]), se(i.kind, ["downturn", "event_end"]), S(i.t), S(i.detected_at), re(i.cfs), (typeof i.event != "string" || !/^E[1-9][0-9]{0,8}$/.test(i.event)) && E();
+  let n = (o) => se(o, 16, (s) => te(s, ia)), a = E(t.capability, ["status", "newDownturnAvailable", "aboveHighCorrectionAvailable", "reasons"]);
+  te(a.status, ["available", "warming_up", "partial", "unavailable"]), Ee(a.newDownturnAvailable), Ee(a.aboveHighCorrectionAvailable), n(a.reasons);
+  let r = E(t.preparation, ["blockingReasons", "nextEligibleAt"]);
+  n(r.blockingReasons), M(r.nextEligibleAt, !0);
+  let i = E(t.support, ["lastSuccessfulPollAt", "monitoringGapMs", "missingQuarterHours", "observationAgeMs", "clockTrusted"]);
+  M(i.lastSuccessfulPollAt, !0), ne(i.monitoringGapMs, !0, !1, !1, Ne), ne(i.observationAgeMs, !0, !1, !1, Ne), se(i.missingQuarterHours, 7, (o) => M(o)), Ee(i.clockTrusted), se(e.transitions, 32, (o) => {
+    E(o, ["kind", "t", "cfs", "event", "detected_at"]), te(o.kind, ["downturn", "event_end"]), M(o.t), M(o.detected_at), ne(o.cfs), (typeof o.event != "string" || !/^E[1-9][0-9]{0,8}$/.test(o.event)) && L();
   });
 }
-async function Jt(e) {
-  k(e, ["schemaVersion", "payload", "sha256"]), (e.schemaVersion !== 1 || typeof e.payload != "string" || typeof e.sha256 != "string" || !/^[a-f0-9]{64}$/.test(e.sha256)) && E();
+async function Qt(e) {
+  E(e, ["schemaVersion", "payload", "sha256"]), (e.schemaVersion !== 1 || typeof e.payload != "string" || typeof e.sha256 != "string" || !/^[a-f0-9]{64}$/.test(e.sha256)) && L();
   let t = new TextEncoder().encode(e.payload);
-  t.length > Gt && E(), [...new Uint8Array(await crypto.subtle.digest("SHA-256", t))].map((i) => i.toString(16).padStart(2, "0")).join("") !== e.sha256 && E();
+  t.length > Jt && L(), [...new Uint8Array(await crypto.subtle.digest("SHA-256", t))].map((o) => o.toString(16).padStart(2, "0")).join("") !== e.sha256 && L();
   let a = JSON.parse(e.payload);
-  k(a, ["schemaVersion", "publishedAt", "snapshot"]), a.schemaVersion !== 1 && E(), S(a.publishedAt);
-  let r = k(a.snapshot, ["schemaVersion", "id", "createdAt", "sources", "monitor"]);
-  (r.schemaVersion !== 1 || typeof r.id != "string" || !/^[a-f0-9]{12}$/.test(r.id)) && E(), S(r.createdAt), a.publishedAt < r.createdAt && E();
-  let o = ["gauge", "noaa", "radar", "grid", "tides"];
-  return k(r.sources, o), o.forEach((i) => ta(i, r.sources[i])), na(r.monitor), r.monitor.summary.asOf !== r.createdAt && E(), a;
+  E(a, ["schemaVersion", "publishedAt", "snapshot"]), a.schemaVersion !== 1 && L(), M(a.publishedAt);
+  let r = E(a.snapshot, ["schemaVersion", "id", "createdAt", "sources", "monitor"]);
+  (r.schemaVersion !== 1 || typeof r.id != "string" || !/^[a-f0-9]{12}$/.test(r.id)) && L(), M(r.createdAt), a.publishedAt < r.createdAt && L();
+  let i = ["gauge", "noaa", "radar", "grid", "tides"];
+  return E(r.sources, i), i.forEach((o) => la(o, r.sources[o])), ca(r.monitor), r.monitor.summary.asOf !== r.createdAt && L(), a;
 }
-var ke = zt(Vt) || {}, C = { range: ["day", "three", "full"].includes(ke.range) ? ke.range : "three", past: ke.past === 48 ? 48 : 24, reference: ke.reference === "low" ? "low" : "endpoint", theme: ["light", "dark"].includes(ke.theme) ? ke.theme : null, cursorT: null };
-C.theme && (document.documentElement.dataset.theme = C.theme);
-var Q = null, He = null, V = null, ct = !1, J = "waiting", ge = null, Fe = null, Ye = !0, me = !1, le = Date.now(), Qe = () => Xt(Vt, { range: C.range, past: C.past, reference: C.reference, theme: C.theme });
-function aa() {
-  let e = Date.now(), t = ge ? Math.max(0, performance.now() - ge.mono) : 0, n = ge ? ge.lower + t : null, a = ge ? ge.upper + t : null;
-  le = Math.max(le, e, a ?? 0, Q?.snapshot.createdAt ?? 0);
-  let r = Ye || !ge || e < n - we || e > a + we || e + we < le || Q && Q.snapshot.createdAt > a + we;
+var Ce = Zt(Xt) || {}, N = { range: ["day", "three", "full"].includes(Ce.range) ? Ce.range : "three", past: Ce.past === 48 ? 48 : 24, reference: Ce.reference === "low" ? "low" : "endpoint", theme: ["light", "dark"].includes(Ce.theme) ? Ce.theme : null, cursorT: null };
+N.theme && (document.documentElement.dataset.theme = N.theme);
+var Y = null, Be = null, W = null, dt = !1, J = "waiting", pe = null, He = null, Ke = !0, ge = !1, le = Date.now(), et = () => Yt(Xt, { range: N.range, past: N.past, reference: N.reference, theme: N.theme });
+function ua() {
+  let e = Date.now(), t = pe ? Math.max(0, performance.now() - pe.mono) : 0, n = pe ? pe.lower + t : null, a = pe ? pe.upper + t : null;
+  le = Math.max(le, e, a ?? 0, Y?.snapshot.createdAt ?? 0);
+  let r = Ke || !pe || e < n - ye || e > a + ye || e + ye < le || Y && Y.snapshot.createdAt > a + ye;
   return { now: le, uncertain: r };
 }
-function Zt() {
-  return Fe ? Fe.now + Math.max(0, performance.now() - Fe.mono) : 0;
+function Kt() {
+  return He ? He.now + Math.max(0, performance.now() - He.mono) : 0;
 }
-function sa() {
-  He && Xt(Wt, { packet: He, greatestNow: le, trustedNow: Zt(), savedDeviceMs: Date.now(), ended: me });
+function da() {
+  Be && Yt(zt, { packet: Be, greatestNow: le, trustedNow: Kt(), savedDeviceMs: Date.now(), ended: ge });
 }
-function Pt(e) {
-  let t = T("connection");
-  if (!Q) {
-    t.textContent = me ? "Preview ended. No current readings are provided." : J === "waiting" ? "Checking the public snapshot and current time\u2026" : "Public readings unavailable. A valid snapshot could not be downloaded and verified.", t.className = "connection attention";
+function Wt(e) {
+  let t = x("connection");
+  if (!Y) {
+    t.textContent = ge ? "Preview ended. No current readings are provided." : J === "waiting" ? "Checking the public snapshot and current time\u2026" : "Public readings unavailable. A valid snapshot could not be downloaded and verified.", t.className = "connection attention";
     return;
   }
-  let n = Math.max(0, e.now - Q.snapshot.createdAt), a = J !== "checked";
-  if (!me && !a && !e.uncertain && n <= 12 * 6e4) {
-    t.textContent = `Snapshot age ${z(n)} \xB7 verified.`, t.className = "connection";
+  let n = Math.max(0, e.now - Y.snapshot.createdAt), a = J !== "checked";
+  if (!ge && !a && !e.uncertain && n <= 12 * 6e4) {
+    t.textContent = `Snapshot age ${X(n)} \xB7 verified.`, t.className = "connection";
     return;
   }
-  t.textContent = [me ? "Preview ended. Earlier readings are retained for reference." : a ? J === "older" ? "Not refreshed \u2014 an older snapshot was received; the newest verified snapshot is retained." : J === "invalid" ? "Not refreshed \u2014 snapshot verification failed; showing last-known readings." : "Not refreshed \u2014 showing last-known readings." : e.uncertain ? "Snapshot content verified." : n > 12 * 6e4 ? "Saved snapshot is old; current monitoring is unavailable." : "Verified snapshot.", e.uncertain ? `Snapshot age unknown; saved ${P(Q.snapshot.createdAt)}. Observation ages are also unknown.` : `Snapshot age ${z(n)}; observation ages below.`, e.uncertain ? "Time uncertain \u2014 device and current-time receipt are unavailable or disagree by more than five minutes. Current direction and monitoring availability are withheld." : ""].join(" "), t.className = "connection attention";
+  t.textContent = [ge ? "Preview ended. Earlier readings are retained for reference." : a ? J === "older" ? "Not refreshed \u2014 an older snapshot was received; the newest verified snapshot is retained." : J === "invalid" ? "Not refreshed \u2014 snapshot verification failed; showing last-known readings." : "Not refreshed \u2014 showing last-known readings." : e.uncertain ? "Snapshot content verified." : n > 12 * 6e4 ? "Saved snapshot is old; current monitoring is unavailable." : "Verified snapshot.", e.uncertain ? `Snapshot age unknown; saved ${P(Y.snapshot.createdAt)}. Observation ages are also unknown.` : `Snapshot age ${X(n)}; observation ages below.`, e.uncertain ? "Time uncertain \u2014 device and current-time receipt are unavailable or disagree by more than five minutes. Current direction and monitoring availability are withheld." : ""].join(" "), t.className = "connection attention";
 }
 function ce() {
-  let e = aa();
-  if (!Q) {
-    Pt(e);
+  let e = ua();
+  if (!Y) {
+    Wt(e);
     return;
   }
-  let t = document.activeElement?.id, n = new Set([...document.querySelectorAll("details.section-help[open]")].map((c) => c.id)), a = ["monitor", "forecast-details", "peaks"].flatMap((c) => [...T(c).querySelectorAll("details:not(.section-help)")].flatMap((u, h) => u.open ? [`${c}:${h}`] : [])), r = Q.snapshot;
-  V = Ct({ nowMs: e.now, sources: r.sources, ratioTable: Ft });
-  let o = me || e.uncertain || J !== "checked" || e.now - r.createdAt > 12 * 6e4;
-  V.timeUncertain = e.uncertain, e.uncertain && (V.forecast.freshContext = !1, V.forecast.higherLater = { ...V.forecast.higherLater, available: !1, reason: { code: "public_time_uncertain" }, aboveCurrent: null, peakCfs: null, peakT: null });
-  let i = r.monitor.summary, s = !Pe(i.supportObservationT) || e.now - i.supportObservationT > 60 * 6e4;
-  o && (V.gauge.direction = { ...V.gauge.direction, available: !1, reason: { code: me ? "preview_ended" : e.uncertain ? "public_time_uncertain" : J !== "checked" ? "public_snapshot_unavailable" : "published_snapshot_old" } });
-  let l = r;
-  if (o || s || !i.support.clockTrusted) {
-    let c = [...i.capability.reasons, ...s ? ["observation_older_than_60min"] : [], ...e.uncertain ? ["public_time_uncertain"] : [], ...i.support.clockTrusted ? [] : ["clock_uncertain"]];
-    l = { ...r, monitor: { ...r.monitor, summary: { ...i, capability: { ...i.capability, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: c }, preparation: { ...i.preparation, nextEligibleAt: null } } } };
+  let t = document.activeElement?.id, n = new Set([...document.querySelectorAll("details.section-help[open]")].map((c) => c.id)), a = ["monitor", "forecast-details", "peaks"].flatMap((c) => [...x(c).querySelectorAll("details:not(.section-help)")].flatMap((p, h) => p.open ? [`${c}:${h}`] : [])), r = Y.snapshot, i = e.uncertain ? r.createdAt : e.now;
+  W = Nt({ nowMs: i, sources: r.sources, ratioTable: Bt });
+  let o = ge || e.uncertain || J !== "checked" || e.now - r.createdAt > 12 * 6e4;
+  W.timeUncertain = e.uncertain, e.uncertain && (W.forecast.freshContext = !1, W.forecast.higherLater = { ...W.forecast.higherLater, available: !1, reason: { code: "public_time_uncertain" }, aboveCurrent: null, peakCfs: null, peakT: null });
+  let s = r.monitor.summary, l = !Le(s.supportObservationT) || i - s.supportObservationT > 60 * 6e4;
+  o && (W.gauge.direction = { ...W.gauge.direction, available: !1, reason: { code: ge ? "preview_ended" : e.uncertain ? "public_time_uncertain" : J !== "checked" ? "public_snapshot_unavailable" : "published_snapshot_old" } });
+  let u = r;
+  if (o || l || !s.support.clockTrusted) {
+    let c = [...s.capability.reasons, ...l ? [Le(s.supportObservationT) ? "observation_older_than_60min" : "no_data"] : [], ...e.uncertain ? ["public_time_uncertain"] : [], ...s.support.clockTrusted ? [] : ["clock_uncertain"]];
+    u = { ...r, monitor: { ...r.monitor, summary: { ...s, capability: { ...s.capability, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: c }, preparation: { ...s.preparation, nextEligibleAt: null } } } };
   }
-  qt(l, V, e.uncertain ? null : { lastCommitAt: r.createdAt, workerStale: e.now - r.createdAt > 12 * 6e4 }, C, e.now, { publicView: !0 });
-  for (let c of T("forecast-details").querySelectorAll("a")) c.getAttribute("href") === "/data/ratio_table.json" && (c.href = new URL("ratio_table.json", Bt).href, c.textContent = "View the frozen historical-case table");
+  Ft(u, W, e.uncertain ? null : { lastCommitAt: r.createdAt, workerStale: e.now - r.createdAt > 12 * 6e4 }, N, i, { publicView: !0 });
+  for (let c of x("forecast-details").querySelectorAll("a")) c.getAttribute("href") === "/data/ratio_table.json" && (c.href = new URL("ratio_table.json", Gt).href, c.textContent = "View the frozen historical-case table");
   a.forEach((c) => {
-    let [u, h] = c.split(":"), d = T(u).querySelectorAll("details:not(.section-help)")[Number(h)];
+    let [p, h] = c.split(":"), d = x(p).querySelectorAll("details:not(.section-help)")[Number(h)];
     d && (d.open = !0);
-  }), ft(n), document.querySelectorAll("[data-range]").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.range === C.range))), T("past").value = String(C.past), T("reference").value = C.reference, Me(T("chart"), V, C), Pt(e), Ne(), sa(), t && T(t) && document.activeElement?.id !== t && T(t).focus({ preventScroll: !0 });
+  }), pt(n), document.querySelectorAll("[data-range]").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.range === N.range))), x("past").value = String(N.past), x("reference").value = N.reference, ke(x("chart"), W, N), Wt(e), Oe(), da(), t && x(t) && document.activeElement?.id !== t && x(t).focus({ preventScroll: !0 });
 }
-async function Yt(e, t = Gt * 2) {
+async function en(e, t = Jt * 2) {
   let n = new AbortController(), a = setTimeout(() => n.abort(), 18e3);
   try {
     let r = await fetch(e, { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: n.signal });
     if (!r.ok) throw new Error("unavailable");
-    let o = await r.text();
-    return new TextEncoder().encode(o).length > t && E(), { response: r, value: JSON.parse(o) };
+    let i = await r.text();
+    return new TextEncoder().encode(i).length > t && L(), { response: r, value: JSON.parse(i) };
   } finally {
     clearTimeout(a);
   }
 }
-async function ra() {
-  let e = new URL("version.json", Bt);
+async function fa() {
+  let e = new URL("version.json", Gt);
   e.searchParams.set("check", String(Date.now()));
-  let { response: t, value: n } = await Yt(e, 65536);
-  (n?.schemaVersion !== 1 || !["active", "ended"].includes(n.state)) && E(), me = n.state === "ended";
-  let a = t.headers.get("Date"), r = t.headers.get("Age"), o = Date.parse(a || "");
-  if (!Pe(o) || o < Ze || o > Ee || r === null || !/^\d+$/.test(r)) throw new Error("time_unavailable");
-  let i = Number(r);
-  if (!Number.isSafeInteger(i) || i > 7 * 86400) throw new Error("time_unavailable");
-  let s = o + i * 1e3, l = Date.now();
-  l >= o - we && l <= s + we && s - l <= we && (le = Math.max(s, l, Zt(), Q?.snapshot.createdAt ?? 0), Fe = { now: le, mono: performance.now() }), ge = { lower: o, upper: s, mono: performance.now() }, Ye = !1;
+  let { response: t, value: n } = await en(e, 65536);
+  (n?.schemaVersion !== 1 || !["active", "ended"].includes(n.state)) && L(), ge = n.state === "ended";
+  let a = t.headers.get("Date"), r = t.headers.get("Age"), i = Date.parse(a || "");
+  if (!Le(i) || i < Qe || i > Ne || r === null || !/^\d+$/.test(r)) throw new Error("time_unavailable");
+  let o = Number(r);
+  if (!Number.isSafeInteger(o) || o > 7 * 86400) throw new Error("time_unavailable");
+  let s = i + o * 1e3, l = Date.now();
+  l >= i - ye && l <= s + ye && s - l <= ye && (le = Math.max(s, l, Kt(), Y?.snapshot.createdAt ?? 0), He = { now: le, mono: performance.now() }), pe = { lower: i, upper: s, mono: performance.now() }, Ke = !1;
 }
-function ia(e, t) {
-  if (Q) {
-    let n = Q.snapshot, a = e.snapshot;
+function ha(e, t) {
+  if (Y) {
+    let n = Y.snapshot, a = e.snapshot;
     if (a.createdAt < n.createdAt || a.createdAt === n.createdAt && a.id < n.id) {
       J = "older";
       return;
     }
     if (a.id === n.id) {
-      (a.createdAt !== n.createdAt || JSON.stringify(a) !== JSON.stringify(n)) && E(), J = "checked";
+      (a.createdAt !== n.createdAt || JSON.stringify(a) !== JSON.stringify(n)) && L(), J = "checked";
       return;
     }
   }
-  Q = e, He = t, J = "checked";
+  Y = e, Be = t, J = "checked";
 }
-async function Le() {
-  if (!ct) {
-    ct = !0, T("refresh").disabled = !0;
+async function Re() {
+  if (!dt) {
+    dt = !0, x("refresh").disabled = !0;
     try {
-      let e = new URL(Yn);
+      let e = new URL(sa);
       e.searchParams.set("check", String(Date.now()));
-      let t = await Promise.allSettled([ra(), Yt(e)]);
-      if (t[0].status === "rejected" && (Ye = !0), t[1].status === "fulfilled")
+      let t = await Promise.allSettled([fa(), en(e)]);
+      if (t[0].status === "rejected" && (Ke = !0), t[1].status === "fulfilled")
         try {
           let n = t[1].value.value;
-          ia(await Jt(n), n);
+          ha(await Qt(n), n);
         } catch {
           J = "invalid";
         }
       else J = "offline";
       ce();
     } finally {
-      ct = !1, T("refresh").disabled = !1;
+      dt = !1, x("refresh").disabled = !1;
     }
   }
 }
 document.querySelectorAll("[data-range]").forEach((e) => e.addEventListener("click", () => {
-  C.range = e.dataset.range, C.cursorT = null, Qe(), ce();
+  N.range = e.dataset.range, N.cursorT = null, et(), ce();
 }));
-T("past").addEventListener("change", () => {
-  C.past = Number(T("past").value), Qe(), ce();
+x("past").addEventListener("change", () => {
+  N.past = Number(x("past").value), et(), ce();
 });
-T("reference").addEventListener("change", () => {
-  C.reference = T("reference").value, Qe(), ce();
+x("reference").addEventListener("change", () => {
+  N.reference = x("reference").value, et(), ce();
 });
-T("theme").addEventListener("click", () => {
-  let e = C.theme ? C.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  C.theme = e ? "light" : "dark", document.documentElement.dataset.theme = C.theme, Qe();
+x("theme").addEventListener("click", () => {
+  let e = N.theme ? N.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  N.theme = e ? "light" : "dark", document.documentElement.dataset.theme = N.theme, et();
 });
-T("refresh").addEventListener("click", Le);
-T("chart").addEventListener("pointerdown", (e) => {
-  C.cursorT = Dt(e), V && Me(T("chart"), V, C);
+x("refresh").addEventListener("click", Re);
+x("chart").addEventListener("pointerdown", (e) => {
+  N.cursorT = jt(e), W && ke(x("chart"), W, N);
 });
-T("chart-cursor").addEventListener("input", () => {
-  C.cursorT = lt(), V && Me(T("chart"), V, C);
+x("chart-cursor").addEventListener("input", () => {
+  N.cursorT = ut(), W && ke(x("chart"), W, N);
 });
-T("chart-cursor").addEventListener("keydown", (e) => {
-  let t = jt(e.key);
-  t !== null && (e.preventDefault(), C.cursorT = t, V && Me(T("chart"), V, C));
+x("chart-cursor").addEventListener("keydown", (e) => {
+  let t = Ht(e.key);
+  t !== null && (e.preventDefault(), N.cursorT = t, W && ke(x("chart"), W, N));
 });
 document.addEventListener("visibilitychange", () => {
-  document.hidden || (J = "waiting", ce(), Le());
+  document.hidden || (J = "waiting", ce(), Re());
 });
 window.addEventListener("pageshow", (e) => {
-  e.persisted && (J = "waiting", ce(), Le());
+  e.persisted && (J = "waiting", ce(), Re());
 });
 window.addEventListener("offline", () => {
-  J = "offline", Ye = !0, ce();
+  J = "offline", Ke = !0, ce();
 });
-window.addEventListener("online", Le);
-var Ht = 0;
+window.addEventListener("online", Re);
+var Vt = 0;
 new ResizeObserver((e) => {
   let t = Math.round(e[0].contentRect.width);
-  t !== Ht && (Ht = t, V && Me(T("chart"), V, C), Ne());
-}).observe(T("chart"));
-async function oa() {
-  let e = zt(Wt);
+  t !== Vt && (Vt = t, W && ke(x("chart"), W, N), Oe());
+}).observe(x("chart"));
+async function pa() {
+  let e = Zt(zt);
   if (e?.packet)
     try {
-      Q = await Jt(e.packet), He = e.packet, Pe(e.greatestNow) && e.greatestNow >= Ze && e.greatestNow <= Ee && (le = Math.max(le, e.greatestNow + Math.max(0, Date.now() - Number(e.savedDeviceMs || Date.now())))), Pe(e.trustedNow) && e.trustedNow >= Ze && e.trustedNow <= Ee && (Fe = { now: e.trustedNow, mono: performance.now() }), me = e.ended === !0, J = "offline", ce();
+      Y = await Qt(e.packet), Be = e.packet, Le(e.greatestNow) && e.greatestNow >= Qe && e.greatestNow <= Ne && (le = Math.max(le, e.greatestNow + Math.max(0, Date.now() - Number(e.savedDeviceMs || Date.now())))), Le(e.trustedNow) && e.trustedNow >= Qe && e.trustedNow <= Ne && (He = { now: e.trustedNow, mono: performance.now() }), ge = e.ended === !0, J = "offline", ce();
     } catch {
-      Q = null, He = null;
+      Y = null, Be = null;
     }
-  await Le(), setInterval(() => {
-    document.hidden || Le();
+  await Re(), setInterval(() => {
+    document.hidden || Re();
   }, 5 * 6e4), setInterval(() => {
     document.hidden || ce();
   }, 3e4);
 }
-oa();
+pa();
 export {
-  Ct as buildWatchModel,
-  Jt as verifyPublicPacket
+  Nt as buildWatchModel,
+  Qt as verifyPublicPacket
 };
