@@ -53,7 +53,7 @@ button,select{min-width:48px}
 .monitor details{margin:0}
 .monitor summary{justify-content:space-between;gap:12px;font-size:13px}
 .monitor summary h2{font-size:16px;letter-spacing:0}
-.monitor summary>span{color:var(--accent);white-space:nowrap}
+.monitor summary>span{color:var(--accent);white-space:normal;max-width:45%;overflow-wrap:anywhere;text-align:right;font-size:12px}.monitor summary h2{min-width:0}
 .monitor details p:last-child,.monitor-fact{padding-bottom:10px}
 .monitor p{font-size:14px}
 .peak-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
