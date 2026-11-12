@@ -13,7 +13,7 @@ function ta() {
     second: "numeric"
   })), Rt;
 }
-function Q(e) {
+function Y(e) {
   if (!Number.isFinite(e)) throw new RangeError("laParts needs a finite time");
   let t = {};
   for (let n of ta().formatToParts(new Date(e)))
@@ -28,15 +28,15 @@ function Q(e) {
   };
 }
 function Jt(e) {
-  let t = Q(e);
+  let t = Y(e);
   return Date.UTC(t.year, t.month - 1, t.day, t.hour, t.minute, t.second) - Math.floor(e / 1e3) * 1e3;
 }
-function We(e, t, n, a = 0, r = 0) {
+function Ge(e, t, n, a = 0, r = 0) {
   let i = Date.UTC(e, t - 1, n, a, r), o = i - Jt(i);
   return i - Jt(o);
 }
 function we(e) {
-  let t = Q(e).month;
+  let t = Y(e).month;
   return t >= 11 || t <= 2 ? 400 : t <= 4 ? 200 : 100;
 }
 
@@ -50,7 +50,7 @@ function sa(e, t) {
   return null;
 }
 function ra(e, t) {
-  return (e && Array.isArray(e.wet_months) ? e.wet_months : aa).includes(Q(t).month);
+  return (e && Array.isArray(e.wet_months) ? e.wet_months : aa).includes(Y(t).month);
 }
 var Ne = (e) => typeof e == "number" && Number.isFinite(e);
 function ia(e) {
@@ -68,11 +68,11 @@ function Yt(e, t, n, a = t.t) {
   let r = [], i = [], o = ra(n, a);
   if (!o || !n || !Array.isArray(n.bins) || !n.bins.length) return { high: r, low: i, wetSeason: o };
   ia(n);
-  let s = n.bins, l = s[s.length - 1].lead_hi_h;
+  let s = n.bins, c = s[s.length - 1].lead_hi_h;
   for (let u of e) {
-    let c = (u.t - t.t) / na;
-    if (c <= 0 || c > l) continue;
-    let f = sa(s, c);
+    let l = (u.t - t.t) / na;
+    if (l <= 0 || l > c) continue;
+    let f = sa(s, l);
     if (!f) continue;
     let d, g;
     if (u.cfs >= n.storm_flow_cfs) {
@@ -86,11 +86,11 @@ function Yt(e, t, n, a = t.t) {
 }
 
 // site/js/watch-model.js
-var Oe = 6e4, D = 60 * Oe, R = 24 * D, pe = 30 * Oe, Ge = 6 * D, Ie = 15 * Oe, oa = [2, 4, 6, 8, 12, 18, 24], F = (e) => typeof e == "number" && Number.isFinite(e), E = (e) => F(e) && Math.abs(e) <= 864e13, v = (e, t = {}) => ({ code: e, details: t }), Ze = (e, t) => E(t) ? Math.max(0, e - t) : null, la = (e, t) => Object.prototype.hasOwnProperty.call(e, t), Tt = (e) => ({ t: e.t, cfs: e.cfs }), X = (e) => e && e.usable !== !1 && F(e.cfs) && e.cfs >= 0;
-function ze(e, t) {
+var Oe = 6e4, D = 60 * Oe, R = 24 * D, pe = 30 * Oe, Ve = 6 * D, Ie = 15 * Oe, oa = [2, 4, 6, 8, 12, 18, 24], F = (e) => typeof e == "number" && Number.isFinite(e), E = (e) => F(e) && Math.abs(e) <= 864e13, v = (e, t = {}) => ({ code: e, details: t }), Je = (e, t) => E(t) ? Math.max(0, e - t) : null, la = (e, t) => Object.prototype.hasOwnProperty.call(e, t), Tt = (e) => ({ t: e.t, cfs: e.cfs }), X = (e) => e && e.usable !== !1 && F(e.cfs) && e.cfs >= 0;
+function Xe(e, t) {
   let n = (s) => {
-    let [l, u = "0"] = String(s).toLowerCase().split("e"), c = l.includes(".") ? l.length - l.indexOf(".") - 1 : 0;
-    return { coefficient: BigInt(l.replace(".", "")), exponent: Number(u) - c };
+    let [c, u = "0"] = String(s).toLowerCase().split("e"), l = c.includes(".") ? c.length - c.indexOf(".") - 1 : 0;
+    return { coefficient: BigInt(c.replace(".", "")), exponent: Number(u) - l };
   }, a = n(e), r = n(t), i = Math.min(a.exponent, r.exponent);
   return +`${a.coefficient * 10n ** BigInt(a.exponent - i) - r.coefficient * 10n ** BigInt(r.exponent - i)}e${i}`;
 }
@@ -135,7 +135,7 @@ function nn(e, t) {
   let n = Pe(e, t);
   return { before: n > 0 ? e[n - 1] : null, after: e[n] ?? null };
 }
-function Xe(e, t, n = Ie) {
+function Ze(e, t, n = Ie) {
   let { before: a, after: r } = nn(e, t), i = r?.t === t ? r : a && (!r || t - a.t <= r.t - t) ? a : r;
   return i && Math.abs(i.t - t) <= n ? i : null;
 }
@@ -161,7 +161,7 @@ function an(e, t) {
   };
 }
 function sn(e, t) {
-  let n = ze(e.current.cfs, t.cfs), a = F(n) ? ze(e.referenceCfs, n) : null;
+  let n = Xe(e.current.cfs, t.cfs), a = F(n) ? Xe(e.referenceCfs, n) : null;
   return !F(n) || !F(a) ? { ...e, comparison: t, reason: v("non_finite_arithmetic") } : {
     ...e,
     available: !0,
@@ -178,7 +178,7 @@ function Ot(e, t) {
   let n = an(e, t);
   if (!X(n.current))
     return { ...n, reason: v(n.current ? "current_observation_unusable" : "current_observation_unavailable") };
-  let a = Xe(e, n.targetT);
+  let a = Ze(e, n.targetT);
   return a ? X(a) ? sn(n, a) : { ...n, comparison: a, reason: v("comparison_unusable") } : { ...n, reason: v("comparison_missing", { toleranceMs: Ie }) };
 }
 function It(e, t) {
@@ -191,28 +191,28 @@ function It(e, t) {
     maxGapMs: null
   };
   if (!X(a.current)) return { ...a, reason: v(a.current ? "current_observation_unusable" : "current_observation_unavailable") };
-  let r = Xe(e, a.targetT);
+  let r = Ze(e, a.targetT);
   if (!r) return { ...a, reason: v("window_start_missing", { toleranceMs: Ie }) };
   if (!X(r)) return { ...a, startSupport: r, reason: v("window_start_unusable") };
-  let i = e.slice(Pe(e, a.targetT), Pe(e, t) + 1), o = i.find((c) => !X(c));
+  let i = e.slice(Pe(e, a.targetT), Pe(e, t) + 1), o = i.find((l) => !X(l));
   if (o) return { ...a, startSupport: r, reason: v("window_unusable_observation", { t: o.t }) };
-  let s = r.t < a.targetT ? [r, ...i] : i, l = 0;
-  for (let c = 1; c < s.length; c++) l = Math.max(l, s[c].t - s[c - 1].t);
-  if (l > pe) return {
+  let s = r.t < a.targetT ? [r, ...i] : i, c = 0;
+  for (let l = 1; l < s.length; l++) c = Math.max(c, s[l].t - s[l - 1].t);
+  if (c > pe) return {
     ...a,
     startSupport: r,
-    maxGapMs: l,
-    reason: v("observation_gap", { maxGapMs: l, allowedMs: pe })
+    maxGapMs: c,
+    reason: v("observation_gap", { maxGapMs: c, allowedMs: pe })
   };
-  let u = i.reduce((c, f) => !c || f.cfs < c.cfs ? f : c, null);
+  let u = i.reduce((l, f) => !l || f.cfs < l.cfs ? f : l, null);
   return u ? {
     ...sn(a, u),
     minimum: u,
     startSupport: r,
-    maxGapMs: l,
+    maxGapMs: c,
     // The selected minimum is not an approximation to the 24-hour endpoint.
     approximate: !1
-  } : { ...a, startSupport: r, maxGapMs: l, reason: v("window_empty") };
+  } : { ...a, startSupport: r, maxGapMs: c, reason: v("window_empty") };
 }
 function $t(e, t, n = !1) {
   let a = [], r = [], i = [], o = [];
@@ -221,8 +221,8 @@ function $t(e, t, n = !1) {
       r.length && a.push(r), r = [], o.push({ t: s.t, reason: n && s.cfs <= 0 ? "non_positive_flow" : s.reason?.code ?? "unusable_observation" });
       continue;
     }
-    let l = r[r.length - 1];
-    l && s.t - l.t > t && (i.push({ startT: l.t, endT: s.t, reason: "unsupported_gap" }), a.push(r), r = []), r.push(Tt(s));
+    let c = r[r.length - 1];
+    c && s.t - c.t > t && (i.push({ startT: c.t, endT: s.t, reason: "unsupported_gap" }), a.push(r), r = []), r.push(Tt(s));
   }
   return r.length && a.push(r), { segments: a, gaps: i, exclusions: o };
 }
@@ -252,7 +252,7 @@ function ye(e, t = {}) {
     ...t
   };
 }
-function rn(e, t = Ge, n = !1) {
+function rn(e, t = Ve, n = !1) {
   let a = $t(e, t, n);
   return ye(a.segments, { gaps: a.gaps, exclusions: a.exclusions });
 }
@@ -263,7 +263,7 @@ function Re(e, t) {
   let r = e[n - 1], i = (t - r.t) / (a.t - r.t), o = (1 - i) * r.cfs + i * a.cfs;
   return F(o) ? o : null;
 }
-function ct(e, t) {
+function ut(e, t) {
   for (let n of e.segments) {
     let a = Re(n, t);
     if (a !== null) return a;
@@ -277,15 +277,15 @@ function Pt(e, t, n) {
     if (i > o) continue;
     let s = [
       { t: i, cfs: Re(r, i) },
-      ...r.filter((l) => l.t > i && l.t < o),
+      ...r.filter((c) => c.t > i && c.t < o),
       ...o > i ? [{ t: o, cfs: Re(r, o) }] : []
     ];
     a.push(s);
   }
   return ye(a, { gaps: e.gaps, exclusions: e.exclusions });
 }
-function lt(e, t, n, a) {
-  let r = Ze(n, t);
+function ct(e, t, n, a) {
+  let r = Je(n, t);
   return {
     available: !!e?.data,
     dataT: E(t) ? t : null,
@@ -316,7 +316,7 @@ function ca(e, t, n, a) {
     asOf: !!(t && n - t.t > 30 * Oe)
   };
   if (!X(t)) return { ...i, reason: v(t ? "current_observation_unusable" : "current_observation_unavailable") };
-  let o = Xe(e, r);
+  let o = Ze(e, r);
   if (!o) return { ...i, reason: v("comparison_missing", { toleranceMs: Ie }) };
   let s = {
     ...i,
@@ -327,12 +327,12 @@ function ca(e, t, n, a) {
   if (!X(o)) return { ...s, reason: v("comparison_unusable") };
   if (n - t.t > 2 * D) return { ...s, reason: v("gauge_stale") };
   if (a?.error) return { ...s, reason: v("source_fetch_failed") };
-  let l = e.slice(Pe(e, o.t), Pe(e, t.t) + 1), u = l.find((d) => !X(d));
+  let c = e.slice(Pe(e, o.t), Pe(e, t.t) + 1), u = c.find((d) => !X(d));
   if (u) return { ...s, reason: v("unusable_observation", { t: u.t }) };
-  let c = 0;
-  for (let d = 1; d < l.length; d++) c = Math.max(c, l[d].t - l[d - 1].t);
-  if (c > pe) return { ...s, reason: v("observation_gap", { maxGapMs: c, allowedMs: pe }) };
-  let f = ze(t.cfs, o.cfs);
+  let l = 0;
+  for (let d = 1; d < c.length; d++) l = Math.max(l, c[d].t - c[d - 1].t);
+  if (l > pe) return { ...s, reason: v("observation_gap", { maxGapMs: l, allowedMs: pe }) };
+  let f = Xe(t.cfs, o.cfs);
   return F(f) ? { ...s, available: !0, reason: null, changeCfs: f } : { ...s, reason: v("non_finite_arithmetic") };
 }
 function ua(e, t, n, a) {
@@ -348,15 +348,15 @@ function ua(e, t, n, a) {
     asOf: !!(t && n - t.t > 30 * Oe)
   };
   if (!X(t)) return { ...r, reason: v(t ? "current_observation_unusable" : "current_observation_unavailable") };
-  let i = Xe(e, t.t - D);
+  let i = Ze(e, t.t - D);
   if (!X(i)) return { ...r, comparison: i, reason: v("direction_comparison_unavailable") };
-  let o = ze(t.cfs, i.cfs), s = Math.max(1, 0.01 * Math.max(t.cfs, i.cfs)), l = { ...r, comparison: i, elapsedMs: t.t - i.t, changeCfs: o, toleranceCfs: s };
-  if (!F(o)) return { ...l, changeCfs: null, reason: v("non_finite_arithmetic") };
-  if (n - t.t > 2 * D) return { ...l, reason: v("gauge_stale") };
-  if (a?.error) return { ...l, reason: v("source_fetch_failed") };
-  let u = e.filter((c) => c.t >= i.t && c.t <= t.t);
-  return u.some((c) => !X(c)) || u.some((c, f) => f && c.t - u[f - 1].t > pe) ? { ...l, reason: v("direction_observation_gap") } : {
-    ...l,
+  let o = Xe(t.cfs, i.cfs), s = Math.max(1, 0.01 * Math.max(t.cfs, i.cfs)), c = { ...r, comparison: i, elapsedMs: t.t - i.t, changeCfs: o, toleranceCfs: s };
+  if (!F(o)) return { ...c, changeCfs: null, reason: v("non_finite_arithmetic") };
+  if (n - t.t > 2 * D) return { ...c, reason: v("gauge_stale") };
+  if (a?.error) return { ...c, reason: v("source_fetch_failed") };
+  let u = e.filter((l) => l.t >= i.t && l.t <= t.t);
+  return u.some((l) => !X(l)) || u.some((l, f) => f && l.t - u[f - 1].t > pe) ? { ...c, reason: v("direction_observation_gap") } : {
+    ...c,
     available: !0,
     reason: null,
     label: Math.abs(o) <= s ? "roughly_level" : o > 0 ? "rising" : "falling"
@@ -385,24 +385,24 @@ function Kt(e, t, n) {
 function en(e, t, n) {
   if (!E(t)) return { ...ce("observations_unavailable"), steps: [] };
   let a = [], r = [], i = [], o = [], s = null;
-  for (let l of e) {
-    if (l.t < t - 2 * R) continue;
-    let u = n(e, l.t), c = u.comparison?.cfs;
-    if (!u.available || !F(c + u.referenceCfs)) {
+  for (let c of e) {
+    if (c.t < t - 2 * R) continue;
+    let u = n(e, c.t), l = u.comparison?.cfs;
+    if (!u.available || !F(l + u.referenceCfs)) {
       o.length && a.push(o), o = [], s = null;
       continue;
     }
-    if (s && l.t - s.t > pe && (i.push({ startT: s.t, endT: l.t, reason: "unsupported_gap" }), o.length && a.push(o), o = [], s = null), s) for (let d of Ut(s.t, l.t)) {
-      let g = (d - s.t) / (l.t - s.t), h = (1 - g) * s.base + g * c, m = h + _e(d - 1), A = h + _e(d);
+    if (s && c.t - s.t > pe && (i.push({ startT: s.t, endT: c.t, reason: "unsupported_gap" }), o.length && a.push(o), o = [], s = null), s) for (let d of Ut(s.t, c.t)) {
+      let g = (d - s.t) / (c.t - s.t), h = (1 - g) * s.base + g * l, m = h + _e(d - 1), A = h + _e(d);
       o.push({ t: d, cfs: m }), a.push(o), o = [{ t: d, cfs: A }], r.push({ t: d, beforeCfs: m, afterCfs: A });
     }
-    let f = { t: l.t, cfs: c + u.referenceCfs };
-    o.at(-1)?.t !== l.t && o.push(f), s = { t: l.t, base: c };
+    let f = { t: c.t, cfs: l + u.referenceCfs };
+    o.at(-1)?.t !== c.t && o.push(f), s = { t: c.t, base: l };
   }
   return o.length && a.push(o), { ...ye(a, { gaps: i }), steps: r };
 }
 function yt(e, t = "forecast_unavailable") {
-  let n = () => ce(t), a = () => ({ endpoint: Ve(t), low: Ve(t) });
+  let n = () => ce(t), a = () => ({ endpoint: ze(t), low: ze(t) });
   return {
     available: !1,
     reason: v(t),
@@ -425,14 +425,14 @@ function yt(e, t = "forecast_unavailable") {
     cases: {
       available: !1,
       reason: v(t),
-      wetSeason: [1, 2, 3, 4, 10, 11, 12].includes(Q(e).month),
+      wetSeason: [1, 2, 3, 4, 10, 11, 12].includes(Y(e).month),
       maxLeadHours: 72,
       tableVersion: null,
       trainingCutoff: null
     }
   };
 }
-function Ve(e = "path_unavailable", t = !1) {
+function ze(e = "path_unavailable", t = !1) {
   return {
     available: !1,
     reason: typeof e == "string" ? v(e) : e,
@@ -447,10 +447,10 @@ function Ve(e = "path_unavailable", t = !1) {
 }
 function Ut(e, t) {
   if (!E(e) || !E(t) || e >= t) return [];
-  let n = Q(e), a = Q(t), r = [];
+  let n = Y(e), a = Y(t), r = [];
   for (let i = n.year; i <= a.year; i++)
     for (let o of [3, 5, 11]) {
-      let s = We(i, o, 1);
+      let s = Ge(i, o, 1);
       s > e && s <= t && r.push(s);
     }
   return r.sort((i, o) => i - o);
@@ -458,17 +458,17 @@ function Ut(e, t) {
 function fa(e, t, n) {
   let a = Pt(e, n.t - 2 * R, n.t), r = Pt(t, n.t, t.endT ?? n.t), i = a.segments.map((o) => [...o]);
   for (let o of r.segments) {
-    let s = o.filter((c) => c.t > n.t);
+    let s = o.filter((l) => l.t > n.t);
     if (!s.length) continue;
-    let l = i[i.length - 1];
-    o[0].t === n.t && l?.[l.length - 1].t === n.t ? l.push(...s) : i.push(s);
+    let c = i[i.length - 1];
+    o[0].t === n.t && c?.[c.length - 1].t === n.t ? c.push(...s) : i.push(s);
   }
   return ye(i);
 }
 function on(e, t) {
-  let n = t - R, a = ct(e, t);
+  let n = t - R, a = ut(e, t);
   if (a === null) return null;
-  let r = ct(e, n);
+  let r = ut(e, n);
   if (r === null) return null;
   let i = e.segments.find((s) => s[0].t <= n && s[s.length - 1].t >= t), o = null;
   if (i) {
@@ -479,7 +479,7 @@ function on(e, t) {
   return { current: a, endpoint: r, low: o };
 }
 function da(e, t, n, a, r, i) {
-  let o = ct(t, r);
+  let o = ut(t, r);
   if (o === null) return null;
   let s = r - R;
   if (s > a.t) {
@@ -487,13 +487,13 @@ function da(e, t, n, a, r, i) {
     return h && h[i] !== null ? { current: o, base: h[i] } : null;
   }
   if (i === "endpoint") {
-    let h = Xe(n, s);
+    let h = Ze(n, s);
     return X(h) ? { current: o, base: h.cfs, comparisonT: h.t } : null;
   }
-  let l = Xe(n, s);
-  if (!X(l)) return null;
-  let u = n.filter((h) => h.t >= s && h.t <= a.t), c = l.t < s ? [l, ...u] : u;
-  if (!u.length || u.some((h) => !X(h)) || c.some((h, m) => m && h.t - c[m - 1].t > pe)) return null;
+  let c = Ze(n, s);
+  if (!X(c)) return null;
+  let u = n.filter((h) => h.t >= s && h.t <= a.t), l = c.t < s ? [c, ...u] : u;
+  if (!u.length || u.some((h) => !X(h)) || l.some((h, m) => m && h.t - l[m - 1].t > pe)) return null;
   let f = t.segments.find((h) => h[0].t <= a.t && h[h.length - 1].t >= r);
   if (!f) return null;
   let d = o, g = null;
@@ -516,44 +516,44 @@ function ha(e, t, n, a, r) {
 function pa(e, t, n, a, r = []) {
   let i = /* @__PURE__ */ new Set([t, n]);
   for (let s of e.points)
-    for (let l of [s.t, s.t + R]) l >= t && l <= n && i.add(l);
+    for (let c of [s.t, s.t + R]) c >= t && c <= n && i.add(c);
   for (let s of Ut(t, n))
     i.add(s), s - 1 >= t && i.add(s - 1);
   for (let s of r)
     i.add(s), s - 1 >= t && i.add(s - 1);
-  let o = [...i].sort((s, l) => s - l);
+  let o = [...i].sort((s, c) => s - c);
   for (let s = 1; s < o.length; s++) {
-    let l = o[s - 1], u = o[s], c = (l + u) / 2, f = on(e, c);
+    let c = o[s - 1], u = o[s], l = (c + u) / 2, f = on(e, l);
     if (!f || a === "low" && f.low === null) {
-      i.add(c);
+      i.add(l);
       continue;
     }
     if (a !== "low") continue;
-    let d = e.segments.find((m) => m[0].t <= c - R && m[m.length - 1].t >= c);
+    let d = e.segments.find((m) => m[0].t <= l - R && m[m.length - 1].t >= l);
     if (!d) continue;
     let g = 1 / 0;
-    for (let m of d) m.t > c - R && m.t < c && (g = Math.min(g, m.cfs));
+    for (let m of d) m.t > l - R && m.t < l && (g = Math.min(g, m.cfs));
     let h = [
-      [Re(d, l - R), Re(d, u - R)],
-      [Re(d, l), Re(d, u)],
+      [Re(d, c - R), Re(d, u - R)],
+      [Re(d, c), Re(d, u)],
       ...F(g) ? [[g, g]] : []
     ].filter((m) => m.every(F));
     for (let m = 0; m < h.length; m++) for (let A = m + 1; A < h.length; A++) {
       let w = h[m][0] - h[A][0], p = h[m][1] - h[A][1];
       if (!F(w) || !F(p) || w === p) continue;
       let y = w / (w - p);
-      y > 0 && y < 1 && i.add(l + y * (u - l));
+      y > 0 && y < 1 && i.add(c + y * (u - c));
     }
   }
-  return [...i].sort((s, l) => s - l);
+  return [...i].sort((s, c) => s - c);
 }
 function ga(e, t, n, a, r, i) {
-  if (!t.available) return { reference: { ...ce(t.reason), steps: [] }, crossing: Ve(t.reason, r) };
-  let o = fa(e, t, n), s = t.endT, l = n.t, u = ha(i, n, l, s, a), c = pa(o, l, s, a, u), f = /* @__PURE__ */ new Set([...Ut(l, s), ...u]), d = [], g = [], h = [], m = Ve("comparison_coverage_missing", r), A = 0, w = !1, p = null, y = (k) => {
-    if (ct(t, k) === null) return null;
+  if (!t.available) return { reference: { ...ce(t.reason), steps: [] }, crossing: ze(t.reason, r) };
+  let o = fa(e, t, n), s = t.endT, c = n.t, u = ha(i, n, c, s, a), l = pa(o, c, s, a, u), f = /* @__PURE__ */ new Set([...Ut(c, s), ...u]), d = [], g = [], h = [], m = ze("comparison_coverage_missing", r), A = 0, w = !1, p = null, y = (k) => {
+    if (ut(t, k) === null) return null;
     let _ = da(o, t, i, n, k, a), M = _?.base;
     if (!_ || M === null || !F(M)) return null;
-    let B = _e(k), q = M + B, G = ze(_.current, M);
+    let B = _e(k), q = M + B, G = Xe(_.current, M);
     return F(q) && F(G) ? {
       t: k,
       current: _.current,
@@ -565,7 +565,7 @@ function ga(e, t, n, a, r, i) {
       minimumObservedT: _.minimumObservedT ?? null
     } : null;
   };
-  for (let k of c) {
+  for (let k of l) {
     let _ = y(k);
     if (!_) {
       m.t === null && (w = !0), h.length && d.push(h), h = [], p = null;
@@ -602,7 +602,7 @@ function ga(e, t, n, a, r, i) {
     }
     p = _;
   }
-  h.length && d.push(h), m.t === null && A && !w ? m = { ...Ve(null, r), available: !0, reason: null } : m.t === null && w && (m = Ve("comparison_coverage_missing", r));
+  h.length && d.push(h), m.t === null && A && !w ? m = { ...ze(null, r), available: !0, reason: null } : m.t === null && w && (m = ze("comparison_coverage_missing", r));
   let N = d.map((k) => {
     let _ = [];
     for (let M of k)
@@ -615,7 +615,7 @@ function ma(e, t) {
   let n = [e, t];
   for (let r = e + Oe; r < t; r += Oe) n.push(r);
   let a = n.map((r) => {
-    let i = Q(r);
+    let i = Y(r);
     return i.hour >= 8 && (i.hour < 17 || i.hour === 17 && i.minute === 0 && i.second === 0);
   });
   return a.every(Boolean) ? "inside_08_17" : a.every((r) => !r) ? "outside_08_17" : "spans_both";
@@ -629,9 +629,9 @@ function ba(e, t) {
       for (; i + 1 < a.length && a[i + 1].cfs === a[r].cfs; ) i++;
       let o = a[r - 1], s = a[i + 1];
       if (o && s && o.cfs < a[r].cfs && s.cfs < a[i].cfs && a[i].t > t) {
-        let l = r - 1;
-        for (; l > 0 && a[l - 1].cfs <= a[l].cfs; ) l--;
-        let u = Tt(a[l]);
+        let c = r - 1;
+        for (; c > 0 && a[c - 1].cfs <= a[c].cfs; ) c--;
+        let u = Tt(a[c]);
         n.push({
           startT: a[r].t,
           endT: a[i].t,
@@ -649,23 +649,23 @@ function ba(e, t) {
   return n.sort((a, r) => a.startT - r.startT);
 }
 function va(e, t, n, a, r, i, o) {
-  let s = yt(e), l = t?.data;
-  if (!l) return s;
-  let u = l.issuedT;
-  s.issuedT = E(u) ? u : null, s.issueAgeMs = Ze(e, u), s.older = s.issueAgeMs !== null && s.issueAgeMs > 12 * D, s.cases.tableVersion = o?.version ?? null, s.cases.trainingCutoff = o?.training_cutoff_utc ?? null;
-  let c = (p) => ({
+  let s = yt(e), c = t?.data;
+  if (!c) return s;
+  let u = c.issuedT;
+  s.issuedT = E(u) ? u : null, s.issueAgeMs = Je(e, u), s.older = s.issueAgeMs !== null && s.issueAgeMs > 12 * D, s.cases.tableVersion = o?.version ?? null, s.cases.trainingCutoff = o?.training_cutoff_utc ?? null;
+  let l = (p) => ({
     ...yt(e, p),
     issuedT: s.issuedT,
     issueAgeMs: s.issueAgeMs,
     older: s.older,
     cases: { ...s.cases, reason: v(p) }
   });
-  if (!E(u)) return c("forecast_issue_missing");
-  if (u > e) return c("forecast_issue_future");
-  if (e - u > 48 * D) return c("forecast_issue_too_old");
-  let f = tn(l.points).filter((p) => p.t <= e + 10 * R), d = rn(f, Ge);
-  if (!d.segments.some((p) => p[0].t <= e + Ge && p[p.length - 1].t >= e + R))
-    return c("forecast_next_day_coverage_missing");
+  if (!E(u)) return l("forecast_issue_missing");
+  if (u > e) return l("forecast_issue_future");
+  if (e - u > 48 * D) return l("forecast_issue_too_old");
+  let f = tn(c.points).filter((p) => p.t <= e + 10 * R), d = rn(f, Ve);
+  if (!d.segments.some((p) => p[0].t <= e + Ve && p[p.length - 1].t >= e + R))
+    return l("forecast_next_day_coverage_missing");
   if (s.available = d.available, s.reason = d.reason, s.raw = d, s.crests = ba(d, i?.t ?? e), s.nextCrest = s.crests[0] ?? null, s.laterHigherCrests = s.nextCrest ? s.crests.slice(1).filter((p) => p.cfs > s.nextCrest.cfs) : [], !X(i)) {
     let y = yt(e, i ? "current_observation_unusable" : "current_observation_unavailable");
     return {
@@ -679,7 +679,7 @@ function va(e, t, n, a, r, i, o) {
       cases: { ...s.cases, reason: y.cases.reason }
     };
   }
-  let g = ct(d, i.t);
+  let g = ut(d, i.t);
   if (g === null) {
     let p = yt(e, "forecast_alignment_unsupported");
     return {
@@ -693,12 +693,12 @@ function va(e, t, n, a, r, i, o) {
       cases: { ...s.cases, reason: p.cases.reason }
     };
   }
-  let h = ze(i.cfs, g);
-  if (!F(h)) return c("non_finite_arithmetic");
+  let h = Xe(i.cfs, g);
+  if (!F(h)) return l("non_finite_arithmetic");
   s.offsetCfs = h, s.largeAdjustment = Math.abs(h) > Math.max(10, 0.1 * i.cfs);
   let m = [], A = [];
   for (let p of d.segments) {
-    let y = p.map((k) => ({ t: k.t, cfs: k.cfs + h })), N = $t(y, Ge, !0);
+    let y = p.map((k) => ({ t: k.t, cfs: k.cfs + h })), N = $t(y, Ve, !0);
     m.push(...N.segments), A.push(...N.exclusions);
   }
   s.shifted = Pt(ye(m, { gaps: d.gaps, exclusions: A }), i.t, i.t + 72 * D), s.shifted.points.some((p) => p.t > i.t) || (s.shifted = { ...ce("non_positive_shifted_flow"), exclusions: A, gaps: d.gaps }), s.freshContext = !s.older && !t.error && !n?.error && e - i.t <= 2 * D, s.higherLater = {
@@ -721,7 +721,7 @@ function va(e, t, n, a, r, i, o) {
       largeAdjustment: s.largeAdjustment
     };
   }
-  if (s.cases.wetSeason = [1, 2, 3, 4, 10, 11, 12].includes(Q(e).month), !s.cases.wetSeason)
+  if (s.cases.wetSeason = [1, 2, 3, 4, 10, 11, 12].includes(Y(e).month), !s.cases.wetSeason)
     s.cases.reason = v("historical_cases_off_season"), s.high = ce(s.cases.reason), s.low = ce(s.cases.reason);
   else if (!o || o.version !== 3 || o.apply_to !== "flow" || !Array.isArray(o.bins) || !o.bins.length)
     s.cases.reason = v("historical_table_unavailable"), s.high = ce(s.cases.reason), s.low = ce(s.cases.reason);
@@ -729,7 +729,7 @@ function va(e, t, n, a, r, i, o) {
     try {
       let p = [], y = [], N = [], k = [];
       for (let _ of s.shifted.segments) {
-        let M = Yt(_, i, o, e), B = _[0]?.t === i.t && i.cfs > 0 ? [Tt(i)] : [], q = $t([...B, ...M.high], Ge, !0), G = $t([...B, ...M.low], Ge, !0);
+        let M = Yt(_, i, o, e), B = _[0]?.t === i.t && i.cfs > 0 ? [Tt(i)] : [], q = $t([...B, ...M.high], Ve, !0), G = $t([...B, ...M.low], Ve, !0);
         p.push(...q.segments), y.push(...G.segments), N.push(...q.exclusions), k.push(...G.exclusions);
       }
       s.high = ye(p, { gaps: s.shifted.gaps, exclusions: N }), s.low = ye(y, { gaps: s.shifted.gaps, exclusions: k });
@@ -747,21 +747,21 @@ function va(e, t, n, a, r, i, o) {
 }
 function wa(e, t) {
   let n = t?.data, a = /* @__PURE__ */ new Map(), r = /* @__PURE__ */ new Set();
-  for (let c of n?.conflicts ?? []) E(c) && c <= e && c % D === 0 && r.add(c);
-  for (let c of n?.hours ?? [])
-    if (!(!E(c.endT) || c.endT > e || c.endT % D !== 0)) {
-      if (!F(c.mm) || c.mm < 0) {
-        r.add(c.endT);
+  for (let l of n?.conflicts ?? []) E(l) && l <= e && l % D === 0 && r.add(l);
+  for (let l of n?.hours ?? [])
+    if (!(!E(l.endT) || l.endT > e || l.endT % D !== 0)) {
+      if (!F(l.mm) || l.mm < 0) {
+        r.add(l.endT);
         continue;
       }
-      a.has(c.endT) && a.get(c.endT) !== c.mm ? r.add(c.endT) : a.set(c.endT, c.mm);
+      a.has(l.endT) && a.get(l.endT) !== l.mm ? r.add(l.endT) : a.set(l.endT, l.mm);
     }
-  let i = [...a.keys(), ...r], o = i.length ? Math.max(...i) : null, s = Ze(e, o), l = oa.map((c) => {
+  let i = [...a.keys(), ...r], o = i.length ? Math.max(...i) : null, s = Je(e, o), c = oa.map((l) => {
     let f = {
-      hours: c,
+      hours: l,
       available: !1,
       reason: v("radar_unavailable"),
-      startT: o === null ? null : o - c * D,
+      startT: o === null ? null : o - l * D,
       endT: o,
       ageMs: s,
       mm: null,
@@ -769,14 +769,14 @@ function wa(e, t) {
     };
     if (o === null) return f;
     let d = 0;
-    for (let g = 0; g < c; g++) {
+    for (let g = 0; g < l; g++) {
       let h = o - g * D;
       if (r.has(h)) return { ...f, reason: v("radar_conflicting_hour", { endT: h }) };
       if (!a.has(h)) return { ...f, reason: v("radar_missing_hour", { endT: h }) };
       d += a.get(h);
     }
     return F(d) ? { ...f, available: !0, reason: null, mm: d, inches: d / 25.4 } : { ...f, reason: v("non_finite_arithmetic") };
-  }), u = l.some((c) => c.available);
+  }), u = c.some((l) => l.available);
   return {
     available: u,
     reason: u ? null : v("radar_windows_unavailable"),
@@ -785,11 +785,11 @@ function wa(e, t) {
     ageMs: s,
     historical: s !== null && s > 2 * D,
     stale: s === null || s > 3 * D,
-    windows: l
+    windows: c
   };
 }
 function _a(e, t) {
-  let n = t?.data, a = Ze(e, n?.updatedT), r = {
+  let n = t?.data, a = Je(e, n?.updatedT), r = {
     available: !1,
     reason: v("grid_forecast_unavailable"),
     startT: e,
@@ -806,19 +806,19 @@ function _a(e, t) {
   };
   if (!n) return r;
   if (!E(n.updatedT) || n.updatedT > e) return { ...r, reason: v("grid_issue_invalid") };
-  let i = (n.periods ?? []).filter((u) => E(u.startT) && E(u.endT) && u.endT > e && u.startT < e + R).sort((u, c) => u.startT - c.startT || u.endT - c.endT), o = e, s = 0, l = !1;
+  let i = (n.periods ?? []).filter((u) => E(u.startT) && E(u.endT) && u.endT > e && u.startT < e + R).sort((u, l) => u.startT - l.startT || u.endT - l.endT), o = e, s = 0, c = !1;
   for (let u of i) {
     if (u.startT >= u.endT || !F(u.mm) || u.mm < 0) return { ...r, reason: v("grid_interval_invalid") };
-    let c = Math.max(e, u.startT), f = Math.min(e + R, u.endT);
-    if (c < o) return { ...r, reason: v("grid_interval_overlap", { t: c }) };
-    if (c > o) return { ...r, reason: v("grid_interval_gap", { startT: o, endT: c }) };
-    let d = (f - c) / (u.endT - u.startT);
-    s += u.mm * d, l || (l = d !== 1), o = f;
+    let l = Math.max(e, u.startT), f = Math.min(e + R, u.endT);
+    if (l < o) return { ...r, reason: v("grid_interval_overlap", { t: l }) };
+    if (l > o) return { ...r, reason: v("grid_interval_gap", { startT: o, endT: l }) };
+    let d = (f - l) / (u.endT - u.startT);
+    s += u.mm * d, c || (c = d !== 1), o = f;
   }
-  return o < e + R ? { ...r, reason: v("grid_interval_gap", { startT: o, endT: e + R }) } : F(s) ? { ...r, available: !0, reason: null, mm: s, inches: s / 25.4, prorated: l } : { ...r, reason: v("non_finite_arithmetic") };
+  return o < e + R ? { ...r, reason: v("grid_interval_gap", { startT: o, endT: e + R }) } : F(s) ? { ...r, available: !0, reason: null, mm: s, inches: s / 25.4, prorated: c } : { ...r, reason: v("non_finite_arithmetic") };
 }
 function ya(e, t) {
-  let n = t?.data, a = Ze(e, t?.lastSuccessAt), r = {
+  let n = t?.data, a = Je(e, t?.lastSuccessAt), r = {
     available: !1,
     reason: v("tides_unavailable"),
     stationId: "9449211",
@@ -832,32 +832,32 @@ function ya(e, t) {
   if (!n) return r;
   if (String(n.stationId) !== "9449211" || n.datum !== "MLLW") return { ...r, reason: v("tide_identity_or_datum_invalid") };
   let i = /* @__PURE__ */ new Map(), o = /* @__PURE__ */ new Set();
-  for (let l of n.points ?? []) {
-    if (!E(l.t) || l.t < e || l.t > e + 2 * R || !F(l.ft) || !["H", "L"].includes(l.type)) continue;
-    let u = i.get(l.t);
-    u && (u.ft !== l.ft || u.type !== l.type) && o.add(l.t), i.set(l.t, { t: l.t, ft: l.ft, type: l.type });
+  for (let c of n.points ?? []) {
+    if (!E(c.t) || c.t < e || c.t > e + 2 * R || !F(c.ft) || !["H", "L"].includes(c.type)) continue;
+    let u = i.get(c.t);
+    u && (u.ft !== c.ft || u.type !== c.type) && o.add(c.t), i.set(c.t, { t: c.t, ft: c.ft, type: c.type });
   }
-  let s = [...i.values()].filter((l) => !o.has(l.t)).sort((l, u) => l.t - u.t);
+  let s = [...i.values()].filter((c) => !o.has(c.t)).sort((c, u) => c.t - u.t);
   return { ...r, available: s.length > 0, reason: s.length ? null : v("tide_events_unavailable"), events: s };
 }
 function ln({ nowMs: e, sources: t = {}, ratioTable: n = null } = {}) {
   if (!E(e)) throw new RangeError("buildWatchModel requires a valid nowMs");
-  let a = t.gauge?.data, r = tn(a?.points).filter((m) => m.t <= e), i = r[r.length - 1] ?? null, o = [...r].reverse().find((m) => X(m)) ?? null, s = rn(r, pe), l = i?.t ?? null, u = lt(t.gauge, l, e, 2 * D), c = {
+  let a = t.gauge?.data, r = tn(a?.points).filter((m) => m.t <= e), i = r[r.length - 1] ?? null, o = [...r].reverse().find((m) => X(m)) ?? null, s = rn(r, pe), c = i?.t ?? null, u = ct(t.gauge, c, e, 2 * D), l = {
     latest: i,
     lastNumericObservation: o,
     points: r,
     segments: s.segments,
     exclusions: a?.exclusions ?? [],
     coveredWindow: a?.coveredWindow ?? null,
-    ageMs: Ze(e, l),
+    ageMs: Je(e, c),
     stale: u.stale,
-    referenceCfs: E(l) ? _e(l) : null,
-    endpoint: Ot(r, l),
-    low: It(r, l),
-    references: { endpoint: en(r, l, Ot), low: en(r, l, It) },
+    referenceCfs: E(c) ? _e(c) : null,
+    endpoint: Ot(r, c),
+    low: It(r, c),
+    references: { endpoint: en(r, c, Ot), low: en(r, c, It) },
     direction: ua(r, i, e, t.gauge),
     twelveHourChange: ca(r, i, e, t.gauge),
-    history: { endpoint: Kt(r, l, Ot), low: Kt(r, l, It) }
+    history: { endpoint: Kt(r, c, Ot), low: Kt(r, c, It) }
   }, f = va(e, t.noaa, t.gauge, r, s, i, n), d = wa(e, t.radar), g = _a(e, t.grid), h = ya(e, t.tides);
   return {
     schemaVersion: 1,
@@ -865,12 +865,12 @@ function ln({ nowMs: e, sources: t = {}, ratioTable: n = null } = {}) {
     actualCurrentObservation: i,
     sources: {
       gauge: u,
-      noaa: lt(t.noaa, f.issuedT, e, 12 * D),
-      radar: lt(t.radar, d.endT, e, 3 * D),
-      grid: lt(t.grid, g.updatedT, e, 12 * D),
-      tides: lt(t.tides, t.tides?.lastSuccessAt, e, 36 * D)
+      noaa: ct(t.noaa, f.issuedT, e, 12 * D),
+      radar: ct(t.radar, d.endT, e, 3 * D),
+      grid: ct(t.grid, g.updatedT, e, 12 * D),
+      tides: ct(t.tides, t.tides?.lastSuccessAt, e, 36 * D)
     },
-    gauge: c,
+    gauge: l,
     forecast: f,
     rain: { radar: d, grid: g },
     tides: h
@@ -887,17 +887,17 @@ function fn(e, t = !1) {
   let n = Math.abs(e), a = n !== 0 && (n >= 1e7 || n < 1e-5) ? e.toExponential(5) : new Intl.NumberFormat("en-US", { maximumFractionDigits: 6, maximumSignificantDigits: 12 }).format(e);
   return t && e > 0 ? `+${a}` : a;
 }
-function Ye(e, t = !1) {
+function Qe(e, t = !1) {
   if (!re(e)) return "Unavailable";
   let n = e !== 0 && Math.abs(e) < 0.1 ? Number(e.toPrecision(2)).toString() : new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(e);
   return t && e > 0 ? `+${n}` : n;
 }
-function J(e, t = !1) {
+function Z(e, t = !1) {
   if (!re(e)) return "Unavailable";
   let n = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Math.round(e));
   return t && e > 0 ? `+${n}` : n;
 }
-function Z(e, t = !1) {
+function Q(e, t = !1) {
   return re(e) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", ...t ? {} : { weekday: "short" }, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(e) : "time unavailable";
 }
 function ne(e) {
@@ -910,9 +910,9 @@ function cn(e) {
   return re(e) ? e > 0 && e < 0.01 ? "less than 0.01" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(e) : "Unavailable";
 }
 var dn = { missing_comparison: "No supported comparison reading near the required time.", missing_current: "The latest reading is not usable.", insufficient_history: "There is not enough supported history.", missing_history: "There is not enough supported history.", incomplete_window: "Missing readings leave this window incomplete.", gap: "A gap in the readings prevents this calculation.", stale: "The retained data are old.", forecast_stale: "This forecast is too old to use.", missing_source: "This source is unavailable.", off_season: "Historical cases are available only for October\u2013April.", nonpositive_shift: "The adjustment would create a non-positive flow, so that part is withheld.", unsupported_units: "The source units are unsupported.", ineligible_quality: "The newest reading does not support automatic turn checks.", clock_uncertain: "The monitor could not confirm its clock.", missing_quarter_hours: "Required quarter-hour readings are missing.", rate_limited: "The warning rate limit has been reached." };
-function Qe(e) {
+function Ke(e) {
   if (!e) return "Insufficient supported data.";
-  if (Array.isArray(e)) return e.map(Qe).join(" ");
+  if (Array.isArray(e)) return e.map(Ke).join(" ");
   let t = typeof e == "string" ? e : e.code;
   return dn[t] || (typeof e == "object" && typeof e.message == "string" ? e.message : "Insufficient supported data.");
 }
@@ -986,47 +986,47 @@ Object.assign(dn, {
   preview_ended: "This preview has ended; the retained readings are earlier evidence.",
   non_finite_arithmetic: "The supplied values cannot produce a finite calculation."
 });
-function Je(e, t) {
+function Ye(e, t) {
   let n = document.getElementById(e);
   n && (n.innerHTML = t);
 }
-var $a = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}"><span aria-hidden="true">\u24D8</span></button>`, hn = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, $e = (e) => `<time datetime="${re(e) ? new Date(e).toISOString() : ""}">${$(Z(e, !0))}</time>`;
+var $a = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}"><span aria-hidden="true">\u24D8</span></button>`, hn = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, $e = (e) => `<time datetime="${re(e) ? new Date(e).toISOString() : ""}">${$(Q(e, !0))}</time>`;
 var Ta = ["forecast_issue_future", "forecast_issue_too_old", "forecast_next_day_coverage_missing", "historical_cases_off_season"];
 function xa(e, t) {
   let n = typeof t == "string" ? t : t?.code;
-  if (e.timeUncertain && n === "forecast_context_not_current") return Qe("public_time_uncertain");
-  let a = Qe(t);
+  if (e.timeUncertain && n === "forecast_context_not_current") return Ke("public_time_uncertain");
+  let a = Ke(t);
   return e.timeUncertain && Ta.includes(n) ? `At the snapshot save time: ${a}` : a;
 }
 function pn(e, t) {
   let n = e.forecast || {}, a = (h) => xa(e, h);
-  Je("forecast-age", n.issuedT ? `Issued ${$e(n.issuedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(n.issueAgeMs) + " old")}${n.older && !e.timeUncertain ? " \xB7 older forecast" : ""}.${n.available === !1 ? ` ${$(a(n.reason))}` : ""}` : `Forecast unavailable. ${$(a(n.reason))}`);
+  Ye("forecast-age", n.issuedT ? `Issued ${$e(n.issuedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(n.issueAgeMs) + " old")}${n.older && !e.timeUncertain ? " \xB7 older forecast" : ""}.${n.available === !1 ? ` ${$(a(n.reason))}` : ""}` : `Forecast unavailable. ${$(a(n.reason))}`);
   let r = [];
-  e.sources?.noaa?.error && r.push("Latest forecast retrieval failed; retained values keep their issue time."), n.largeAdjustment && r.push({ text: `Gauge adjustment makes the forecast ${n.offsetCfs < 0 ? "lower" : "higher"} by ${Ye(Math.abs(n.offsetCfs))} cfs.`, neutral: n.offsetCfs < 0 });
+  e.sources?.noaa?.error && r.push("Latest forecast retrieval failed; retained values keep their issue time."), n.largeAdjustment && r.push({ text: `Gauge adjustment makes the forecast ${n.offsetCfs < 0 ? "lower" : "higher"} by ${Qe(Math.abs(n.offsetCfs))} cfs.`, neutral: n.offsetCfs < 0 });
   let i = n.available && n.shifted?.reason?.code === "forecast_alignment_unsupported";
-  i ? r.push({ text: a(n.shifted.reason), neutral: !0 }) : n.available && n.shifted?.available === !1 && r.push(`Adjusted forecast unavailable. ${a(n.shifted.reason)}`), n.available && n.cases?.available === !1 && !(i && n.cases?.reason?.code === "forecast_alignment_unsupported") && r.push(`Historical cases unavailable. ${a(n.cases.reason)}`), Je("forecast-problems", r.map((h) => `<p${typeof h == "object" && h.neutral ? ' class="neutral"' : ""}>${$(typeof h == "object" ? h.text : h)}</p>`).join(""));
+  i ? r.push({ text: a(n.shifted.reason), neutral: !0 }) : n.available && n.shifted?.available === !1 && r.push(`Adjusted forecast unavailable. ${a(n.shifted.reason)}`), n.available && n.cases?.available === !1 && !(i && n.cases?.reason?.code === "forecast_alignment_unsupported") && r.push(`Historical cases unavailable. ${a(n.cases.reason)}`), Ye("forecast-problems", r.map((h) => `<p${typeof h == "object" && h.neutral ? ' class="neutral"' : ""}>${$(typeof h == "object" ? h.text : h)}</p>`).join(""));
   let o = document.getElementById("forecast-problems");
   (i && r.length === 1 ? document.getElementById("chart-readout") : document.getElementById("forecast-age"))?.insertAdjacentElement?.("afterend", o);
-  let l = n.crossings?.shifted?.[t.reference], u = l?.available ? re(l.t) ? `The adjusted forecast ${l.alreadyReached ? "already meets" : "first reaches"} the reference at ${Z(l.t, !0)}.` : "No supported adjusted-forecast crossing is calculated." : `Crossing unavailable. ${a(l?.reason)}`, c = re(n.offsetCfs) ? `Adjustment to the gauge reading: ${Ye(n.offsetCfs, !0)} cfs.` : "A supported adjustment to the gauge reading is unavailable.", f = Date.parse(n.cases?.trainingCutoff ?? ""), d = re(n.cases?.tableVersion) ? `<p>Frozen historical-case table version ${fn(n.cases.tableVersion)}${re(f) ? `; training cutoff ${$e(f)}` : ""}.</p><div class="station-links"><a href="/data/ratio_table.json" target="_blank" rel="noopener noreferrer">View the frozen table and its source history</a></div>` : "";
-  Je("forecast-details", hn("forecast", "Forecast and chart", `<p>The key above the graph names the lines currently drawn. Lines can overlap when their values match. Missing lines or gaps mean the data do not support drawing them.</p><ul class="line-guide-list"><li><i class="obs" aria-hidden="true"></i><div><strong>Measured river flow</strong><p>What the river gauge actually recorded.</p></div></li><li><i class="raw" aria-hidden="true"></i><div><strong>Official river forecast</strong><p>The National Weather Service prediction, unchanged.</p></div></li><li><i class="shifted" aria-hidden="true"></i><div><strong>Adjusted forecast</strong><p>The official forecast moved up or down to match the latest gauge reading at that reading's time. This is a comparison, not a new official forecast.</p></div></li><li><i class="case" aria-hidden="true"></i><div><strong>Past high / low cases</strong><p>Higher and lower examples based on earlier forecast misses. These are not probabilities or guaranteed bounds.</p></div></li><li><i class="reference" aria-hidden="true"></i><div><strong>24-hour rise reference</strong><p>The flow needed to reach the selected rolling 24-hour increase. This line moves with earlier measurements or the adjusted forecast; it is not a fixed flow limit or a closure decision.</p></div></li></ul><p>National Weather Service river forecast for SMRW1${re(n.raw?.endT) ? `; available through ${$e(n.raw.endT)}` : ""}.</p><p>${$(c)} ${n.available === !1 ? `The issued forecast is unavailable. ${$(a(n.reason))}` : "The original forecast remains visible."}</p><p>The reference adds a seasonal rise to the selected earlier flow; it is not a fixed flow limit. ${$(u)}</p><p>Between readings, values follow straight-line estimates. Observation gaps over 30 minutes and forecast gaps over six hours stay blank. Nothing extends beyond supported points. Estimates are rounded; headline comparisons use actual readings.</p><p>Past high and low ranges reflect earlier forecast misses. They are not probabilities or proven forecasts. Cases extend up to 72 hours from the latest reading in October\u2013April. A low case stops when its historical subtraction reaches zero; this does not predict a dry river. Only the official forecast can extend beyond 72 hours; these comparisons are limited to 72 hours.</p>${d}<p>Peak cards show high points in the forecast, including any later peak higher than the first. A dip may precede another rise.</p><p>Nearby forecast times show the spacing of model readings. They do not bound when the river will actually crest.</p>`));
+  let c = n.crossings?.shifted?.[t.reference], u = c?.available ? re(c.t) ? `The adjusted forecast ${c.alreadyReached ? "already meets" : "first reaches"} the reference at ${Q(c.t, !0)}.` : "No supported adjusted-forecast crossing is calculated." : `Crossing unavailable. ${a(c?.reason)}`, l = re(n.offsetCfs) ? `Adjustment to the gauge reading: ${Qe(n.offsetCfs, !0)} cfs.` : "A supported adjustment to the gauge reading is unavailable.", f = Date.parse(n.cases?.trainingCutoff ?? ""), d = re(n.cases?.tableVersion) ? `<p>Frozen historical-case table version ${fn(n.cases.tableVersion)}${re(f) ? `; training cutoff ${$e(f)}` : ""}.</p><div class="station-links"><a href="/data/ratio_table.json" target="_blank" rel="noopener noreferrer">View the frozen table and its source history</a></div>` : "";
+  Ye("forecast-details", hn("forecast", "Forecast and chart", `<p>The key above the graph names the lines currently drawn. Lines can overlap when their values match. Missing lines or gaps mean the data do not support drawing them.</p><ul class="line-guide-list"><li><i class="obs" aria-hidden="true"></i><div><strong>Measured river flow</strong><p>What the river gauge actually recorded.</p></div></li><li><i class="raw" aria-hidden="true"></i><div><strong>Official river forecast</strong><p>The National Weather Service prediction, unchanged.</p></div></li><li><i class="shifted" aria-hidden="true"></i><div><strong>Adjusted forecast</strong><p>The official forecast moved up or down to match the latest gauge reading at that reading's time. This is a comparison, not a new official forecast.</p></div></li><li><i class="case" aria-hidden="true"></i><div><strong>Past high / low cases</strong><p>Higher and lower examples based on earlier forecast misses. These are not probabilities or guaranteed bounds.</p></div></li><li><i class="reference" aria-hidden="true"></i><div><strong>24-hour rise reference</strong><p>The flow needed to reach the selected rolling 24-hour increase. This line moves with earlier measurements or the adjusted forecast; it is not a fixed flow limit or a closure decision.</p></div></li></ul><p>National Weather Service river forecast for SMRW1${re(n.raw?.endT) ? `; available through ${$e(n.raw.endT)}` : ""}.</p><p>${$(l)} ${n.available === !1 ? `The issued forecast is unavailable. ${$(a(n.reason))}` : "The original forecast remains visible."}</p><p>The reference adds a seasonal rise to the selected earlier flow; it is not a fixed flow limit. ${$(u)}</p><p>Between readings, values follow straight-line estimates. Observation gaps over 30 minutes and forecast gaps over six hours stay blank. Nothing extends beyond supported points. Estimates are rounded; headline comparisons use actual readings.</p><p>Past high and low ranges reflect earlier forecast misses. They are not probabilities or proven forecasts. Cases extend up to 72 hours from the latest reading in October\u2013April. A low case stops when its historical subtraction reaches zero; this does not predict a dry river. Only the official forecast can extend beyond 72 hours; these comparisons are limited to 72 hours.</p>${d}<p>Peak cards show high points in the forecast, including any later peak higher than the first. A dip may precede another rise.</p><p>Nearby forecast times show the spacing of model readings. They do not bound when the river will actually crest.</p>`));
 }
 function gn(e) {
-  let t = e.rain?.radar || {}, n = e.rain?.grid || {}, a = t.endT ? `All totals end ${Z(t.endT, !0)} \xB7 ${e.timeUncertain ? "age unknown" : ne(t.ageMs) + " ago"}${e.timeUncertain ? "" : t.stale ? " \xB7 STALE" : t.historical ? " \xB7 historical" : ""}.` : "Hour-ending rainfall time unavailable.", r = t.windows || [2, 4, 6, 8, 12, 18, 24].map((s) => ({ hours: s, available: !1 })), i = [...new Set(r.filter((s) => !s.available).map((s) => Qe(s.reason || t.reason)))], o = hn("rain", "How rainfall is estimated", "<p>Totals use complete hourly radar estimates averaged over the drainage area. Missing or conflicting hours make that total unavailable; partial hours are excluded. Radar cannot confirm whether rain has stopped upriver.</p><p>The rainfall forecast is for one grid cell near the watershed, not measured watershed rainfall. Partial forecast intervals are prorated.</p><p>Mount Vernon and Sakuma links open official Washington State University station pages; those readings are not imported here.</p>");
-  Je("rain", `<div class="section-heading"><h2>Rain</h2>${$a("rain", "About rainfall")}</div><p class="meta">Radar estimate over the drainage area; not a rain gauge.</p><p class="meta" id="rain-end">${$(a)}</p><div class="station-links"><a href="https://weather.wsu.edu/widget/current?unit_id=100090" target="_blank" rel="noopener noreferrer">Mount Vernon station \u2197</a><a href="https://weather.wsu.edu/widget/current?unit_id=330159" target="_blank" rel="noopener noreferrer">Sakuma station \u2197</a></div>${o}<div class="rain-total-grid">${r.map((s) => `<div class="rain-total" aria-label="${s.hours}-hour total ending ${$(Z(s.endT ?? t.endT, !0))}, ${$(e.timeUncertain ? "age unknown" : ne(s.ageMs ?? t.ageMs) + " old")}"><span>${s.hours} hours</span><strong>${s.available ? cn(s.inches) + " in" : "Unavailable"}</strong></div>`).join("")}</div>${i.length ? `<p class="meta">${i.map($).join(" ")}</p>` : ""}<div class="rain-secondary"><h3>Forecast rain \xB7 one nearby grid point</h3><p>${e.timeUncertain ? "Unavailable while current time is uncertain." : n.available ? `<strong>${cn(n.inches)} inches</strong> over the next 24 hours.` : `Unavailable. ${$(Qe(n.reason))}`}</p>${n.updatedT ? `<p class="meta">Updated ${$e(n.updatedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(n.issueAgeMs) + " old")}${n.stale && !e.timeUncertain ? " \xB7 STALE" : ""}.</p>` : ""}<p class="meta">National Weather Service forecast; not measured watershed rainfall.</p></div>`);
+  let t = e.rain?.radar || {}, n = e.rain?.grid || {}, a = t.endT ? `All totals end ${Q(t.endT, !0)} \xB7 ${e.timeUncertain ? "age unknown" : ne(t.ageMs) + " ago"}${e.timeUncertain ? "" : t.stale ? " \xB7 STALE" : t.historical ? " \xB7 historical" : ""}.` : "Hour-ending rainfall time unavailable.", r = t.windows || [2, 4, 6, 8, 12, 18, 24].map((s) => ({ hours: s, available: !1 })), i = [...new Set(r.filter((s) => !s.available).map((s) => Ke(s.reason || t.reason)))], o = hn("rain", "How rainfall is estimated", "<p>Totals use complete hourly radar estimates averaged over the drainage area. Missing or conflicting hours make that total unavailable; partial hours are excluded. Radar cannot confirm whether rain has stopped upriver.</p><p>The rainfall forecast is for one grid cell near the watershed, not measured watershed rainfall. Partial forecast intervals are prorated.</p><p>Mount Vernon and Sakuma links open official Washington State University station pages; those readings are not imported here.</p>");
+  Ye("rain", `<div class="section-heading"><h2>Rain</h2>${$a("rain", "About rainfall")}</div><p class="meta">Radar estimate over the drainage area; not a rain gauge.</p><p class="meta" id="rain-end">${$(a)}</p><div class="station-links"><a href="https://weather.wsu.edu/widget/current?unit_id=100090" target="_blank" rel="noopener noreferrer">Mount Vernon station \u2197</a><a href="https://weather.wsu.edu/widget/current?unit_id=330159" target="_blank" rel="noopener noreferrer">Sakuma station \u2197</a></div>${o}<div class="rain-total-grid">${r.map((s) => `<div class="rain-total" aria-label="${s.hours}-hour total ending ${$(Q(s.endT ?? t.endT, !0))}, ${$(e.timeUncertain ? "age unknown" : ne(s.ageMs ?? t.ageMs) + " old")}"><span>${s.hours} hours</span><strong>${s.available ? cn(s.inches) + " in" : "Unavailable"}</strong></div>`).join("")}</div>${i.length ? `<p class="meta">${i.map($).join(" ")}</p>` : ""}<div class="rain-secondary"><h3>Forecast rain \xB7 one nearby grid point</h3><p>${e.timeUncertain ? "Unavailable while current time is uncertain." : n.available ? `<strong>${cn(n.inches)} inches</strong> over the next 24 hours.` : `Unavailable. ${$(Ke(n.reason))}`}</p>${n.updatedT ? `<p class="meta">Updated ${$e(n.updatedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(n.issueAgeMs) + " old")}${n.stale && !e.timeUncertain ? " \xB7 STALE" : ""}.</p>` : ""}<p class="meta">National Weather Service forecast; not measured watershed rainfall.</p></div>`);
 }
 function mn(e) {
   let t = e.tides || {};
-  Je("tides", `<div class="disclosure-body"><p>Predicted high and low tides for Bellingham, station 9449211. Feet relative to Mean Lower Low Water (MLLW).</p><p class="meta">${e.timeUncertain ? "Saved predicted events; the current 48-hour window cannot be confirmed. Retrieval age unknown" : "Next 48 hours. Retrieved " + $(ne(t.fetchAgeMs)) + " ago" + (t.stale ? " \xB7 STALE" : "")}. Predictions do not establish boat clearance or access to sampling stations.</p>${t.available ? `<table class="tide-table"><thead><tr><th>Pacific time</th><th>Tide</th><th>Feet MLLW</th></tr></thead><tbody>${(t.events || []).map((n) => `<tr><td>${$e(n.t)}</td><td>${n.type === "H" ? "High" : "Low"}</td><td>${fn(n.ft)}</td></tr>`).join("")}</tbody></table>` : `<p>${$(Qe(t.reason))}</p>`}</div>`);
+  Ye("tides", `<div class="disclosure-body"><p>Predicted high and low tides for Bellingham, station 9449211. Feet relative to Mean Lower Low Water (MLLW).</p><p class="meta">${e.timeUncertain ? "Saved predicted events; the current 48-hour window cannot be confirmed. Retrieval age unknown" : "Next 48 hours. Retrieved " + $(ne(t.fetchAgeMs)) + " ago" + (t.stale ? " \xB7 STALE" : "")}. Predictions do not establish boat clearance or access to sampling stations.</p>${t.available ? `<table class="tide-table"><thead><tr><th>Pacific time</th><th>Tide</th><th>Feet MLLW</th></tr></thead><tbody>${(t.events || []).map((n) => `<tr><td>${$e(n.t)}</td><td>${n.type === "H" ? "High" : "Low"}</td><td>${fn(n.ft)}</td></tr>`).join("")}</tbody></table>` : `<p>${$(Ke(t.reason))}</p>`}</div>`);
 }
 function bn(e, t, n) {
-  Je("sources", Object.entries({ gauge: "U.S. Geological Survey (USGS) \xB7 gauge 12201500", noaa: "NOAA issued river forecast \xB7 SMRW1", radar: "Multi-Radar/Multi-Sensor (MRMS) radar rainfall estimate", grid: "National Weather Service \xB7 forecast grid cell", tides: "NOAA Bellingham tide predictions" }).map(([r, i]) => {
+  Ye("sources", Object.entries({ gauge: "U.S. Geological Survey (USGS) \xB7 gauge 12201500", noaa: "NOAA issued river forecast \xB7 SMRW1", radar: "Multi-Radar/Multi-Sensor (MRMS) radar rainfall estimate", grid: "National Weather Service \xB7 forecast grid cell", tides: "NOAA Bellingham tide predictions" }).map(([r, i]) => {
     let o = t.sources?.[r] || {}, s = n?.sources?.[r] || {};
     return `<div class="source-row"><strong>${$(i)}</strong>${r === "tides" ? "<p>Prediction event times are listed in the tide panel; they are not observation times.</p>" : `<p>Data time: ${$e(o.dataT)} \xB7 ${$(t.timeUncertain ? "age unknown" : ne(o.ageMs) + " old")}${o.stale && !t.timeUncertain ? " \xB7 STALE" : ""}.</p>`}<p>Last successful retrieval: ${$e(s.lastSuccessAt ?? o.lastSuccessAt)}.${s.error || o.error ? " Latest retrieval failed; any retained values keep their original data time." : ""}</p></div>`;
   }).join("") + `<p>Snapshot saved ${$e(e.createdAt)}. This save time is not the observation time. Provisional readings may be revised; estimated or otherwise unsupported readings cannot support automatic turn notices.</p>`);
 }
 
 // site/js/watch-crest-settings.js
-var ut = Object.freeze({ releaseMode: "observed-facts-only", automaticConfirmationEnabled: !1, floorCfs: 1, fraction: 62e-4, trendMedianPoints: 5, trendWindowMinutes: 60, episodeTurnFraction: 0.05, episodeTurnCfs: 2, capturedRiseFraction: 0.01, capturedRiseCfs: 2 }), Ht = Object.freeze({ mode: "A", heading: "Observed high \u2014 crest not confirmed", automaticDirectionLabelsEnabled: !1, rejectedDesignSha256: "7e1abe8dc96061a37c4059c9b13ab4cecc3a12c4a332160e8f29822427ef1f98" }), Ma = Object.freeze({ mode: "B", trendMedianPoints: 5, trendWindowMinutes: 60, comparisonMinutes: 60, nativeIntervalMinutes: 15, persistencePoints: 5, floorCfs: 1, fraction: 62e-4, designSha256: "7e1abe8dc96061a37c4059c9b13ab4cecc3a12c4a332160e8f29822427ef1f98" }), vn = Object.freeze({ floorCfs: 1, fraction: 62e-4, minimumHoursBelowHigh: 6, minimumPeakAgeHours: 12, firstConfirmationDeadlineHours: 18, minimumHistoryBeforePeakHours: 12, minimumDropFraction: 0.05, minimumDropCfs: 2, trendMedianPoints: 5, trendWindowMinutes: 60, episodeTurnFraction: 0.05, episodeTurnCfs: 2, capturedRiseFraction: 0.01, capturedRiseCfs: 2 }), ms = Object.freeze({
+var ft = Object.freeze({ releaseMode: "observed-facts-only", automaticConfirmationEnabled: !1, floorCfs: 1, fraction: 62e-4, trendMedianPoints: 5, trendWindowMinutes: 60, episodeTurnFraction: 0.05, episodeTurnCfs: 2, capturedRiseFraction: 0.01, capturedRiseCfs: 2 }), Ht = Object.freeze({ mode: "A", heading: "Observed high \u2014 crest not confirmed", automaticDirectionLabelsEnabled: !1, rejectedDesignSha256: "7e1abe8dc96061a37c4059c9b13ab4cecc3a12c4a332160e8f29822427ef1f98" }), Ma = Object.freeze({ mode: "B", trendMedianPoints: 5, trendWindowMinutes: 60, comparisonMinutes: 60, nativeIntervalMinutes: 15, persistencePoints: 5, floorCfs: 1, fraction: 62e-4, designSha256: "7e1abe8dc96061a37c4059c9b13ab4cecc3a12c4a332160e8f29822427ef1f98" }), vn = Object.freeze({ floorCfs: 1, fraction: 62e-4, minimumHoursBelowHigh: 6, minimumPeakAgeHours: 12, firstConfirmationDeadlineHours: 18, minimumHistoryBeforePeakHours: 12, minimumDropFraction: 0.05, minimumDropCfs: 2, trendMedianPoints: 5, trendWindowMinutes: 60, episodeTurnFraction: 0.05, episodeTurnCfs: 2, capturedRiseFraction: 0.01, capturedRiseCfs: 2 }), ms = Object.freeze({
   schemaVersion: 3,
   releaseMode: "observed-facts-only",
   automaticConfirmationEnabled: !1,
@@ -1040,94 +1040,94 @@ var ut = Object.freeze({ releaseMode: "observed-facts-only", automaticConfirmati
   calibrationEndExclusive: "2026-01-01T08:00:00Z",
   sourceSha256: "9d779634658a99bdea6e8defe92603b716c52d728b61efdc64b37ec53732f372",
   contractSha256: "ed7ded05aabe88e5e3528ae573f21888ab3bd38ab8de734856420686b1660fa5"
-}), ft = (e, t = ut) => Math.max(t.floorCfs, e * t.fraction);
+}), dt = (e, t = ft) => Math.max(t.floorCfs, e * t.fraction);
 
 // site/js/watch-preview.js
-var W = 36e5, Ft = 15 * 6e4, ee = Number.isFinite;
+var W = 36e5, Ft = 15 * 6e4, K = Number.isFinite;
 function ae(e, t) {
   let n = (s) => {
-    let [l, u = "0"] = String(s).toLowerCase().split("e"), c = l.includes(".") ? l.length - l.indexOf(".") - 1 : 0;
-    return { coefficient: BigInt(l.replace(".", "")), exponent: Number(u) - c };
+    let [c, u = "0"] = String(s).toLowerCase().split("e"), l = c.includes(".") ? c.length - c.indexOf(".") - 1 : 0;
+    return { coefficient: BigInt(c.replace(".", "")), exponent: Number(u) - l };
   }, a = n(e), r = n(t), i = Math.min(a.exponent, r.exponent);
   return +`${a.coefficient * 10n ** BigInt(a.exponent - i) - r.coefficient * 10n ** BigInt(r.exponent - i)}e${i}`;
 }
-var Y = (e) => `<time datetime="${new Date(e).toISOString()}">${$(Z(e, !0))}</time>`, dt = (e) => {
+var J = (e) => `<time datetime="${new Date(e).toISOString()}">${$(Q(e, !0))}</time>`, ht = (e) => {
   let t = Math.floor(e / 6e4), n = Math.floor(t / 60), a = t % 60;
   return n ? a ? `${n}h ${a}m` : `${n} ${n === 1 ? "hour" : "hours"}` : `${a} ${a === 1 ? "minute" : "minutes"}`;
-}, ht = (e, t) => {
+}, Ue = (e, t) => {
   document.getElementById(e).innerHTML = t;
-}, _n = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}">\u24D8</button>`, yn = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, Aa = `Observations cannot establish that the final storm crest has passed. Automatic crest confirmation is withheld because the tested rules failed real-storm replay. This page shows the actual observed high, its reading time and age, the drop since that high, and a separate clock for time without a material renewed rise. That clock uses the middle value of five actual 15-minute readings spanning the preceding hour; the displayed high and its time remain actual readings. A rebound in this smoothed trend exceeding the larger of ${ut.floorCfs} cfs or ${+(ut.fraction * 100).toFixed(2)}% of the actual high resets the clock to the last increasing trend reading in that upswing. Flat readings and smaller flickers are allowed: this does not mean continuous falling. This allowance was measured from returning fluctuations in November\u2013December 2025 readings, not chosen as a closure or sampling rule. Missing quarter-hours or ineligible readings break the trend clock, with no interpolation.`;
+}, _n = (e, t) => `<button id="${e}-help-toggle" class="help-toggle" type="button" data-help-target="${e}-help" aria-controls="${e}-help" aria-expanded="false" aria-label="${t}">\u24D8</button>`, yn = (e, t, n) => `<details id="${e}-help" class="section-help"><summary hidden>${t}</summary><div class="help-content" role="region" aria-labelledby="${e}-help-heading"><h3 id="${e}-help-heading">${t}</h3>${n}<button id="${e}-help-close" type="button" data-help-close="${e}-help">Close help</button></div></details>`, Aa = `This page does not make a crest call. It shows the observed high and the time since it; growers and sampling staff judge whether the river has crested. Automatic crest confirmation is withheld because the tested rules failed real-storm replay. This page shows the actual observed high, its reading time and age, the drop since that high, and a separate clock for time without a material renewed rise. That clock uses the middle value of five actual 15-minute readings spanning the preceding hour; the displayed high and its time remain actual readings. A rebound in this smoothed trend exceeding the larger of ${ft.floorCfs} cfs or ${+(ft.fraction * 100).toFixed(2)}% of the actual high resets the clock to the last increasing trend reading in that upswing. Flat readings and smaller flickers are allowed: this does not mean continuous falling. This allowance was measured from returning fluctuations in November\u2013December 2025 readings, not chosen as a closure or sampling rule. Missing quarter-hours or ineligible readings break the trend clock, with no interpolation.`;
 function ka(e, t) {
   let n = t.trendMedianPoints, a = t.trendWindowMinutes * 6e4;
   if (n !== 5 || a !== W) throw new Error("Unsupported crest trend window");
   return e.map((r, i) => {
-    let o = e.slice(Math.max(0, i - n + 1), i + 1), s = o.length === n && o.every((l, u) => l.eligible === !0 && l.usable === !0 && ee(l.cfs) && l.t === r.t - a + u * Ft);
-    return { t: r.t, cfs: s ? o.map((l) => l.cfs).sort((l, u) => l - u)[2] : null, eligible: s, usable: s };
+    let o = e.slice(Math.max(0, i - n + 1), i + 1), s = o.length === n && o.every((c, u) => c.eligible === !0 && c.usable === !0 && K(c.cfs) && c.t === r.t - a + u * Ft);
+    return { t: r.t, cfs: s ? o.map((c) => c.cfs).sort((c, u) => c - u)[2] : null, eligible: s, usable: s };
   });
 }
 function wn(e, t, n) {
-  let a = null, r = null, i = t.t, o = !1, s = ft(t.cfs, n);
-  for (let l of ka(e, n))
-    if (!(l.t < t.t)) {
-      if (!l.eligible) {
-        a = null, r = null, o = !1, i = l.t;
+  let a = null, r = null, i = t.t, o = !1, s = dt(t.cfs, n);
+  for (let c of ka(e, n))
+    if (!(c.t < t.t)) {
+      if (!c.eligible) {
+        a = null, r = null, o = !1, i = c.t;
         continue;
       }
       if (!a) {
-        a = l, i = Math.max(i, l.t), o = !0;
+        a = c, i = Math.max(i, c.t), o = !0;
         continue;
       }
-      r ? l.cfs > r.cfs ? (i = l.t, r = l) : r.cfs - l.cfs > s && (r = null, a = l) : (l.cfs < a.cfs && (a = l), l.cfs - a.cfs > s && (i = l.t, r = l));
+      r ? c.cfs > r.cfs ? (i = c.t, r = c) : r.cfs - c.cfs > s && (r = null, a = c) : (c.cfs < a.cfs && (a = c), c.cfs - a.cfs > s && (i = c.t, r = c));
     }
   return { lastResetT: i, supported: o };
 }
 function Sa(e, { checking: t = !1, suppressed: n = !1 } = {}) {
-  return { ...$n(e, { checking: t, suppressed: n, settings: ut }, !1, !0), mode: "observed-facts-only", releaseMode: "observed-facts-only", automaticConfirmationEnabled: !1 };
+  return { ...$n(e, { checking: t, suppressed: n, settings: ft }, !1, !0), mode: "observed-facts-only", releaseMode: "observed-facts-only", automaticConfirmationEnabled: !1 };
 }
 function Ca(e, t = {}) {
   let n = Sa(e, t);
   return { ...n, state: n.state === "checking" || n.state === "unavailable" ? n.state : "observed_high", label: Ht.heading, labelCategory: "neutral", labelMode: "removed" };
 }
 function $n(e, { checking: t = !1, suppressed: n = !1, settings: a = vn } = {}, r, i = !1) {
-  let o = e.gauge || {}, s = o.latest, l = (x) => ({ state: t ? "checking" : "unavailable", label: t ? "Checking river readings\u2026" : "Crest status unavailable", why: x, peak: null, high: null, fallMs: null });
-  if (t) return l("Verification is in progress.");
-  if (n || e.timeUncertain) return l("A current snapshot and current time must be verified first.");
-  if (!s || !ee(s.cfs) || s.usable !== !0 || s.eligible !== !0) return l("The newest gauge reading is missing or its quality does not support a crest check.");
-  if (o.ageMs > W || e.sources?.gauge?.error) return l("The newest eligible reading must be no more than one hour old, with a successful latest retrieval.");
-  let u = o.points.filter((x) => x.t >= s.t - 48 * W && x.t <= s.t), c = [], f = null;
-  for (let x of u) x.eligible === !0 && x.usable === !0 && ee(x.cfs) && (!f || x.cfs >= f.cfs) && (f = x);
+  let o = e.gauge || {}, s = o.latest, c = (x) => ({ state: t ? "checking" : "unavailable", label: t ? "Checking river readings\u2026" : "Crest status unavailable", why: x, peak: null, high: null, fallMs: null });
+  if (t) return c("Verification is in progress.");
+  if (n || e.timeUncertain) return c("A current snapshot and current time must be verified first.");
+  if (!s || !K(s.cfs) || s.usable !== !0 || s.eligible !== !0) return c("The newest gauge reading is missing or its quality does not support a crest check.");
+  if (o.ageMs > W || e.sources?.gauge?.error) return c("The newest eligible reading must be no more than one hour old, with a successful latest retrieval.");
+  let u = o.points.filter((x) => x.t >= s.t - 48 * W && x.t <= s.t), l = [], f = null;
+  for (let x of u) x.eligible === !0 && x.usable === !0 && K(x.cfs) && (!f || x.cfs >= f.cfs) && (f = x);
   for (let x = u.length - 1; x >= 0; x--) {
     let T = u[x];
-    if (T.eligible !== !0 || T.usable !== !0 || !ee(T.cfs) || c.length && c[0].t - T.t > 2 * Ft) break;
-    c.unshift(T);
+    if (T.eligible !== !0 || T.usable !== !0 || !K(T.cfs) || l.length && l[0].t - T.t > 2 * Ft) break;
+    l.unshift(T);
   }
-  if (c.length < 5 || s.t - c[0].t < W)
-    return i && f ? { state: "possible", label: "Crest not confirmed \u2014 short reading history", high: f, peak: f, candidateHigh: null, drop: ae(f.cfs, s.cfs), highDropCfs: ae(f.cfs, s.cfs), sincePeakMs: s.t - f.t, sinceHighMs: s.t - f.t, fallMs: null, trendSupported: !1, evidenceStartT: c[0]?.t ?? s.t, hadGap: c[0]?.t > u[0]?.t, bracketed: !1 } : l("At least an hour of uninterrupted eligible observations is needed.");
-  let d = c[0], g = d, h = d, m = d.t, A = null, w = !1, p = !1, y = d, N = null;
-  for (let x = 1; x < c.length; x++) {
-    let T = c[x], he = ft(d.cfs, a), qe = Math.max(a.episodeTurnCfs ?? 2, d.cfs * (a.episodeTurnFraction ?? 0.05));
+  if (l.length < 5 || s.t - l[0].t < W)
+    return i && f ? { state: "possible", label: "Crest not confirmed \u2014 short reading history", high: f, peak: f, candidateHigh: null, drop: ae(f.cfs, s.cfs), highDropCfs: ae(f.cfs, s.cfs), sincePeakMs: s.t - f.t, sinceHighMs: s.t - f.t, fallMs: null, trendSupported: !1, evidenceStartT: l[0]?.t ?? s.t, hadGap: l[0]?.t > u[0]?.t, bracketed: !1 } : c("At least an hour of uninterrupted eligible observations is needed.");
+  let d = l[0], g = d, h = d, m = d.t, A = null, w = !1, p = !1, y = d, N = null;
+  for (let x = 1; x < l.length; x++) {
+    let T = l[x], he = dt(d.cfs, a), Be = Math.max(a.episodeTurnCfs ?? 2, d.cfs * (a.episodeTurnFraction ?? 0.05));
     if (T.cfs >= d.cfs) {
       T.cfs - g.cfs > he && d.cfs - g.cfs > he && (p = !0), w || (w = ae(T.cfs, h.cfs) > Math.max(a.capturedRiseCfs, T.cfs * a.capturedRiseFraction)), d = T, g = T, m = T.t, y = T, N = null;
       continue;
     }
     T.cfs < g.cfs && (g = T);
-    let Be = T.cfs - g.cfs;
-    N ? T.cfs > N.cfs ? (m = T.t, N = T) : N.cfs - T.cfs > he && (N = null, y = T) : (T.cfs < y.cfs && (y = T), T.cfs - y.cfs > he && (m = T.t, N = T, p = !0)), d.cfs - g.cfs >= qe && Be >= qe && (A = d, h = g, d = T, g = T, w = !0, m = T.t, y = T, N = null);
+    let We = T.cfs - g.cfs;
+    N ? T.cfs > N.cfs ? (m = T.t, N = T) : N.cfs - T.cfs > he && (N = null, y = T) : (T.cfs < y.cfs && (y = T), T.cfs - y.cfs > he && (m = T.t, N = T, p = !0)), d.cfs - g.cfs >= Be && We >= Be && (A = d, h = g, d = T, g = T, w = !0, m = T.t, y = T, N = null);
   }
-  let k = a.trendMedianPoints ? wn(c, d, a) : { lastResetT: m, supported: !0 }, _ = ft(d.cfs, a), M = d.cfs - s.cfs, B = s.t - Math.max(d.t, k.lastResetT), q = s.t - d.t, G = c[0].t, Me = G > u[0].t, De = c.reduce((x, T) => Math.abs(T.t - (s.t - W)) < Math.abs(x.t - (s.t - W)) ? T : x, c[0]), vt = c.reduce((x, T) => Math.abs(T.t - (s.t - 2 * W)) < Math.abs(x.t - (s.t - 2 * W)) ? T : x, c[0]), Ae = ae(s.cfs, vt.cfs) > 0, wt = c.filter((x) => x.t >= s.t - 6 * W).reduce((x, T) => Math.min(x, T.cfs), s.cfs), Fe = ae(s.cfs, De.cfs) > _ || M <= _ && s.t - d.t < W && ae(s.cfs, wt) > _ && Ae, P = a.minimumHistoryBeforePeakHours ?? 0, me = d.t - G, rt = me >= P * W, it = P > 0 && !rt && q > (48 - P) * W, St = rt ? null : it ? `The 48-hour window no longer includes ${P} hours before this high. Its time and flow remain shown; the earlier crest check has expired.` : `At least ${P} hours of uninterrupted eligible readings before this high are needed to establish a crest.`, ot = ae(s.cfs, g.cfs) <= _, ve = { high: f, earlierPeak: A, peak: d, fallMs: i && !k.supported ? null : B, sincePeakMs: q, sinceHighMs: s.t - f.t, highDropCfs: ae(f.cfs, s.cfs), drop: M, bracketed: w, evidenceStartT: G, hadGap: Me, trendSupported: k.supported, peakContextMs: me, contextExpired: it, contextWhy: St, nearPostPeakLow: ot }, de = ae(s.cfs, g.cfs) > _ && Ae;
+  let k = a.trendMedianPoints ? wn(l, d, a) : { lastResetT: m, supported: !0 }, _ = dt(d.cfs, a), M = d.cfs - s.cfs, B = s.t - Math.max(d.t, k.lastResetT), q = s.t - d.t, G = l[0].t, Me = G > u[0].t, Fe = l.reduce((x, T) => Math.abs(T.t - (s.t - W)) < Math.abs(x.t - (s.t - W)) ? T : x, l[0]), vt = l.reduce((x, T) => Math.abs(T.t - (s.t - 2 * W)) < Math.abs(x.t - (s.t - 2 * W)) ? T : x, l[0]), Ae = ae(s.cfs, vt.cfs) > 0, wt = l.filter((x) => x.t >= s.t - 6 * W).reduce((x, T) => Math.min(x, T.cfs), s.cfs), je = ae(s.cfs, Fe.cfs) > _ || M <= _ && s.t - d.t < W && ae(s.cfs, wt) > _ && Ae, P = a.minimumHistoryBeforePeakHours ?? 0, me = d.t - G, it = me >= P * W, ot = P > 0 && !it && q > (48 - P) * W, St = it ? null : ot ? `The 48-hour window no longer includes ${P} hours before this high. Its time and flow remain shown; the earlier crest check has expired.` : `At least ${P} hours of uninterrupted eligible readings before this high are needed to establish a crest.`, lt = ae(s.cfs, g.cfs) <= _, ve = { high: f, earlierPeak: A, peak: d, fallMs: i && !k.supported ? null : B, sincePeakMs: q, sinceHighMs: s.t - f.t, highDropCfs: ae(f.cfs, s.cfs), drop: M, bracketed: w, evidenceStartT: G, hadGap: Me, trendSupported: k.supported, peakContextMs: me, contextExpired: ot, contextWhy: St, nearPostPeakLow: lt }, de = ae(s.cfs, g.cfs) > _ && Ae;
   if (i) {
-    let x = wn(c, f, a), T = { ...ve, peak: f, candidateHigh: d, drop: ae(f.cfs, s.cfs), sincePeakMs: s.t - f.t, fallMs: x.supported ? s.t - Math.max(f.t, x.lastResetT) : null, trendSupported: x.supported, contextExpired: !1, contextWhy: null }, he = s.cfs - g.cfs > _ && (Fe || de), qe = M <= _ && Fe, Be = he ? "rising_again" : M <= _ ? qe ? A || p ? "rising_again" : "rising" : "level" : ot && ae(s.cfs, De.cfs) < 0 && !Ae ? "falling_unconfirmed" : "possible";
-    return { ...T, state: Be, label: { rising: "Rising \u2014 crest not confirmed", rising_again: "Rising again \u2014 crest not confirmed", level: "Little change \u2014 crest not confirmed", falling_unconfirmed: "Falling \u2014 crest not confirmed", possible: "Possible crest \u2014 not confirmed" }[Be] };
+    let x = wn(l, f, a), T = { ...ve, peak: f, candidateHigh: d, drop: ae(f.cfs, s.cfs), sincePeakMs: s.t - f.t, fallMs: x.supported ? s.t - Math.max(f.t, x.lastResetT) : null, trendSupported: x.supported, contextExpired: !1, contextWhy: null }, he = s.cfs - g.cfs > _ && (je || de), Be = M <= _ && je, We = he ? "rising_again" : M <= _ ? Be ? A || p ? "rising_again" : "rising" : "level" : lt && ae(s.cfs, Fe.cfs) < 0 && !Ae ? "falling_unconfirmed" : "possible";
+    return { ...T, state: We, label: { rising: "Rising \u2014 crest not confirmed", rising_again: "Rising again \u2014 crest not confirmed", level: "Little change \u2014 crest not confirmed", falling_unconfirmed: "Falling \u2014 crest not confirmed", possible: "Possible crest \u2014 not confirmed" }[We] };
   }
-  if (s.cfs - g.cfs > _ && (Fe || de)) return { ...ve, state: "rising_again", label: "Rising again \u2014 crest not confirmed", peak: null };
+  if (s.cfs - g.cfs > _ && (je || de)) return { ...ve, state: "rising_again", label: "Rising again \u2014 crest not confirmed", peak: null };
   if (M <= _) {
-    let x = Fe;
+    let x = je;
     return { ...ve, state: x ? A || p ? "rising_again" : "rising" : "level", label: x ? A || p ? "Rising again \u2014 crest not confirmed" : "Rising \u2014 crest not confirmed" : "Little change \u2014 crest not confirmed", peak: null, fallMs: 0 };
   }
-  if (!w || !rt) return { ...ve, bracketed: !1, state: "falling_unbracketed", label: it ? "Falling \u2014 earlier crest check expired" : "Falling \u2014 crest not established" };
-  let _t = (a.minimumPeakAgeHours ?? 0) * W, ke = (a.firstConfirmationDeadlineHours ?? 1 / 0) * W, Se = !(ae(s.cfs, De.cfs) > 0) && ot && k.supported && q >= _t && B >= a.minimumHoursBelowHigh * W && M >= Math.max(a.minimumDropCfs, d.cfs * a.minimumDropFraction), Ce = null;
+  if (!w || !it) return { ...ve, bracketed: !1, state: "falling_unbracketed", label: ot ? "Falling \u2014 earlier crest check expired" : "Falling \u2014 crest not established" };
+  let _t = (a.minimumPeakAgeHours ?? 0) * W, ke = (a.firstConfirmationDeadlineHours ?? 1 / 0) * W, Se = !(ae(s.cfs, Fe.cfs) > 0) && lt && k.supported && q >= _t && B >= a.minimumHoursBelowHigh * W && M >= Math.max(a.minimumDropCfs, d.cfs * a.minimumDropFraction), Ce = null;
   if (Se && q > ke && (Se = !1, r))
-    for (let x of c) {
+    for (let x of l) {
       if (x.t < d.t + _t || x.t > d.t + ke) continue;
       let T = $n({ ...e, gauge: { ...o, points: u.filter((he) => he.t <= x.t), latest: x, ageMs: 0 } }, { settings: a }, !1);
       if (T.state === "confirmed" && T.peak.t === d.t) {
@@ -1138,12 +1138,16 @@ function $n(e, { checking: t = !1, suppressed: n = !1, settings: a = vn } = {}, 
   return { ...ve, evidenceEarnedT: Ce, state: Se ? "confirmed" : "possible", label: Se ? "Observed crest so far" : "Possible crest \u2014 not confirmed" };
 }
 function Ea(e, { checking: t = !1, suppressed: n = !1 } = {}) {
-  let a = e.gauge, r = a.endpoint, i = a.latest, o = r.available, s = o && r.elapsedMs === 24 * W, l = o ? J(r.changeCfs, !0) : "Unavailable", u = o ? r.changeCfs < 0 ? "No net 24-hour rise" : r.distanceCfs === 0 ? `At the ${J(r.referenceCfs)} cfs rise trigger` : `${Math.abs(r.distanceCfs) < 0.5 ? "Less than 1" : J(Math.abs(r.distanceCfs))} cfs ${r.distanceCfs > 0 ? "below" : "above"} the ${J(r.referenceCfs)} cfs rise trigger` : t ? "Checking the 24-hour rise\u2026" : "24-hour rise unavailable", c = e.timeUncertain ? "age unknown" : `${ne(a.ageMs)} old${a.stale ? " \xB7 STALE" : ""}`, f = ee(i?.cfs) ? `${J(i.cfs)} cfs` : "unavailable", d = n || a.stale || e.timeUncertain, g = o ? `${l} cfs ${d ? "over the 24 hours to this reading" : s ? "in the last 24 hours" : "over about 24 hours"}` : t ? "Checking the 24-hour rise\u2026" : "24-hour rise unavailable", h = o && r.changeCfs < 0 ? " (a fall; no net rise)" : "", m = a.history?.endpoint?.last, A = o && r.distanceCfs > 0 && m ? `<p class="meta rise-history-note">Rise reference last met ${Y(m.current?.t ?? m.windowEndT)}. Closure status is decided by health authorities.</p>` : "";
-  ht("current", `<div class="flow-row"><div class="section-heading flow-heading"><h2>24-hour rise</h2>${_n("flow", "About flow readings")}</div><div class="rise-headline"><strong class="distance-headline">${$(g + h)}</strong><b class="rise-support">${$(u)}</b></div>${A}<div class="preview-flow"><strong class="actual-flow flow-number">Actual flow: ${$(f)} \xB7 ${$(c)}</strong>${i ? Y(i.t) : ""}</div></div><p class="authority">Rise trigger calculation unconfirmed. Health authorities decide closures and reopening.</p>${yn("flow", "How flow comparisons work", `<p>Flow is water passing the gauge, in cubic feet per second (cfs). A rise of 400 cfs means an increase of 400, not a river flow of 400.</p><p>The 24-hour rise compares the newest actual reading with the actual reading nearest 24 elapsed hours earlier, within 15 minutes. ${o ? `Comparison: ${J(r.comparison.cfs)} cfs at ${Y(r.comparison.t)}; ${ne(r.elapsedMs)} earlier.` : ""} It is not a calendar day. Missing data are not filled.</p><p>Rise trigger shown: 400 cfs November\u2013February, 200 March\u2013April, 100 May\u2013October. Confirm these seasons with the health department.</p><p>Rise from the 24-hour low is ${a.low.available ? J(a.low.changeCfs, !0) + " cfs" : "unavailable"}. It differs from comparing with the reading 24 hours earlier.</p><p>Gauge quality: ${$(i?.qualityLabel || "unknown")}. Provisional readings are not yet finalized and may be revised.</p>`)}`), document.getElementById("current").setAttribute("aria-busy", String(t)), ht("number-strip", `<span>Flow (cfs) <strong>${ee(i?.cfs) ? J(i.cfs) : "\u2014"}</strong><small>${$(c)}</small></span><span>24h change <strong>${o ? l : "\u2014"}</strong></span><span>Low rise <strong>${a.low.available ? J(a.low.changeCfs, !0) : "\u2014"}</strong></span>`);
+  if (t) {
+    Ue("current", '<div class="flow-row"><h2>24-hour rise</h2><p class="checking-readings" role="status">Checking river readings\u2026</p><p class="meta">Verifying the latest snapshot and reading ages.</p></div><p class="authority">Rise trigger calculation unconfirmed. Health authorities decide closures and reopening.</p>'), document.getElementById("current").setAttribute("aria-busy", "true"), Ue("number-strip", "<span>Checking river readings\u2026</span>");
+    return;
+  }
+  let a = e.gauge, r = a.endpoint, i = a.latest, o = r.available, s = o && r.elapsedMs === 24 * W, c = o ? Z(r.changeCfs, !0) : "Unavailable", u = o ? r.changeCfs < 0 ? "No net 24-hour rise" : r.distanceCfs === 0 ? `At the ${Z(r.referenceCfs)} cfs rise trigger` : `${Math.abs(r.distanceCfs) < 0.5 ? "Less than 1" : Z(Math.abs(r.distanceCfs))} cfs ${r.distanceCfs > 0 ? "below" : "above"} the ${Z(r.referenceCfs)} cfs rise trigger` : t ? "Checking the 24-hour rise\u2026" : "24-hour rise unavailable", l = e.timeUncertain ? "age unknown" : `${ne(a.ageMs)} old${a.stale ? " \xB7 STALE" : ""}`, f = K(i?.cfs) ? `${Z(i.cfs)} cfs` : "unavailable", d = n || a.stale || e.timeUncertain, g = o ? `${c} cfs ${d ? "over the 24 hours to this reading" : s ? "in the last 24 hours" : "over about 24 hours"}` : t ? "Checking the 24-hour rise\u2026" : "24-hour rise unavailable", h = o && r.changeCfs < 0 ? " (a fall; no net rise)" : "", m = a.history?.endpoint?.last, A = o && r.distanceCfs > 0 && m ? `<p class="meta rise-history-note">Rise reference last met ${J(m.current?.t ?? m.windowEndT)}. Closure status is decided by health authorities.</p>` : "";
+  Ue("current", `<div class="flow-row"><div class="section-heading flow-heading"><h2>24-hour rise</h2>${_n("flow", "About flow readings")}</div><div class="rise-headline"><strong class="distance-headline">${$(g + h)}</strong><b class="rise-support">${$(u)}</b></div>${A}<div class="preview-flow"><strong class="actual-flow flow-number">Actual flow: ${$(f)} \xB7 ${$(l)}</strong>${i ? J(i.t) : ""}</div></div><p class="authority">Rise trigger calculation unconfirmed. Health authorities decide closures and reopening.</p>${yn("flow", "How flow comparisons work", `<p>Flow is water passing the gauge, in cubic feet per second (cfs). A rise of 400 cfs means an increase of 400, not a river flow of 400.</p><p>The 24-hour rise compares the newest actual reading with the actual reading nearest 24 elapsed hours earlier, within 15 minutes. ${o ? `Comparison: ${Z(r.comparison.cfs)} cfs at ${J(r.comparison.t)}; ${ne(r.elapsedMs)} earlier.` : ""} It is not a calendar day. Missing data are not filled.</p><p>Rise trigger shown: 400 cfs November\u2013February, 200 March\u2013April, 100 May\u2013October. Confirm these seasons with the health department.</p><p>Rise from the 24-hour low is ${a.low.available ? Z(a.low.changeCfs, !0) + " cfs" : "unavailable"}. It differs from comparing with the reading 24 hours earlier.</p><p>Gauge quality: ${$(i?.qualityLabel || "unknown")}. Provisional readings are not yet finalized and may be revised.</p>`)}`), document.getElementById("current").setAttribute("aria-busy", String(t)), Ue("number-strip", `<span>Flow (cfs) <strong>${K(i?.cfs) ? Z(i.cfs) : "\u2014"}</strong><small>${$(l)}</small></span><span>24h change <strong>${o ? c : "\u2014"}</strong></span><span>Low rise <strong>${a.low.available ? Z(a.low.changeCfs, !0) : "\u2014"}</strong></span>`);
 }
 function La(e) {
-  let t = e.peak ?? e.high, n = e.peak ? e.sincePeakMs : e.sinceHighMs, a = t ? `Observed high: <strong>${J(t.cfs)} cfs</strong> \xB7 ${Y(t.t)}<br>${$(dt(n))} before latest reading${e.peak ? `; now ${J(e.drop)} cfs lower` : ""}.` : $(e.why || ""), r = e.peak && e.drop > ft(e.peak.cfs) ? `<p class="crest-fact">${e.trendSupported && ee(e.fallMs) ? `<strong>No material renewed rise for ${$(dt(e.fallMs))}</strong>.` : "Renewed-rise clock unavailable: a complete hour of eligible readings is needed."}</p>` : "", i = e.peak && e.high?.cfs > e.peak.cfs ? `<p class="crest-fact">Earlier higher reading: ${J(e.high.cfs)} cfs \xB7 ${Y(e.high.t)} (${$(dt(e.sinceHighMs))} before latest reading).</p>` : "", o = e.hadGap ? `<p class="crest-fact">Continuous evidence starts ${Y(e.evidenceStartT)} after a gap or unusable reading.</p>` : "";
-  ht("monitor", `<div class="crest-top"><h2 data-crest-state="${e.state}" data-crest-mode="observed-facts-only">${$(e.label)}</h2>${_n("crest", "About observed highs and the renewed-rise clock")}</div><p class="crest-fact">${a}</p>${r}${i}${o}${yn("crest", "Observed highs and the renewed-rise clock", `<p>${Aa}</p><p>The observed high is the highest eligible actual reading in the available 48 hours, using the latest time when equal highs repeat. Gaps may exist. ${Ht.mode === "B" ? "Direction labels compare the middle of five native readings spanning the past hour with the same middle value one hour earlier. A change larger than both 1 cfs and 0.62% of the larger comparison value is Rising or Falling; otherwise it is Little change. Every new direction must persist across five consecutive quarter-hour comparisons (60 elapsed minutes) before the label changes. Missing support clears the direction to the neutral observed-high heading. The calculation restarts from the available 48-hour history on every load; no browser memory or future readings are used." : "Direction labels are withheld. The observed high and the separate renewed-rise clock remain available as measured facts."} These describe the available readings, not a final crest decision.</p><p>The two clocks end at the newest gauge reading: the high's age is elapsed time since that actual reading; the renewed-rise clock starts at that high or its last material increasing trend reading. A missing quarter-hour breaks trend support; a gap over 30 minutes or unusable reading restarts the contiguous evidence window. Its first complete trend hour restarts the clock, so missing time is never counted. Reading age and quality can withhold all status. Older highs do not acquire an automatic confirmation or an expiry verdict.</p><p>A crest concerns actual river flow topping out, not the peak of the 24-hour rise. A closure can already be in place while the river rises. Around 12 hours of falling is a staff planning judgment, not a fixed closure or sampling rule. The clocks do not mean continuous falling or establish that a storm has ended.</p>`)}`);
+  let t = e.peak ?? e.high, n = e.peak ? e.sincePeakMs : e.sinceHighMs, a = t ? `Observed high: <strong>${Z(t.cfs)} cfs</strong> \xB7 ${J(t.t)}<br>${$(ht(n))} before latest reading${e.peak ? `; now ${Z(e.drop)} cfs lower` : ""}.` : $(e.why || ""), r = e.peak && e.drop > dt(e.peak.cfs) ? `<p class="crest-fact">${e.trendSupported && K(e.fallMs) ? `<strong>No new rise for ${$(ht(e.fallMs))}</strong> <span class="clock-qualifier">\xB7 small fluctuations ignored</span>.` : "Renewed-rise clock unavailable: a complete hour of eligible readings is needed."}</p>` : "", i = e.peak && e.high?.cfs > e.peak.cfs ? `<p class="crest-fact">Earlier higher reading: ${Z(e.high.cfs)} cfs \xB7 ${J(e.high.t)} (${$(ht(e.sinceHighMs))} before latest reading).</p>` : "", o = e.hadGap ? `<p class="crest-fact">Continuous evidence starts ${J(e.evidenceStartT)} after a gap or unusable reading.</p>` : "";
+  Ue("monitor", `<div class="crest-top"><h2 data-crest-state="${e.state}" data-crest-mode="observed-facts-only">${$(e.label)}</h2>${_n("crest", "About observed highs and the renewed-rise clock")}</div><p class="crest-fact">${a}</p>${r}${i}${o}<p class="crest-fact crest-guidance">Growers and sampling staff make the crest call.</p>${yn("crest", "Observed highs and the renewed-rise clock", `<p>${Aa}</p><p>The observed high is the highest eligible actual reading in the available 48 hours, using the latest time when equal highs repeat. Gaps may exist. ${Ht.mode === "B" ? "Direction labels compare the middle of five native readings spanning the past hour with the same middle value one hour earlier. A change larger than both 1 cfs and 0.62% of the larger comparison value is Rising or Falling; otherwise it is Little change. Every new direction must persist across five consecutive quarter-hour comparisons (60 elapsed minutes) before the label changes. Missing support clears the direction to the neutral observed-high heading. The calculation restarts from the available 48-hour history on every load; no browser memory or future readings are used." : "Direction labels are withheld. The observed high and the separate renewed-rise clock remain available as measured facts."} These describe the available readings, not a final crest decision.</p><p>The two clocks end at the newest gauge reading: the high's age is elapsed time since that actual reading; the renewed-rise clock starts at that high or its last material increasing trend reading. A missing quarter-hour breaks trend support; a gap over 30 minutes or unusable reading restarts the contiguous evidence window. Its first complete trend hour restarts the clock, so missing time is never counted. Reading age and quality can withhold all status. Older highs do not acquire an automatic confirmation or an expiry verdict.</p><p>A crest concerns actual river flow topping out, not the peak of the 24-hour rise. A closure can already be in place while the river rises. Around 12 hours of falling is a staff planning judgment, not a fixed closure or sampling rule. The clocks do not mean continuous falling or establish that a storm has ended.</p>`)}`);
 }
 function Dt(e, t) {
   for (let n of e || [])
@@ -1161,7 +1165,7 @@ function Na(e, t, n) {
   for (let a of e || []) {
     if (!a.length || a[0].t > t || a[a.length - 1].t < n) continue;
     let r = Dt([a], t), i = Dt([a], n);
-    if (!ee(r) || !ee(i)) continue;
+    if (!K(r) || !K(i)) continue;
     let o = Math.min(r, i);
     for (let s of a) s.t > t && s.t < n && (o = Math.min(o, s.cfs));
     return o;
@@ -1174,44 +1178,44 @@ function Ra(e) {
 }
 function Tn(e) {
   let t = e.forecast || {}, n = Math.max(e.nowMs, e.gauge?.latest?.t ?? e.nowMs), a = t.raw?.endT, r = e.gauge?.latest?.t;
-  if (!t.available || !ee(a) || e.timeUncertain) return { available: !1, through: a, peaks: [], maxRatio: null, complete: !1 };
-  let i = t.raw.segments, o = Ra(e), s = ee(r) ? r + 24 * W : n, l = /* @__PURE__ */ new Set([n, a, s]);
-  for (let w = Q(n).year; w <= Q(a).year; w++) for (let p of [3, 5, 11]) {
-    let y = We(w, p, 1);
-    y >= n && y <= a && (l.add(y), l.add(y - 1));
+  if (!t.available || !K(a) || e.timeUncertain) return { available: !1, through: a, peaks: [], maxRatio: null, complete: !1 };
+  let i = t.raw.segments, o = Ra(e), s = K(r) ? r + 24 * W : n, c = /* @__PURE__ */ new Set([n, a, s]);
+  for (let w = Y(n).year; w <= Y(a).year; w++) for (let p of [3, 5, 11]) {
+    let y = Ge(w, p, 1);
+    y >= n && y <= a && (c.add(y), c.add(y - 1));
   }
   for (let w of [...i, ...o]) for (let p of w)
-    p.t >= n && p.t <= a && l.add(p.t), p.t + 24 * W >= n && p.t + 24 * W <= a && l.add(p.t + 24 * W);
-  for (let w = n; w <= a; w += Ft) l.add(w);
-  let u = -1 / 0, c = null, f = null, d = !0, g = [];
-  for (let w of [...l].filter((p) => p >= n && p <= a).sort((p, y) => p - y)) {
+    p.t >= n && p.t <= a && c.add(p.t), p.t + 24 * W >= n && p.t + 24 * W <= a && c.add(p.t + 24 * W);
+  for (let w = n; w <= a; w += Ft) c.add(w);
+  let u = -1 / 0, l = null, f = null, d = !0, g = [];
+  for (let w of [...c].filter((p) => p >= n && p <= a).sort((p, y) => p - y)) {
     let p = w <= s ? o : i, y = Dt(p, w), N = Na(p, w - 24 * W, w);
-    if (!ee(y) || !ee(N)) {
+    if (!K(y) || !K(N)) {
       d = !1;
       continue;
     }
     let k = ae(y, N), _ = k / we(w);
-    g.push({ t: w, rise: k, ratio: _ }), _ > u && (u = _), (c === null || k > c) && (c = k, f = w);
+    g.push({ t: w, rise: k, ratio: _ }), _ > u && (u = _), (l === null || k > l) && (l = k, f = w);
   }
   let h = (t.crests || []).filter((w) => w.endT > n && g.some((p) => p.t >= Math.max(n, w.precedingLow?.t ?? n) && p.t <= w.endT && p.ratio >= 0.5)), m = i?.[i.length - 1], A = m?.length > 1 && m[m.length - 1].cfs > m[m.length - 2].cfs;
-  return { available: g.length > 0, complete: d, through: a, maxRatio: ee(u) ? u : null, maxRise: c, maxT: f, peaks: h, risingTail: A };
+  return { available: g.length > 0, complete: d, through: a, maxRatio: K(u) ? u : null, maxRise: l, maxT: f, peaks: h, risingTail: A };
 }
 function Oa(e, t, n = Tn(e)) {
-  let a = e.forecast, r = t.high, i = t.peak ? `<p><strong>Observed high: ${J(t.peak.cfs)} cfs</strong> \xB7 ${Y(t.peak.t)} (${$(dt(t.sincePeakMs))} before latest reading). Now ${J(t.drop)} cfs lower; final crest not established.</p>` : r ? `<p><strong>Recent observed high: ${J(r.cfs)} cfs</strong> \xB7 ${Y(r.t)} (${$(dt(t.sinceHighMs))} before latest reading). ${$(t.label)}.</p>` : `<p>${$(t.label)}. ${$(t.why || "")}</p>`, o = ee(a.issuedT) ? `Issued ${Y(a.issuedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(a.issueAgeMs) + " old")}.` : "", s = n.available ? n.maxRatio < 0.5 ? `${n.complete ? "No supported" : "In the supported portions, no"} measured-and-forecast rise from the 24-hour low reaches half the seasonal rise trigger through ${Z(n.through, !0)}.` : n.peaks.length ? "" : "The comparison using measured flow and forecasts reaches at least half the seasonal rise trigger; no supported future peak time is identified." : "The forecast rise cannot be fully checked with the supported readings.", l = n.peaks.map((u) => `<article class="peak-card"><h3>NOAA forecast peak \xB7 ${J(u.cfs)} cfs</h3><p>Between ${Y(u.bracketStartT)} and ${Y(u.bracketEndT)} (highest issued point ${Y(u.startT)}${u.endT !== u.startT ? " to " + Y(u.endT) : ""}). ${$({ inside_08_17: "Daytime (8 AM\u20135 PM)", outside_08_17: "Overnight / outside 8 AM\u20135 PM", spans_both: "Spans daytime and overnight" }[u.clockRange] || "Daytime / overnight timing unavailable")}.</p><details><summary>Timing and surrounding forecast points</summary><p>${Y(u.bracketStartT)} to ${Y(u.bracketEndT)}. These times describe forecast spacing, not the actual crest-time uncertainty.</p></details></article>`).join("");
-  ht("peaks", `<h2>Observed high, then forecast</h2>${i}<h3>NOAA river forecast</h3><p class="meta">National Oceanic and Atmospheric Administration (NOAA), National Weather Service. ${o}</p>${s ? `<p>${$(s)}</p>` : ""}${l}${n.available ? `<p class="meta">Largest supported rise from the 24-hour low (measured + forecast comparison): ${Ye(n.maxRise, !0)} cfs \xB7 ${Y(n.maxT)}. Display filter: 50% of the seasonal rise trigger.</p>` : ""}${n.risingTail ? `<p class="meta">Forecast still rising at its last point (${Y(n.through)}); no final crest time is established.</p>` : ""}${!n.complete && n.available ? '<p class="meta">Some forecast comparisons are unsupported; a missing comparison does not mean no rise.</p>' : ""}<details><summary>Which forecast peaks are shown?</summary><p>Display filter: a forecast peak is shown only when a supported rise from the rolling 24-hour low on its rising limb reaches at least 50% of the seasonal rise trigger (200 cfs November\u2013February, 100 March\u2013April, 50 May\u2013October). This is a display choice, not a closure rule. During the first 24 hours, the gauge-adjusted forecast is compared with the supported measured and adjusted low; if adjustment is unsupported that interval is unavailable. After 24 hours, both the flow and rolling low use the unchanged official forecast. The chart shows smaller forecast bumps too. No peak time is predicted by this page.</p></details>`);
+  let a = e.forecast, r = t.high, i = t.peak ? `<p><strong>Observed high: ${Z(t.peak.cfs)} cfs</strong> \xB7 ${J(t.peak.t)} (${$(ht(t.sincePeakMs))} before latest reading). Now ${Z(t.drop)} cfs lower; final crest not established.</p>` : r ? `<p><strong>Recent observed high: ${Z(r.cfs)} cfs</strong> \xB7 ${J(r.t)} (${$(ht(t.sinceHighMs))} before latest reading). ${$(t.label)}.</p>` : `<p>${$(t.label)}. ${$(t.why || "")}</p>`, o = K(a.issuedT) ? `Issued ${J(a.issuedT)} \xB7 ${$(e.timeUncertain ? "age unknown" : ne(a.issueAgeMs) + " old")}.` : "", s = K(n.through) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric" }).format(n.through) : "the available forecast", c = n.available ? n.maxRatio < 0.5 ? `${n.complete ? "NOAA-based forecast shows no rise near the trigger" : "Where readings are available, the NOAA-based forecast shows no rise near the trigger"} through ${s}.` : n.peaks.length ? "" : "The comparison using measured flow and forecasts reaches at least half the seasonal rise trigger; no supported future peak time is identified." : "There are not enough readings to check the forecast rise.", u = n.peaks.map((l) => `<article class="peak-card"><h3>NOAA forecast peak \xB7 ${Z(l.cfs)} cfs</h3><p>Between ${J(l.bracketStartT)} and ${J(l.bracketEndT)} (highest issued point ${J(l.startT)}${l.endT !== l.startT ? " to " + J(l.endT) : ""}). ${$({ inside_08_17: "Daytime (8 AM\u20135 PM)", outside_08_17: "Overnight / outside 8 AM\u20135 PM", spans_both: "Spans daytime and overnight" }[l.clockRange] || "Daytime / overnight timing unavailable")}.</p><details><summary>Timing and surrounding forecast points</summary><p>${J(l.bracketStartT)} to ${J(l.bracketEndT)}. These times describe forecast spacing, not the actual crest-time uncertainty.</p></details></article>`).join("");
+  Ue("peaks", `<h2>Observed high, then forecast</h2>${i}<h3>NOAA river forecast</h3><p class="meta">National Oceanic and Atmospheric Administration (NOAA), National Weather Service. ${o}</p>${c ? `<p>${$(c)}</p>` : ""}${u}${n.available ? `<p class="meta">Largest supported rise from the 24-hour low (measured + forecast comparison): ${Qe(n.maxRise, !0)} cfs \xB7 ${J(n.maxT)}. \u201CNear the trigger\u201D means at least half the seasonal rise trigger.</p>` : ""}${n.risingTail ? `<p class="meta">Forecast still rising at its last point (${J(n.through)}); no final crest time is established.</p>` : ""}${!n.complete && n.available ? '<p class="meta">Some forecast comparisons are unsupported; a missing comparison does not mean no rise.</p>' : ""}<details><summary>Which forecast peaks are shown?</summary><p>Display filter: a forecast peak is shown only when a supported rise from the rolling 24-hour low on its rising limb reaches at least 50% of the seasonal rise trigger (200 cfs November\u2013February, 100 March\u2013April, 50 May\u2013October). This is a display choice, not a closure rule. During the first 24 hours, the gauge-adjusted forecast is compared with the supported measured and adjusted low; if adjustment is unsupported that interval is unavailable. After 24 hours, both the flow and rolling low use the unchanged official forecast. The chart shows smaller forecast bumps too. No peak time is predicted by this page.</p></details>`);
 }
 function xn(e, t, n, a, r, i = {}) {
   Ea(t, i);
   let o = Ca(t, i), s = Tn(t);
   La(o, s.peaks.length > 0), pn(t, a), gn(t);
-  let l = document.getElementById("rain");
-  l.innerHTML = l.innerHTML.replaceAll("<strong>Unavailable</strong>", '<strong class="unavailable">Unavailable</strong>');
-  let u = l.querySelector?.(".station-links"), c = l.querySelector?.(".rain-total-grid");
-  u && c && c.insertAdjacentElement("afterend", u), Oa(t, o, s), mn(t), bn(e, t, n);
+  let c = document.getElementById("rain");
+  c.innerHTML = c.innerHTML.replaceAll("<strong>Unavailable</strong>", '<strong class="unavailable">Unavailable</strong>');
+  let u = c.querySelector?.(".station-links"), l = c.querySelector?.(".rain-total-grid");
+  u && l && l.insertAdjacentElement("afterend", u), Oa(t, o, s), mn(t), bn(e, t, n);
   let f = document.getElementById("forecast-details");
   f.innerHTML = f.innerHTML.replace("The adjusted forecast first reaches", "Within its first 72 hours, the adjusted forecast first reaches").replace("The adjusted forecast already meets", "Within its first 72 hours, the adjusted forecast already meets").replace("earlier measurements or the adjusted forecast", "earlier measurements or forecast values").replace("Only the official forecast can extend beyond 72 hours; these comparisons are limited to 72 hours.", "After 72 hours, the moving rise reference uses only the unchanged official forecast. Adjusted forecasts and past cases still stop at 72 hours; a gap marks any change of basis.").replace("Peak cards show high points in the forecast, including any later peak higher than the first. A dip may precede another rise.", "The observed high is listed first. Forecast peaks are filtered by their rolling 24-hour rise; smaller bumps remain on the chart.");
   let d = document.getElementById("sources");
-  d.innerHTML = d.innerHTML.replace("Provisional readings may be revised; estimated or otherwise unsupported readings cannot support automatic turn notices.", "Estimated or otherwise unsupported readings cannot confirm an observed crest."), ht("snapshot-label", `Saved snapshot ${$(e.id)} \xB7 ${$(Z(e.createdAt))}`);
+  d.innerHTML = d.innerHTML.replace("Provisional readings may be revised; estimated or otherwise unsupported readings cannot support automatic turn notices.", "Estimated or otherwise unsupported readings cannot confirm an observed crest."), Ue("snapshot-label", `Saved snapshot ${$(e.id)} \xB7 ${$(Q(e.createdAt))}`);
 }
 
 // site/js/watch-preview-reference.js
@@ -1235,7 +1239,7 @@ function Pa(e) {
   }
   return t;
 }
-function Ue(e, t) {
+function He(e, t) {
   if (!e.length || t < e[0].t || t > e.at(-1).t) return null;
   for (let n = 0; n < e.length; n++) {
     let a = e[n];
@@ -1249,14 +1253,14 @@ function Ue(e, t) {
 }
 function Ua(e, t) {
   let n = [];
-  for (let a = Q(e).year; a <= Q(t).year; a++) for (let r of [3, 5, 11]) {
-    let i = We(a, r, 1);
+  for (let a = Y(e).year; a <= Y(t).year; a++) for (let r of [3, 5, 11]) {
+    let i = Ge(a, r, 1);
     i > e && i <= t && n.push(i);
   }
   return n.sort((a, r) => a - r);
 }
 function Ha(e, t) {
-  let n = Ue(e, t - ue), a = Ue(e, t);
+  let n = He(e, t - ue), a = He(e, t);
   if (n === null || a === null) return null;
   let r = Math.min(n, a);
   for (let i of e) i.t > t - ue && i.t < t && (r = Math.min(r, i.cfs));
@@ -1267,13 +1271,13 @@ function Da(e, t, n) {
   for (let i of e) for (let o of [i.t, i.t + ue]) o > t && o < n && a.add(o);
   let r = [...a].sort((i, o) => i - o);
   for (let i = 1; i < r.length; i++) {
-    let o = r[i - 1], s = r[i], l = (o + s) / 2, u = e.filter((f) => f.t > l - ue && f.t < l).reduce((f, d) => Math.min(f, d.cfs), 1 / 0), c = [
-      [Ue(e, o - ue), Ue(e, s - ue)],
-      [Ue(e, o), Ue(e, s)],
+    let o = r[i - 1], s = r[i], c = (o + s) / 2, u = e.filter((f) => f.t > c - ue && f.t < c).reduce((f, d) => Math.min(f, d.cfs), 1 / 0), l = [
+      [He(e, o - ue), He(e, s - ue)],
+      [He(e, o), He(e, s)],
       ...se(u) ? [[u, u]] : []
     ];
-    for (let f = 0; f < c.length; f++) for (let d = f + 1; d < c.length; d++) {
-      let g = c[f][0] - c[d][0], h = c[f][1] - c[d][1];
+    for (let f = 0; f < l.length; f++) for (let d = f + 1; d < l.length; d++) {
+      let g = l[f][0] - l[d][0], h = l[f][1] - l[d][1];
       if (!se(g) || !se(h) || g === h) continue;
       let m = Math.max(Math.abs(g), Math.abs(h)), A = g / m / (g / m - h / m);
       A > 0 && A < 1 && a.add(o + A * (s - o));
@@ -1282,51 +1286,51 @@ function Da(e, t, n) {
   return [...a].sort((i, o) => i - o);
 }
 function Fa(e, t, n, a) {
-  let r = (u, c) => {
+  let r = (u, l) => {
     let f = a(u);
-    return se(f) && se(f + c) ? f + c : null;
+    return se(f) && se(f + l) ? f + l : null;
   };
   if (e === t) {
     let u = r(e, we(e));
     return { segments: se(u) ? [[{ t: e, cfs: u }]] : [], steps: [] };
   }
-  let i = Ua(e, t), o = [e, ...i, ...i.at(-1) === t ? [] : [t]], s = [], l = [];
+  let i = Ua(e, t), o = [e, ...i, ...i.at(-1) === t ? [] : [t]], s = [], c = [];
   for (let u = 1; u < o.length; u++) {
-    let c = o[u - 1], f = o[u], d = we(c), h = [c, ...n.filter((m) => m > c && m < f), f].map((m) => ({ t: m, cfs: r(m, d) }));
+    let l = o[u - 1], f = o[u], d = we(l), h = [l, ...n.filter((m) => m > l && m < f), f].map((m) => ({ t: m, cfs: r(m, d) }));
     if (h.every((m) => se(m.cfs)) && s.push(h), i.includes(f)) {
       let m = r(f, d), A = r(f, we(f));
-      se(m) && se(A) && (l.push({ t: f, beforeCfs: m, afterCfs: A }), f === t && s.push([{ t: f, cfs: A }]));
+      se(m) && se(A) && (c.push({ t: f, beforeCfs: m, afterCfs: A }), f === t && s.push([{ t: f, cfs: A }]));
     }
   }
-  return { segments: s, steps: l };
+  return { segments: s, steps: c };
 }
 function An(e, t, n = "endpoint") {
   let a = { available: !1, basis: "official_forecast", segments: [], steps: [], startT: null, endT: null };
   if (!jt(t) || !jt(e?.endT) || e.endT <= t || !["endpoint", "low"].includes(n)) return a;
-  let r = Pa(e), i = [], o = [], s = t + 1, l = (c, f, d, g) => {
-    if (c > f) return;
-    let h = Fa(c, f, d, g);
+  let r = Pa(e), i = [], o = [], s = t + 1, c = (l, f, d, g) => {
+    if (l > f) return;
+    let h = Fa(l, f, d, g);
     i.push(...h.segments), o.push(...h.steps);
   };
   if (n === "endpoint")
-    for (let c of r) for (let f of r) {
-      let d = Math.max(s, c[0].t, f[0].t + ue), g = Math.min(e.endT, c.at(-1).t, f.at(-1).t + ue);
-      l(d, g, f.map((h) => h.t + ue), (h) => Ue(f, h - ue));
+    for (let l of r) for (let f of r) {
+      let d = Math.max(s, l[0].t, f[0].t + ue), g = Math.min(e.endT, l.at(-1).t, f.at(-1).t + ue);
+      c(d, g, f.map((h) => h.t + ue), (h) => He(f, h - ue));
     }
   else
-    for (let c of r) {
-      let f = Math.max(s, c[0].t + ue), d = Math.min(e.endT, c.at(-1).t);
-      f <= d && l(f, d, Da(c, f, d), (g) => Ha(c, g));
+    for (let l of r) {
+      let f = Math.max(s, l[0].t + ue), d = Math.min(e.endT, l.at(-1).t);
+      f <= d && c(f, d, Da(l, f, d), (g) => Ha(l, g));
     }
-  i.sort((c, f) => c[0].t - f[0].t);
+  i.sort((l, f) => l[0].t - f[0].t);
   let u = i.flat();
   return u.length ? {
     available: !0,
     basis: "official_forecast",
     segments: i,
     steps: o,
-    startT: Math.min(...u.map((c) => c.t)),
-    endT: Math.max(...u.map((c) => c.t))
+    startT: Math.min(...u.map((l) => l.t)),
+    endT: Math.max(...u.map((l) => l.t))
   } : a;
 }
 
@@ -1361,7 +1365,7 @@ function kn(e, t, n) {
     let r = Sn(a, t, n, 1 / 0);
     for (let i of e.steps || []) {
       if (i.t < t || i.t > n || !a.length || i.t < a[0].t || i.t > a.at(-1).t) continue;
-      let o = r.findIndex((l) => l.t >= i.t), s = o < 0 ? r.length : o;
+      let o = r.findIndex((c) => c.t >= i.t), s = o < 0 ? r.length : o;
       for (; r[s]?.t === i.t; ) r.splice(s, 1);
       r.splice(s, 0, { t: i.t, cfs: i.beforeCfs }, { t: i.t, cfs: i.afterCfs });
     }
@@ -1381,25 +1385,25 @@ function Wa(e) {
 function Ga(e, t, n) {
   let a = Math.max(2, Math.floor(n / 70) + 1), r = qt(e), i = qt(t), o = [];
   for (let s of [6, 12, 24, 48, 72, 96, 120, 144, 168, 192, 240, 336, 504, 672]) {
-    let l = Math.min(s, 12) * 36e5, u = [];
-    for (let f = Math.ceil(r / l) * l; f <= i + 36e5; f += s * 36e5) {
+    let c = Math.min(s, 12) * 36e5, u = [];
+    for (let f = Math.ceil(r / c) * c; f <= i + 36e5; f += s * 36e5) {
       let d = Wa(f);
       d >= e && d <= t && u.push(d);
     }
     if (u.length < 2) continue;
     o = u;
-    let c = Math.min(...u.slice(1).map((f, d) => (f - u[d]) / (t - e) * n));
-    if (u.length <= a && c >= 40) return u;
+    let l = Math.min(...u.slice(1).map((f, d) => (f - u[d]) / (t - e) * n));
+    if (u.length <= a && l >= 40) return u;
   }
   return o.length > 2 ? [o[0], o.at(-1)] : o;
 }
 function Cn(e, t, n, { previewReferenceTail: a = !1, officialReferenceTail: r = null } = {}) {
-  let i = Math.max(1, Math.floor(e.clientWidth)), o = globalThis.innerHeight, s = i < 500 ? 240 : U(o) && o < 500 ? Math.max(180, Math.min(280, o - 80)) : 280, l = { left: Math.min(49, i / 4), right: Math.min(14, i / 4), top: 26, bottom: 38 }, u = l.left, c = i - l.right, f = l.top, d = s - l.bottom, g = t.gauge?.latest?.t, h = Math.round(t.nowMs), m = document.getElementById("chart-cursor");
+  let i = Math.max(1, Math.floor(e.clientWidth)), o = globalThis.innerHeight, s = i < 500 ? 240 : U(o) && o < 500 ? Math.max(180, Math.min(280, o - 80)) : 280, c = { left: Math.min(49, i / 4), right: Math.min(14, i / 4), top: 26, bottom: 38 }, u = c.left, l = i - c.right, f = c.top, d = s - c.bottom, g = t.gauge?.latest?.t, h = Math.round(t.nowMs), m = document.getElementById("chart-cursor");
   if (t.timeUncertain && !U(g)) {
     let b = "Chart unavailable. No saved river-reading time is available; current time is unconfirmed.";
     e.innerHTML = `<svg viewBox="0 0 ${i} ${s}" width="${i}" height="${s}" role="img" aria-label="${b}"><text x="${i / 2}" y="${s / 2 - 12}" text-anchor="middle">Chart unavailable</text><text x="${i / 2}" y="${s / 2 + 4}" text-anchor="middle">${i < 220 ? "No saved time" : "No saved river-reading time"}</text></svg>`;
     for (let C of document.querySelectorAll?.(".legend span") ?? []) C.hidden = !0;
-    H = null, m.min = "0", m.max = "1", m.step = "1", m.value = "0", m.disabled = !0, m.style.marginLeft = `${u - 10}px`, m.style.width = `${c - u + 20}px`, m.setAttribute("aria-valuetext", b), document.getElementById("chart-readout").textContent = b;
+    H = null, m.min = "0", m.max = "1", m.step = "1", m.value = "0", m.disabled = !0, m.style.marginLeft = `${u - 10}px`, m.style.width = `${l - u + 20}px`, m.setAttribute("aria-valuetext", b), document.getElementById("chart-readout").textContent = b;
     return;
   }
   let A = t.timeUncertain ? g : h, w = A - Number(n.past || 24) * 36e5, p = n.range === "full" ? Math.max(A + 36e5, t.forecast?.raw?.endT ?? A + 72 * 36e5) : A + (n.range === "day" ? 24 : 72) * 36e5, y = t.forecast || {}, N = t.gauge?.references?.[n.reference], k = y.references?.[n.reference], _ = { segments: [...N?.segments || [], ...k?.segments || []], steps: [...N?.steps || [], ...k?.steps || []] }, M = a && U(g) ? r : null, B = [{ key: "observed", name: "Measured river flow", segments: t.gauge?.segments || [], gap: 30 * 6e4 }, { key: "raw", name: "Official river forecast", segments: y.raw?.segments || [], gap: 6 * 36e5 }, { key: "shifted", name: "Adjusted forecast", segments: y.shifted?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past high case", segments: y.high?.segments || [], gap: 6 * 36e5 }, { key: "case", name: "Past low case", segments: y.low?.segments || [], gap: 6 * 36e5 }, { key: "reference", name: a ? "Rise-trigger flow" : "24-hour rise reference", segments: kn(_, w, p), gap: 1 / 0 }, ...M ? [{ key: "reference", name: "Official forecast-based rise-trigger flow", basis: "official-forecast", segments: kn(M, Math.max(w, g + 72 * 36e5 + 1), p), gap: 1 / 0 }] : []].map((b) => ({ ...b, visible: b.key === "reference" ? b.segments : b.segments.map((C) => Sn(C, w, p, b.gap)) })), q = B.flatMap((b) => b.visible.flat()).filter((b) => U(b.cfs)), G = { obs: "observed", raw: "raw", shifted: "shifted", case: "case", reference: "reference" };
@@ -1407,15 +1411,15 @@ function Cn(e, t, n, { previewReferenceTail: a = !1, officialReferenceTail: r = 
     let C = G[b.querySelector("i")?.className];
     b.hidden = !!C && !B.some((Le) => Le.key === C && Le.visible.some((Nt) => Nt.length));
   }
-  let Me = Math.max(10, ...q.map((b) => b.cfs)) * 1.08, De = Me / 4, vt = Math.pow(10, Math.floor(Math.log10(De))), Ae = De / vt, wt = (Ae <= 1 ? 1 : Ae <= 2 ? 2 : Ae <= 5 ? 5 : 10) * vt, Fe = wt * 4, P = (b) => u + (b - w) / (p - w) * (c - u), me = (b) => d - b / Fe * (d - f), rt = Array.from({ length: 5 }, (b, C) => wt * C), it = Ga(w, p, c - u), St = rt.map((b) => `<line class="grid" x1="${u}" x2="${c}" y1="${me(b)}" y2="${me(b)}"/><text x="${u - 7}" y="${me(b) + 4}" text-anchor="end">${$(Ye(b))}</text>`).join("") + it.map((b) => {
+  let Me = Math.max(10, ...q.map((b) => b.cfs)) * 1.08, Fe = Me / 4, vt = Math.pow(10, Math.floor(Math.log10(Fe))), Ae = Fe / vt, wt = (Ae <= 1 ? 1 : Ae <= 2 ? 2 : Ae <= 5 ? 5 : 10) * vt, je = wt * 4, P = (b) => u + (b - w) / (p - w) * (l - u), me = (b) => d - b / je * (d - f), it = Array.from({ length: 5 }, (b, C) => wt * C), ot = Ga(w, p, l - u), St = it.map((b) => `<line class="grid" x1="${u}" x2="${l}" y1="${me(b)}" y2="${me(b)}"/><text x="${u - 7}" y="${me(b) + 4}" text-anchor="end">${$(Qe(b))}</text>`).join("") + ot.map((b) => {
     let C = P(b), Le = C < 24 ? "start" : C > i - 24 ? "end" : "middle", Nt = `<tspan x="${C}">${$(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "numeric", day: "numeric" }).format(b))}</tspan><tspan x="${C}" dy="14">${$(new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric" }).format(b))}</tspan>`;
     return `<text class="x-axis-label" x="${C}" y="${s - 24}" text-anchor="${Le}">${Nt}</text>`;
-  }).join(""), ot = B.map((b) => b.visible.filter((C) => C.length).map((C) => C.length === 1 ? `<circle class="${b.key}${b.basis ? " reference-official" : ""}"${b.basis ? ` data-reference-basis="${b.basis}"` : ""} cx="${P(C[0].t)}" cy="${me(C[0].cfs)}" r="2" fill="var(--${b.key === "observed" ? "obs" : b.key})"/>` : `<path class="plot-line ${b.key}${b.basis ? " reference-official" : ""}"${b.basis ? ` data-reference-basis="${b.basis}"` : ""} d="${qa(C, P, me)}"/>`).join("")).join(""), ve = xt(_.segments, w, 1 / 0) ?? xt(_.segments, A, 1 / 0), de = U(ve) ? me(ve) : f + 14;
+  }).join(""), lt = B.map((b) => b.visible.filter((C) => C.length).map((C) => C.length === 1 ? `<circle class="${b.key}${b.basis ? " reference-official" : ""}"${b.basis ? ` data-reference-basis="${b.basis}"` : ""} cx="${P(C[0].t)}" cy="${me(C[0].cfs)}" r="2" fill="var(--${b.key === "observed" ? "obs" : b.key})"/>` : `<path class="plot-line ${b.key}${b.basis ? " reference-official" : ""}"${b.basis ? ` data-reference-basis="${b.basis}"` : ""} d="${qa(C, P, me)}"/>`).join("")).join(""), ve = xt(_.segments, w, 1 / 0) ?? xt(_.segments, A, 1 / 0), de = U(ve) ? me(ve) : f + 14;
   de = de - f > 32 ? de - 10 : de + 24, de = Math.max(f + 12, Math.min(d - 6, de));
-  let _t = B.find((b) => b.key === "reference")?.visible.flat() || [], ke = _t.reduce((b, C) => !b || C.t > b.t ? C : b, null), je = a ? 112 : 84, Se = a ? "Rise-trigger flow" : "24h rise line", Ce = ke ? Math.max(u + 4, Math.min(c - je - 4, P(ke.t) - je)) : u + 4, x = de, T = Ce + je, he = U(n.cursorT) && n.cursorT >= w && n.cursorT <= p ? P(n.cursorT) : null, qe = U(g) && g >= w && g <= p ? P(g) : null, Be = ke && P(ke.t) - u >= je, Xt = [he, qe].some((b) => U(b) && b >= Ce && b <= T), Wn = c - u < 200 || !Be || Xt ? "" : `<rect class="reference-label-bg" x="${Ce}" y="${x - 12}" width="${je}" height="16" rx="3"/><text class="reference-label" x="${Ce + 4}" y="${x}">${Se}</text>`, Zt = t.timeUncertain && c - u < 132, Gn = t.timeUncertain ? Zt ? "Last reading" : "Last saved river reading" : "Latest observed", Vn = t.timeUncertain ? Zt ? 80 : 132 : 90, zn = U(g) && g >= w && g <= p ? `<line x1="${P(g)}" x2="${P(g)}" y1="${f}" y2="${d}" stroke="var(--obs)" opacity=".5"/><text x="${Math.max(u, Math.min(c - Vn, P(g) + 5))}" y="${f - 9}">${Gn}</text>` : "", Xn = !t.timeUncertain && h >= w && h <= p ? `<line class="now" x1="${P(h)}" x2="${P(h)}" y1="${f}" y2="${d}"/><text x="${Math.min(c - 25, P(h) + 5)}" y="${f + 15}">Now</text>` : "", Ee = U(n.cursorT) ? Math.max(w, Math.min(p, n.cursorT)) : null, Zn = Ee !== null ? `<line class="cursor" x1="${P(Ee)}" x2="${P(Ee)}" y1="${f}" y2="${d}"/>` : "", le = U(g) ? g + 72 * 36e5 : null, Jn = U(y.raw?.endT) && y.raw.endT > le && (y.raw?.segments || []).some((b) => b.some((C) => U(C.cfs) && C.t > le)), Ct = n.range === "full" && U(le) && le > w && p - le > 6 * 36e5 && Jn, Et = Ct ? c - P(le) : 0, Yn = a ? "Beyond this limit the forecast and its 24-hour rise reference use official forecast values only, where supported. Adjusted forecasts and past cases stop at 72 hours. The reference changes basis in a separate path." : "Beyond this limit only supported official forecast points can be shown. Adjustments, past cases and moving references are limited to at most 72 hours.", Qn = Ct ? `<g class="forecast-horizon"><title>72-hour context limit: ${$(Z(le, !0))}. ${Yn}</title><rect x="${P(le)}" y="${f}" width="${Et}" height="${d - f}" fill="currentColor" opacity=".04"/><line x1="${P(le)}" x2="${P(le)}" y1="${f}" y2="${d}" stroke="currentColor" stroke-dasharray="3 4" opacity=".55"/>${Et >= 65 ? `<rect x="${c - 68}" y="${f + 6}" width="67" height="33" rx="3" fill="var(--surface)" opacity=".95"/><text x="${c - 4}" y="${f + 19}" text-anchor="end"><tspan x="${c - 4}">After 72h</tspan><tspan x="${c - 4}" dy="14">Official only</tspan></text>` : ""}</g>` : "", Kn = B.some((b) => b.segments.some((C) => C.some((Le) => U(Le.t) && U(Le.cfs)))) ? "No supported points fall within the selected chart range." : "No supported source readings are available to draw.";
-  e.innerHTML = `<svg viewBox="0 0 ${i} ${s}" width="${i}" height="${s}" role="img" aria-label="River flow in cubic feet per second. ${t.timeUncertain ? "Chart based on the last saved river reading; current time is unconfirmed. " : ""}The comparison line marks the level needed for the rolling 24-hour rise to meet its reference. ${a ? "After the 72-hour limit, any reference shown uses only official forecast values and begins as a separate path. " : ""}Observations and forecast paths from ${$(Z(w, !0))} through ${$(Z(p, !0))}. Gaps are not connected."><defs><clipPath id="plot-clip"><rect x="${u}" y="${f}" width="${c - u}" height="${d - f}"/></clipPath></defs>${St}<g clip-path="url(#plot-clip)">${Qn}${ot}${Zn}</g>${Wn}${zn}${Xn}${q.length ? "" : `<text x="${(u + c) / 2}" y="${s / 2}" text-anchor="middle">${Kn}</text>`}</svg>${Ct && Et < 65 ? `<p class="meta forecast-horizon-caption">${a ? "After 72h: official forecast and its supported 24-hour reference." : "After 72h: official forecast only, where supported."}</p>` : ""}`, H = { lines: B, hasData: q.length > 0, start: w, end: p, left: u, right: c, width: i, host: e, contextLimit: le, previewReferenceTail: a }, m.min = String(w), m.max = String(p), m.step = "1", m.disabled = !H.hasData, m.style.marginLeft = `${u - 10}px`, m.style.width = `${c - u + 20}px`;
+  let _t = B.find((b) => b.key === "reference")?.visible.flat() || [], ke = _t.reduce((b, C) => !b || C.t > b.t ? C : b, null), qe = a ? 112 : 84, Se = a ? "Rise-trigger flow" : "24h rise line", Ce = ke ? Math.max(u + 4, Math.min(l - qe - 4, P(ke.t) - qe)) : u + 4, x = de, T = Ce + qe, he = U(n.cursorT) && n.cursorT >= w && n.cursorT <= p ? P(n.cursorT) : null, Be = U(g) && g >= w && g <= p ? P(g) : null, We = ke && P(ke.t) - u >= qe, Xt = [he, Be].some((b) => U(b) && b >= Ce && b <= T), Wn = l - u < 200 || !We || Xt ? "" : `<rect class="reference-label-bg" x="${Ce}" y="${x - 12}" width="${qe}" height="16" rx="3"/><text class="reference-label" x="${Ce + 4}" y="${x}">${Se}</text>`, Zt = t.timeUncertain && l - u < 132, Gn = t.timeUncertain ? Zt ? "Last reading" : "Last saved river reading" : "Latest observed", Vn = t.timeUncertain ? Zt ? 80 : 132 : 90, zn = U(g) && g >= w && g <= p ? `<line x1="${P(g)}" x2="${P(g)}" y1="${f}" y2="${d}" stroke="var(--obs)" opacity=".5"/><text x="${Math.max(u, Math.min(l - Vn, P(g) + 5))}" y="${f - 9}">${Gn}</text>` : "", Xn = !t.timeUncertain && h >= w && h <= p ? `<line class="now" x1="${P(h)}" x2="${P(h)}" y1="${f}" y2="${d}"/><text x="${Math.min(l - 25, P(h) + 5)}" y="${f + 15}">Now</text>` : "", Ee = U(n.cursorT) ? Math.max(w, Math.min(p, n.cursorT)) : null, Zn = Ee !== null ? `<line class="cursor" x1="${P(Ee)}" x2="${P(Ee)}" y1="${f}" y2="${d}"/>` : "", le = U(g) ? g + 72 * 36e5 : null, Jn = U(y.raw?.endT) && y.raw.endT > le && (y.raw?.segments || []).some((b) => b.some((C) => U(C.cfs) && C.t > le)), Ct = n.range === "full" && U(le) && le > w && p - le > 6 * 36e5 && Jn, Et = Ct ? l - P(le) : 0, Yn = a ? "Beyond this limit the forecast and its 24-hour rise reference use official forecast values only, where supported. Adjusted forecasts and past cases stop at 72 hours. The reference changes basis in a separate path." : "Beyond this limit only supported official forecast points can be shown. Adjustments, past cases and moving references are limited to at most 72 hours.", Qn = Ct ? `<g class="forecast-horizon"><title>72-hour context limit: ${$(Q(le, !0))}. ${Yn}</title><rect x="${P(le)}" y="${f}" width="${Et}" height="${d - f}" fill="currentColor" opacity=".04"/><line x1="${P(le)}" x2="${P(le)}" y1="${f}" y2="${d}" stroke="currentColor" stroke-dasharray="3 4" opacity=".55"/>${Et >= 65 ? `<rect x="${l - 68}" y="${f + 6}" width="67" height="33" rx="3" fill="var(--surface)" opacity=".95"/><text x="${l - 4}" y="${f + 19}" text-anchor="end"><tspan x="${l - 4}">After 72h</tspan><tspan x="${l - 4}" dy="14">Official only</tspan></text>` : ""}</g>` : "", Kn = B.some((b) => b.segments.some((C) => C.some((Le) => U(Le.t) && U(Le.cfs)))) ? "No supported points fall within the selected chart range." : "No supported source readings are available to draw.";
+  e.innerHTML = `<svg viewBox="0 0 ${i} ${s}" width="${i}" height="${s}" role="img" aria-label="River flow in cubic feet per second. ${t.timeUncertain ? "Chart based on the last saved river reading; current time is unconfirmed. " : ""}The comparison line marks the level needed for the rolling 24-hour rise to meet its reference. ${a ? "After the 72-hour limit, any reference shown uses only official forecast values and begins as a separate path. " : ""}Observations and forecast paths from ${$(Q(w, !0))} through ${$(Q(p, !0))}. Gaps are not connected."><defs><clipPath id="plot-clip"><rect x="${u}" y="${f}" width="${l - u}" height="${d - f}"/></clipPath></defs>${St}<g clip-path="url(#plot-clip)">${Qn}${lt}${Zn}</g>${Wn}${zn}${Xn}${q.length ? "" : `<text x="${(u + l) / 2}" y="${s / 2}" text-anchor="middle">${Kn}</text>`}</svg>${Ct && Et < 65 ? `<p class="meta forecast-horizon-caption">${a ? "After 72h: official forecast and its supported 24-hour reference." : "After 72h: official forecast only, where supported."}</p>` : ""}`, H = { lines: B, hasData: q.length > 0, start: w, end: p, left: u, right: l, width: i, host: e, contextLimit: le, previewReferenceTail: a }, m.min = String(w), m.max = String(p), m.step = "1", m.disabled = !H.hasData, m.style.marginLeft = `${u - 10}px`, m.style.width = `${l - u + 20}px`;
   let Lt = Ee ?? Math.max(w, Math.min(p, U(g) ? g : h));
-  m.value = String(Math.round(Lt)), m.setAttribute("aria-valuetext", t.timeUncertain ? `${Ee === null ? "Last saved river reading" : "Saved chart selection"}: ${Z(Lt)}. Current time is unconfirmed.` : Z(Lt)), Ee !== null ? Va(Ee) : document.getElementById("chart-readout").textContent = "Tap the graph or drag the slider to inspect a time.";
+  m.value = String(Math.round(Lt)), m.setAttribute("aria-valuetext", t.timeUncertain ? `${Ee === null ? "Last saved river reading" : "Saved chart selection"}: ${Q(Lt)}. Current time is unconfirmed.` : Q(Lt)), Ee !== null ? Va(Ee) : document.getElementById("chart-readout").textContent = "Tap the graph or drag the slider to inspect a time.";
 }
 function Va(e) {
   if (!H) return;
@@ -1423,7 +1427,7 @@ function Va(e) {
     let a = xt(n.visible, e, n.gap);
     return U(a) ? `${n.name}: ${Math.round(a).toLocaleString("en-US")} cfs` : null;
   }).filter(Boolean);
-  document.getElementById("chart-readout").innerHTML = `<strong>${$(Z(e))}</strong><br>${t.map($).join(" \xB7 ") || "No supported value at this time."}${t.length ? '<br><span class="meta">Between readings: estimated. Gaps stay blank.</span>' : ""}${U(H.contextLimit) && e > H.contextLimit ? `<br><span class="meta">${H.previewReferenceTail ? "Beyond 72 hours: official forecast values only. The reference uses those forecast values when supported; adjusted forecasts and past cases stop at 72 hours." : "Beyond 72 hours: official forecast only, where supported. Other comparisons are limited to 72 hours."}</span>` : ""}`;
+  document.getElementById("chart-readout").innerHTML = `<strong>${$(Q(e))}</strong><br>${t.map($).join(" \xB7 ") || "No supported value at this time."}${t.length ? '<br><span class="meta">Between readings: estimated. Gaps stay blank.</span>' : ""}${U(H.contextLimit) && e > H.contextLimit ? `<br><span class="meta">${H.previewReferenceTail ? "Beyond 72 hours: official forecast values only. The reference uses those forecast values when supported; adjusted forecasts and past cases stop at 72 hours." : "Beyond 72 hours: official forecast only, where supported. Other comparisons are limited to 72 hours."}</span>` : ""}`;
 }
 function En(e) {
   if (!H?.hasData) return null;
@@ -1446,13 +1450,13 @@ function Ln(e) {
 var Nn = { name: "Historical river forecast cases", version: 3, apply_to: "flow", rise_floor_cfs: 50, storm_flow_cfs: 150, wet_months: [1, 2, 3, 4, 10, 11, 12], training_cutoff_utc: "2026-10-06 00:00:00+00:00", bins: [{ lead_lo_h: 0, lead_hi_h: 12, add_cfs: 11.7, rise: { low_factor: 0.697, high_factor: 1.193 }, flat: { low_factor: 0.93, high_factor: 1.06 } }, { lead_lo_h: 12, lead_hi_h: 24, add_cfs: 29.6, rise: { low_factor: 0.608, high_factor: 1.223 }, flat: { low_factor: 0.881, high_factor: 1.146 } }, { lead_lo_h: 24, lead_hi_h: 36, add_cfs: 47.7, rise: { low_factor: 0.547, high_factor: 1.223 }, flat: { low_factor: 0.862, high_factor: 1.229 } }, { lead_lo_h: 36, lead_hi_h: 48, add_cfs: 63, rise: { low_factor: 0.524, high_factor: 1.228 }, flat: { low_factor: 0.834, high_factor: 1.299 } }, { lead_lo_h: 48, lead_hi_h: 60, add_cfs: 84.5, rise: { low_factor: 0.505, high_factor: 1.297 }, flat: { low_factor: 0.807, high_factor: 1.306 } }, { lead_lo_h: 60, lead_hi_h: 72, add_cfs: 107.7, rise: { low_factor: 0.491, high_factor: 1.346 }, flat: { low_factor: 0.791, high_factor: 1.341 } }], description: "Descriptive examples of past forecast misses; not probabilities or independently validated forecasts." };
 
 // site/watch-public.js
-var bt = (e, t, n) => Cn(e, t, n, { previewReferenceTail: !0, officialReferenceTail: An(t.forecast.raw, (t.gauge.latest?.t ?? NaN) + 72 * 36e5, n.reference) }), Xa = "https://raw.githubusercontent.com/jdinneen/samish-river-watch/preview-data/current.json", In = new URL("./", import.meta.url), Pn = "samish.public.preview.packet.v1", Un = "samish.public.preview.preferences.v1", Mt = 9466848e5, tt = 41024448e5, He = 5 * 6e4, Hn = 2 * 1024 * 1024, S = (e) => document.getElementById(e), nt = Number.isFinite;
-function at() {
+var bt = (e, t, n) => Cn(e, t, n, { previewReferenceTail: !0, officialReferenceTail: An(t.forecast.raw, (t.gauge.latest?.t ?? NaN) + 72 * 36e5, n.reference) }), Xa = "https://raw.githubusercontent.com/jdinneen/samish-river-watch/preview-data/current.json", In = new URL("./", import.meta.url), Pn = "samish.public.preview.packet.v1", Un = "samish.public.preview.preferences.v1", Mt = 9466848e5, nt = 41024448e5, De = 5 * 6e4, Hn = 2 * 1024 * 1024, S = (e) => document.getElementById(e), at = Number.isFinite;
+function st() {
   let e = S("number-strip"), t = S("current").querySelector(".flow-number");
   e.dataset.visible = String(!!t && t.getBoundingClientRect().top <= 0), document.documentElement.style.setProperty("--reading-strip-height", `${e.offsetHeight}px`);
 }
-window.addEventListener("scroll", at, { passive: !0 });
-window.addEventListener("resize", at);
+window.addEventListener("scroll", st, { passive: !0 });
+window.addEventListener("resize", st);
 function zt(e) {
   document.querySelectorAll("button[data-help-target]").forEach((t) => {
     let n = S(t.dataset.helpTarget);
@@ -1464,10 +1468,10 @@ function zt(e) {
 }
 function Gt(e, t, n = !1) {
   let a = S(e), r = S(`${e}-toggle`);
-  if (!(!a || !r) && (a.open = t, zt(), at(), n)) {
+  if (!(!a || !r) && (a.open = t, zt(), st(), n)) {
     r.focus({ preventScroll: !0 });
     let i = S("number-strip"), o = i.dataset.visible === "true" ? i.getBoundingClientRect().bottom : 0, s = r.getBoundingClientRect();
-    (s.top < o + 8 || s.bottom > innerHeight - 8) && r.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }), at();
+    (s.top < o + 8 || s.bottom > innerHeight - 8) && r.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }), st();
   }
 }
 document.addEventListener("click", (e) => {
@@ -1498,12 +1502,12 @@ function O(e, t, n = []) {
   return (!e || typeof e != "object" || Array.isArray(e) || t.some((a) => !Object.prototype.hasOwnProperty.call(e, a)) || Object.keys(e).some((a) => ![...t, ...n].includes(a))) && j(), e;
 }
 function oe(e, t = !1, n = !1, a = !1, r = Number.MAX_SAFE_INTEGER) {
-  e === null && t || (typeof e != "number" || !nt(e) || !n && e < 0 || a && !Number.isInteger(e) || e > r) && j();
+  e === null && t || (typeof e != "number" || !at(e) || !n && e < 0 || a && !Number.isInteger(e) || e > r) && j();
 }
 function L(e, t = !1) {
-  oe(e, t, !1, !0, tt), e !== null && e < Mt && j();
+  oe(e, t, !1, !0, nt), e !== null && e < Mt && j();
 }
-function et(e) {
+function tt(e) {
   typeof e != "boolean" && j();
 }
 function ie(e, t, n = !1) {
@@ -1515,7 +1519,7 @@ function fe(e, t, n) {
 var Za = ["negative_value", "ice", "malformed_value", "estimated", "quality_flags_unavailable", "approval_unavailable", "unsupported_quality", "conflicting_duplicate", "wrong_station", "wrong_parameter", "unsupported_unit", "invalid_timestamp", "future_timestamp", "unusable_observation", "ineligible_quality"], Ja = ["latest_ineligible", "no_data", "observation_older_than_60min", "missing_quarter_hours", "clock_uncertain", "rate_suppression", "rate_limit"], Ya = ["conflicting duplicate readings", "Conflicting readings at this time", "Quality metadata supplied", "Quality flags unavailable", "quality unknown", "approved", "provisional", "Approved", "Provisional", "estimated", "ineligible", ...["approved", "provisional", "approval unavailable"].flatMap((e) => ["no qualifier supplied", "estimated", "flags unavailable"].map((t) => `${e}; ${t}`))];
 function Vt(e, t = !1) {
   O(e, t ? ["t"] : ["t", "cfs"], ["cfs", "eligible", "usable", "qualifierPresent", "approval", "qualifier", "qualityLabel", "quality", "reason", ...t ? ["currentCandidate"] : []]), L(e.t, t), "cfs" in e && oe(e.cfs, !0);
-  for (let n of ["eligible", "usable", "qualifierPresent", "currentCandidate"]) n in e && et(e[n]);
+  for (let n of ["eligible", "usable", "qualifierPresent", "currentCandidate"]) n in e && tt(e[n]);
   "approval" in e && ie(e.approval, ["Approved", "Provisional", "approved", "provisional"], !0), "qualifier" in e && ie(e.qualifier, ["", "e", "E", "estimated", "Estimated"], !0);
   for (let n of ["quality", "qualityLabel"]) n in e && ie(e[n], Ya);
   "reason" in e && ie(e.reason, Za, !0);
@@ -1556,18 +1560,18 @@ function Ka(e) {
     let o = O(t.event, ["openedT", "high", "cycle"]);
     L(o.openedT), pt(o.high);
     let s = O(o.cycle, ["ordinal", "openedT", "high", "low", "endingPending"]);
-    oe(s.ordinal, !1, !1, !0, 1e5), L(s.openedT), pt(s.high, !0), pt(s.low), et(s.endingPending);
+    oe(s.ordinal, !1, !1, !0, 1e5), L(s.openedT), pt(s.high, !0), pt(s.low), tt(s.endingPending);
   }
   if (t.standing !== null) {
     let o = O(t.standing, ["kind", "state", "t", "detectedAt", "cfs", "active", "supportingHigh", "low"]);
-    ie(o.kind, ["downturn", "correction"]), ie(o.state, ["possible_downturn", "rising_again"]), L(o.t), L(o.detectedAt), oe(o.cfs), et(o.active), pt(o.supportingHigh), pt(o.low);
+    ie(o.kind, ["downturn", "correction"]), ie(o.state, ["possible_downturn", "rising_again"]), L(o.t), L(o.detectedAt), oe(o.cfs), tt(o.active), pt(o.supportingHigh), pt(o.low);
   }
   let n = (o) => fe(o, 16, (s) => ie(s, Ja)), a = O(t.capability, ["status", "newDownturnAvailable", "aboveHighCorrectionAvailable", "reasons"]);
-  ie(a.status, ["available", "warming_up", "partial", "unavailable"]), et(a.newDownturnAvailable), et(a.aboveHighCorrectionAvailable), n(a.reasons);
+  ie(a.status, ["available", "warming_up", "partial", "unavailable"]), tt(a.newDownturnAvailable), tt(a.aboveHighCorrectionAvailable), n(a.reasons);
   let r = O(t.preparation, ["blockingReasons", "nextEligibleAt"]);
   n(r.blockingReasons), L(r.nextEligibleAt, !0);
   let i = O(t.support, ["lastSuccessfulPollAt", "monitoringGapMs", "missingQuarterHours", "observationAgeMs", "clockTrusted"]);
-  L(i.lastSuccessfulPollAt, !0), oe(i.monitoringGapMs, !0, !1, !1, tt), oe(i.observationAgeMs, !0, !1, !1, tt), fe(i.missingQuarterHours, 7, (o) => L(o)), et(i.clockTrusted), fe(e.transitions, 32, (o) => {
+  L(i.lastSuccessfulPollAt, !0), oe(i.monitoringGapMs, !0, !1, !1, nt), oe(i.observationAgeMs, !0, !1, !1, nt), fe(i.missingQuarterHours, 7, (o) => L(o)), tt(i.clockTrusted), fe(e.transitions, 32, (o) => {
     O(o, ["kind", "t", "cfs", "event", "detected_at"]), ie(o.kind, ["downturn", "event_end"]), L(o.t), L(o.detected_at), oe(o.cfs), (typeof o.event != "string" || !/^E[1-9][0-9]{0,8}$/.test(o.event)) && j();
   });
 }
@@ -1582,13 +1586,13 @@ async function jn(e) {
   let i = ["gauge", "noaa", "radar", "grid", "tides"];
   return O(r.sources, i), i.forEach((o) => Qa(o, r.sources[o])), Ka(r.monitor), r.monitor.summary.asOf !== r.createdAt && j(), a;
 }
-var Ke = Dn(Un) || {}, I = { range: ["day", "three", "full"].includes(Ke.range) ? Ke.range : "three", past: Ke.past === 48 ? 48 : 24, reference: Ke.reference === "low" ? "low" : "endpoint", theme: ["light", "dark"].includes(Ke.theme) ? Ke.theme : null, cursorT: null };
+var et = Dn(Un) || {}, I = { range: ["day", "three", "full"].includes(et.range) ? et.range : "three", past: et.past === 48 ? 48 : 24, reference: et.reference === "low" ? "low" : "endpoint", theme: ["light", "dark"].includes(et.theme) ? et.theme : null, cursorT: null };
 I.theme && (document.documentElement.dataset.theme = I.theme);
 var te = null, mt = null, V = null, Wt = !1, z = "waiting", Te = null, gt = null, At = !0, xe = !1, be = Date.now(), kt = () => Fn(Un, { range: I.range, past: I.past, reference: I.reference, theme: I.theme });
 function es() {
   let e = Date.now(), t = Te ? Math.max(0, performance.now() - Te.mono) : 0, n = Te ? Te.lower + t : null, a = Te ? Te.upper + t : null;
   be = Math.max(be, e, a ?? 0, te?.snapshot.createdAt ?? 0);
-  let r = At || !Te || e < n - He || e > a + He || e + He < be || te && te.snapshot.createdAt > a + He;
+  let r = At || !Te || e < n - De || e > a + De || e + De < be || te && te.snapshot.createdAt > a + De;
   return { now: be, uncertain: r };
 }
 function qn() {
@@ -1612,36 +1616,36 @@ function Rn(e) {
     t.textContent = `Snapshot age ${ne(n)} \xB7 verified.`, t.className = "connection";
     return;
   }
-  t.textContent = [xe ? "Preview ended. Earlier readings are retained for reference." : a ? z === "older" ? "Not refreshed \u2014 an older snapshot was received; the newest verified snapshot is retained." : z === "invalid" ? "Not refreshed \u2014 snapshot verification failed; showing last-known readings." : "Not refreshed \u2014 showing last-known readings." : e.uncertain ? "Snapshot content verified." : n > 12 * 6e4 ? "Saved snapshot is old; current crest status is unavailable." : "Verified snapshot.", e.uncertain ? `Snapshot age unknown; saved ${Z(te.snapshot.createdAt)}. Observation ages are also unknown.` : `Snapshot age ${ne(n)}; observation ages below.`, e.uncertain ? "Time uncertain \u2014 device and current-time receipt are unavailable or disagree by more than five minutes. Current crest status is withheld." : ""].join(" "), t.className = "connection attention";
+  t.textContent = [xe ? "Preview ended. Earlier readings are retained for reference." : a ? z === "older" ? "Not refreshed \u2014 an older snapshot was received; the newest verified snapshot is retained." : z === "invalid" ? "Not refreshed \u2014 snapshot verification failed; showing last-known readings." : "Not refreshed \u2014 showing last-known readings." : e.uncertain ? "Snapshot content verified." : n > 12 * 6e4 ? "Saved snapshot is old; current crest status is unavailable." : "Verified snapshot.", e.uncertain ? `Snapshot age unknown; saved ${Q(te.snapshot.createdAt)}. Observation ages are also unknown.` : `Snapshot age ${ne(n)}; observation ages below.`, e.uncertain ? "Time uncertain \u2014 device and current-time receipt are unavailable or disagree by more than five minutes. Current crest status is withheld." : ""].join(" "), t.className = "connection attention";
 }
 function ge() {
   let e = es();
   if (!te) {
     Rn(e);
-    let c = z === "waiting";
-    S("current").textContent = c ? "Checking river readings\u2026" : "No verified river readings available.", S("current").setAttribute("aria-busy", String(c)), S("monitor").textContent = c ? "" : "Crest status unavailable until readings can be verified.";
+    let l = z === "waiting";
+    S("current").textContent = l ? "Checking river readings\u2026" : "No verified river readings available.", S("current").setAttribute("aria-busy", String(l)), S("monitor").textContent = l ? "" : "Crest status unavailable until readings can be verified.";
     return;
   }
-  let t = document.activeElement?.id, n = new Set([...document.querySelectorAll("details.section-help[open]")].map((c) => c.id)), a = ["monitor", "forecast-details", "peaks"].flatMap((c) => [...S(c).querySelectorAll("details:not(.section-help)")].flatMap((f, d) => f.open ? [`${c}:${d}`] : [])), r = te.snapshot, i = e.uncertain ? r.createdAt : e.now;
+  let t = document.activeElement?.id, n = new Set([...document.querySelectorAll("details.section-help[open]")].map((l) => l.id)), a = ["monitor", "forecast-details", "peaks"].flatMap((l) => [...S(l).querySelectorAll("details:not(.section-help)")].flatMap((f, d) => f.open ? [`${l}:${d}`] : [])), r = te.snapshot, i = e.uncertain ? r.createdAt : e.now;
   V = ln({ nowMs: i, sources: r.sources, ratioTable: Nn });
   let o = xe || e.uncertain || z !== "checked" || e.now - r.createdAt > 12 * 6e4;
   V.timeUncertain = e.uncertain, e.uncertain && (V.forecast.freshContext = !1, V.forecast.higherLater = { ...V.forecast.higherLater, available: !1, reason: { code: "public_time_uncertain" }, aboveCurrent: null, peakCfs: null, peakT: null });
-  let s = r.monitor.summary, l = !nt(s.supportObservationT) || i - s.supportObservationT > 60 * 6e4;
+  let s = r.monitor.summary, c = !at(s.supportObservationT) || i - s.supportObservationT > 60 * 6e4;
   if (o) {
-    let c = { code: xe ? "preview_ended" : e.uncertain ? "public_time_uncertain" : z !== "checked" ? "public_snapshot_unavailable" : "published_snapshot_old" };
-    V.gauge.direction = { ...V.gauge.direction, available: !1, reason: c }, V.gauge.twelveHourChange = { ...V.gauge.twelveHourChange, available: !1, reason: c };
+    let l = { code: xe ? "preview_ended" : e.uncertain ? "public_time_uncertain" : z !== "checked" ? "public_snapshot_unavailable" : "published_snapshot_old" };
+    V.gauge.direction = { ...V.gauge.direction, available: !1, reason: l }, V.gauge.twelveHourChange = { ...V.gauge.twelveHourChange, available: !1, reason: l };
   }
   let u = r;
-  if (o || l || !s.support.clockTrusted) {
-    let c = [...s.capability.reasons, ...l ? [nt(s.supportObservationT) ? "observation_older_than_60min" : "no_data"] : [], ...e.uncertain ? ["public_time_uncertain"] : [], ...s.support.clockTrusted ? [] : ["clock_uncertain"]];
-    u = { ...r, monitor: { ...r.monitor, summary: { ...s, capability: { ...s.capability, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: c }, preparation: { ...s.preparation, nextEligibleAt: null } } } };
+  if (o || c || !s.support.clockTrusted) {
+    let l = [...s.capability.reasons, ...c ? [at(s.supportObservationT) ? "observation_older_than_60min" : "no_data"] : [], ...e.uncertain ? ["public_time_uncertain"] : [], ...s.support.clockTrusted ? [] : ["clock_uncertain"]];
+    u = { ...r, monitor: { ...r.monitor, summary: { ...s, capability: { ...s.capability, status: "unavailable", newDownturnAvailable: !1, aboveHighCorrectionAvailable: !1, reasons: l }, preparation: { ...s.preparation, nextEligibleAt: null } } } };
   }
   xn(u, V, e.uncertain ? null : { lastCommitAt: r.createdAt, workerStale: e.now - r.createdAt > 12 * 6e4 }, I, i, { checking: z === "waiting", suppressed: o });
-  for (let c of S("forecast-details").querySelectorAll("a")) c.getAttribute("href") === "/data/ratio_table.json" && (c.href = new URL("ratio_table.json", In).href, c.textContent = "View the frozen historical-case table");
-  a.forEach((c) => {
-    let [f, d] = c.split(":"), g = S(f).querySelectorAll("details:not(.section-help)")[Number(d)];
+  for (let l of S("forecast-details").querySelectorAll("a")) l.getAttribute("href") === "/data/ratio_table.json" && (l.href = new URL("ratio_table.json", In).href, l.textContent = "View the frozen historical-case table");
+  a.forEach((l) => {
+    let [f, d] = l.split(":"), g = S(f).querySelectorAll("details:not(.section-help)")[Number(d)];
     g && (g.open = !0);
-  }), zt(n), document.querySelectorAll("[data-range]").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.range === I.range))), S("past").value = String(I.past), S("reference").value = I.reference, bt(S("chart"), V, I), Rn(e), at(), ts(), t && S(t) && document.activeElement?.id !== t && S(t).focus({ preventScroll: !0 });
+  }), zt(n), document.querySelectorAll("[data-range]").forEach((l) => l.setAttribute("aria-pressed", String(l.dataset.range === I.range))), S("past").value = String(I.past), S("reference").value = I.reference, bt(S("chart"), V, I), Rn(e), st(), ts(), t && S(t) && document.activeElement?.id !== t && S(t).focus({ preventScroll: !0 });
 }
 async function Bn(e, t = Hn * 2) {
   let n = new AbortController(), a = setTimeout(() => n.abort(), 18e3);
@@ -1660,11 +1664,11 @@ async function ns() {
   let { response: t, value: n } = await Bn(e, 65536);
   (n?.schemaVersion !== 1 || !["active", "ended"].includes(n.state)) && j(), xe = n.state === "ended";
   let a = t.headers.get("Date"), r = t.headers.get("Age"), i = Date.parse(a || "");
-  if (!nt(i) || i < Mt || i > tt || r !== null && !/^\d+$/.test(r)) throw new Error("time_unavailable");
+  if (!at(i) || i < Mt || i > nt || r !== null && !/^\d+$/.test(r)) throw new Error("time_unavailable");
   let o = r === null ? 0 : Number(r);
   if (!Number.isSafeInteger(o) || o > 7 * 86400) throw new Error("time_unavailable");
-  let s = i + o * 1e3, l = Date.now();
-  l >= i - He && l <= s + He && s - l <= He && (be = Math.max(s, l, qn(), te?.snapshot.createdAt ?? 0), gt = { now: be, mono: performance.now() }), Te = { lower: i, upper: s, mono: performance.now() }, At = !1;
+  let s = i + o * 1e3, c = Date.now();
+  c >= i - De && c <= s + De && s - c <= De && (be = Math.max(s, c, qn(), te?.snapshot.createdAt ?? 0), gt = { now: be, mono: performance.now() }), Te = { lower: i, upper: s, mono: performance.now() }, At = !1;
 }
 function as(e, t) {
   if (te) {
@@ -1680,7 +1684,7 @@ function as(e, t) {
   }
   te = e, mt = t, z = "checked";
 }
-async function st() {
+async function rt() {
   if (!Wt) {
     Wt = !0, S("refresh").disabled = !0, z === "waiting" && ge();
     try {
@@ -1714,7 +1718,7 @@ S("theme").addEventListener("click", () => {
   let e = I.theme ? I.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   I.theme = e ? "light" : "dark", document.documentElement.dataset.theme = I.theme, kt();
 });
-S("refresh").addEventListener("click", st);
+S("refresh").addEventListener("click", rt);
 S("chart").addEventListener("pointerdown", (e) => {
   I.cursorT = En(e), V && bt(S("chart"), V, I);
 });
@@ -1726,30 +1730,30 @@ S("chart-cursor").addEventListener("keydown", (e) => {
   t !== null && (e.preventDefault(), I.cursorT = t, V && bt(S("chart"), V, I));
 });
 document.addEventListener("visibilitychange", () => {
-  document.hidden || (z = "waiting", ge(), st());
+  document.hidden || (z = "waiting", ge(), rt());
 });
 window.addEventListener("pageshow", (e) => {
-  e.persisted && (z = "waiting", ge(), st());
+  e.persisted && (z = "waiting", ge(), rt());
 });
 window.addEventListener("offline", () => {
   z = "offline", At = !0, ge();
 });
-window.addEventListener("online", st);
+window.addEventListener("online", rt);
 var On = 0;
 new ResizeObserver((e) => {
   let t = Math.round(e[0].contentRect.width);
-  t !== On && (On = t, V && bt(S("chart"), V, I), at());
+  t !== On && (On = t, V && bt(S("chart"), V, I), st());
 }).observe(S("chart"));
 async function ss() {
   let e = Dn(Pn);
   if (e?.packet)
     try {
-      te = await jn(e.packet), mt = e.packet, nt(e.greatestNow) && e.greatestNow >= Mt && e.greatestNow <= tt && (be = Math.max(be, e.greatestNow + Math.max(0, Date.now() - Number(e.savedDeviceMs || Date.now())))), nt(e.trustedNow) && e.trustedNow >= Mt && e.trustedNow <= tt && (gt = { now: e.trustedNow, mono: performance.now() }), xe = e.ended === !0, z = "waiting", ge();
+      te = await jn(e.packet), mt = e.packet, at(e.greatestNow) && e.greatestNow >= Mt && e.greatestNow <= nt && (be = Math.max(be, e.greatestNow + Math.max(0, Date.now() - Number(e.savedDeviceMs || Date.now())))), at(e.trustedNow) && e.trustedNow >= Mt && e.trustedNow <= nt && (gt = { now: e.trustedNow, mono: performance.now() }), xe = e.ended === !0, z = "waiting", ge();
     } catch {
       te = null, mt = null;
     }
-  await st(), setInterval(() => {
-    document.hidden || st();
+  await rt(), setInterval(() => {
+    document.hidden || rt();
   }, 5 * 6e4), setInterval(() => {
     document.hidden || ge();
   }, 3e4);

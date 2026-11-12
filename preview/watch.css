@@ -170,3 +170,8 @@ button,select{min-width:48px}
 .work-grid>.panel{width:100%}
 
 .rain-total strong{overflow-wrap:anywhere}.rain-total strong.unavailable{font-size:12px}
+
+/* Short line names stay beside the chart; the Line guide holds definitions. */
+.chart-panel .legend{gap:4px 12px;line-height:1.4}
+#monitor .crest-guidance,#monitor .clock-qualifier{color:var(--muted);font-size:12px}
+#current .checking-readings{font-size:20px;font-weight:650;margin:8px 0}
