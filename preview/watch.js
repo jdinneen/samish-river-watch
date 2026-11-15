@@ -1667,7 +1667,7 @@ async function ns() {
   if (!at(i) || i < Mt || i > nt || r !== null && !/^\d+$/.test(r)) throw new Error("time_unavailable");
   let o = r === null ? 0 : Number(r);
   if (!Number.isSafeInteger(o) || o > 7 * 86400) throw new Error("time_unavailable");
-  let s = i + o * 1e3, c = Date.now();
+  let s = i, c = Date.now();
   c >= i - De && c <= s + De && s - c <= De && (be = Math.max(s, c, qn(), te?.snapshot.createdAt ?? 0), gt = { now: be, mono: performance.now() }), Te = { lower: i, upper: s, mono: performance.now() }, At = !1;
 }
 function as(e, t) {
