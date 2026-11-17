@@ -1,11 +1,7 @@
 {
- "generated_utc": "2026-11-17T17:10:01Z",
+ "generated_utc": "2026-11-17T18:10:01Z",
  "source": "MRMS RadarOnly_QPE_01H",
  "hours": [
-  {
-   "end_utc": "2026-11-15T18:00:00Z",
-   "mm": 0.0
-  },
   {
    "end_utc": "2026-11-15T19:00:00Z",
    "mm": 0.0
@@ -193,8 +189,279 @@
   {
    "end_utc": "2026-11-17T17:00:00Z",
    "mm": 0.037
+  },
+  {
+   "end_utc": "2026-11-17T18:00:00Z",
+   "mm": 0.02
   }
  ],
  "solid_rain_end_utc": null,
- "rule": "last hour >= 1 mm followed by >= 1 hour < 1 mm"
+ "rule": "last hour >= 1 mm followed by >= 1 hour < 1 mm",
+ "regional_hours": [
+  {
+   "end_utc": "2026-11-15T19:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-15T20:00:00Z",
+   "upper_mm": 0.001,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-15T21:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-15T22:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-15T23:00:00Z",
+   "upper_mm": 0.021,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T00:00:00Z",
+   "upper_mm": 0.057,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T01:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T02:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T03:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T04:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T05:00:00Z",
+   "upper_mm": 0.003,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T06:00:00Z",
+   "upper_mm": 0.005,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T07:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T08:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T09:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T10:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T11:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T12:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T13:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T14:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T15:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T16:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T17:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T18:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T19:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T20:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T21:00:00Z",
+   "upper_mm": 0.005,
+   "lower_mm": 0.003
+  },
+  {
+   "end_utc": "2026-11-16T22:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-16T23:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T00:00:00Z",
+   "upper_mm": 0.006,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T01:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T02:00:00Z",
+   "upper_mm": 0.006,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T03:00:00Z",
+   "upper_mm": 0.003,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T04:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T05:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T06:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T07:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T08:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T09:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T10:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T11:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T12:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T13:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T14:00:00Z",
+   "upper_mm": 0.0,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T15:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T16:00:00Z",
+   "upper_mm": 0.002,
+   "lower_mm": 0.026
+  },
+  {
+   "end_utc": "2026-11-17T17:00:00Z",
+   "upper_mm": 0.038,
+   "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-17T18:00:00Z",
+   "upper_mm": 0.02,
+   "lower_mm": 0.0
+  }
+ ],
+ "regional_definition": {
+  "definition_code": "wbd_huc12_upper_middle_friday_vs_lower_v1",
+  "source": "Washington Department of Fish and Wildlife ArcGIS FP_HUC, sourced from USGS Watershed Boundary Dataset",
+  "source_url": "https://geodataservices.wdfw.wa.gov/arcgis/rest/services/ApplicationServices/FP_HUC/MapServer/0",
+  "method": "Each MRMS 0.01-degree cell is split by its area intersection with HUC12 polygons, then weighted by the frozen SMRW1 basin cell weight; regional weights are normalized within each region.",
+  "regions": {
+   "upper": {
+    "name": "Upper and middle Samish, including Friday Creek",
+    "huc12": [
+     "171100020201",
+     "171100020203",
+     "171100020202"
+    ],
+    "area_fraction": 0.9621456571845356
+   },
+   "lower": {
+    "name": "Lower Samish River",
+    "huc12": [
+     "171100020204"
+    ],
+    "area_fraction": 0.03785426796335805
+   }
+  },
+  "unallocated_basin_weight": 7.485210632114787e-08
+ }
 }
