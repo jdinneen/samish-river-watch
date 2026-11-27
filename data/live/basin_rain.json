@@ -1,11 +1,7 @@
 {
- "generated_utc": "2026-11-27T02:10:02Z",
+ "generated_utc": "2026-11-27T03:10:02Z",
  "source": "MRMS RadarOnly_QPE_01H",
  "hours": [
-  {
-   "end_utc": "2026-11-25T03:00:00Z",
-   "mm": 0.01
-  },
   {
    "end_utc": "2026-11-25T04:00:00Z",
    "mm": 0.105
@@ -193,18 +189,15 @@
   {
    "end_utc": "2026-11-27T02:00:00Z",
    "mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-27T03:00:00Z",
+   "mm": 0.64
   }
  ],
  "solid_rain_end_utc": "2026-11-26T22:00:00Z",
  "rule": "last hour >= 1 mm followed by >= 1 hour < 1 mm",
  "regional_hours": [
-  {
-   "end_utc": "2026-11-25T03:00:00Z",
-   "upper_mm": 0.015,
-   "middle_mm": 0.021,
-   "friday_mm": 0.0,
-   "lower_mm": 0.0
-  },
   {
    "end_utc": "2026-11-25T04:00:00Z",
    "upper_mm": 0.271,
@@ -533,6 +526,13 @@
    "middle_mm": 0.0,
    "friday_mm": 0.0,
    "lower_mm": 0.0
+  },
+  {
+   "end_utc": "2026-11-27T03:00:00Z",
+   "upper_mm": 0.877,
+   "middle_mm": 0.456,
+   "friday_mm": 0.621,
+   "lower_mm": 0.291
   }
  ],
  "regional_definition": {
